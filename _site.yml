@@ -1,0 +1,11 @@
+name: "my-website"
+navbar:
+  title: "Métodos Numéricos"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+output:
+  html_document:
+    css: css/estilos.css # 👈 ¡NUEVA LÍNEA CLAVE!

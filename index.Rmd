@@ -1,0 +1,90 @@
+---
+title: "Métodos Numéricos con Python"
+author: "José Luis Ramírez"
+date: "Octubre 2025"
+output:
+  html_document:
+    toc: true # Tabla de contenido
+    toc_depth: 3
+    toc_float: # Opciones para el TOC flotante (lateral)
+      collapsed: true # Mantenerla colapsada inicialmente
+      smooth_scroll: true # Desplazamiento suave
+    theme: readable # Tema visual
+    number_sections: true
+---
+
+# `r rmarkdown::metadata$title`
+
+
+
+![](img/Image_fx.jpg){width=80%}
+
+
+Bienvenidos al Curso de Métodos Numéricos con Python!
+
+Este curso conecta la teoría matemática con la práctica de la programación para resolver problemas de índole matemático que son demasiado complejos o imposibles de abordar con soluciones analíticas (exactas) y la computación numérica se convierte en una herramienta esencial para encontrar soluciones aproximadas a estos problemas.
+
+***
+
+## Información General del Curso
+
+### Objetivo
+
+El objetivo del curso consiste en describir y analizar algoritmos numéricos que permitan resolver problemas matemáticos con una precisión determinada. Identificar el tipo de problemas que requieren técnicas numéricas para su resolución. Analizar la propagación del error que pueden ocurrir cuando se aplican métodos numéricos, y aproximar con precisión las soluciones a algunos problemas que no pueden ser resueltos exactamente. 
+
+Al finalizar este curso, serás capaz de:
+
+* **Clasificar Problemas**: Identificar y diferenciar problemas matemáticos (en ingeniería, ciencia de datos o matemáticas aplicadas) que **requieren soluciones aproximadas** mediante métodos numéricos de aquellos que pueden resolverse analíticamente.
+* **Implementación en Python**: Traducir los algoritmos numéricos descritos teóricamente en código Python funcional, utilizando eficazmente librerías científicas como **NumPy** para el manejo eficiente de vectores y matrices, y **SciPy** para métodos optimizados.
+* **Validación de Resultados**: Aplicar pruebas de convergencia y utilizar herramientas de Python para validar la precisión de las soluciones numéricas obtenidas contra soluciones conocidas o mediante métodos de contraste.
+* **Selección Óptima**: Seleccionar el método numérico más eficiente y adecuado para un problema dado, considerando factores como el tiempo de cómputo, la complejidad del algoritmo y la precisión requerida.
+
+### Prerrequisitos
+
+Para este curso se requiere que el estudiante posea niveles básicos de Programación y Algoritmos,  para escribir código funcional, y manejo de elementos matemáticos vistos en Cálculo Diferencial e Integral y Álgebra Lineal.
+
+***
+
+## Contenido del Curso
+
+En esta sección encontrarás un enlace directo a las distintas unidades que cubren el contenido de la materia.
+
+| Unidad | Tema Principal | Enlace Rápido |
+| :-- | :--- | :--- |
+| **Unidad 1** | Teoría de Errores | [Ir a Unidad 1](unidad_01.html) |
+| **Unidad 2** | Solución de ecuaciones no lineales | [Ir a Unidad 2](modulos/modulo_02.html) |
+| **Unidad 3** | Ajuste de curvas | [Ir a Unidad 3](modulos/modulo_03.html) |
+| **Unidad 4** | Diferenciación e Integración Numérica | [Ir a Unidad 4](modulos/modulo_04.html) |
+| **Unidad5** | Sistemas de Ecuaciones Lineales | [Ir a Unidad 5](modulos/modulo_05.html) |
+
+### Bibliografía recomendada
+
+* R. L. Burden y J. D. Faires. Análisis Numérico. Grupo Editorial Iberoamérica, 1985.
+* D. Kincaid y W. Cheney. Análisis numérico. Las matemáticas del cálculo científico.
+Athena scientific, belmont, MA, 1999.
+* S. Chapra y R. Canale. Métodos Numéricos para Ingenieros. Editorial Mc Graw Hill, tercera edición, 1998.
+* J. Mathews y K. Fink. Métodos Numéricos con MATLAB. Prentice Hall, tercera edición, 2000.
+
+***
+
+## Evaluación del curso
+
+La evaluación del curso estará compuesta por examenes parciales, pruebas cortas y proyectos:
+
+1.  **3 Parciales** (20% c/u)
+2.  **Pruebas cortas** (10% de la nota final)
+3.  **2 Proyectos** (15% c/u)
+
+***
+
+## Recursos Adicionales
+
+### Instalación de Software
+
+Asegúrate de tener instalado el siguiente software:
+
+* **Python** (Versión 3.14 o superior): [Descargar Python](https://www.python.org/)
+
+***
+
+<small>Última actualización: `r format(Sys.Date(), "%d de %B, %Y")`</small>

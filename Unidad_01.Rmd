@@ -1,0 +1,114 @@
+---
+title: "Módulo 1: Fundamentos y Entorno de Trabajo"
+author: "Tu Nombre"
+date: "Octubre 2025"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: readable 
+    css: css/estilos.css # Mantiene los estilos del navbar y body
+    number_sections: true
+---
+
+# 1. ¡Bienvenidos al Módulo 1! 🚀
+
+Este módulo establece la base fundamental para el resto del curso. Nos enfocaremos en preparar nuestras herramientas de trabajo y en revisar los conceptos matemáticos que utilizaremos constantemente para implementar métodos numéricos efectivos.
+
+---
+
+## 2. Entorno de Trabajo: Python y RStudio
+
+El éxito en este curso depende de tener un entorno de programación robusto y bien configurado.
+
+### 2.1. Instalación de Python (Anaconda/Miniconda)
+
+Recomendamos encarecidamente utilizar **Anaconda** o **Miniconda**, ya que incluyen las librerías científicas (`NumPy`, `SciPy`) preinstaladas y facilitan la gestión de entornos virtuales.
+
+* **Paso 1: Descarga e Instalación:** Sigue la guía oficial para instalar la distribución de Anaconda: [Enlace a la Guía de Instalación de Anaconda](enlace_guia_anaconda)
+* **Paso 2: Creación del Entorno:** Abre la terminal o Anaconda Prompt y crea un entorno virtual (por ejemplo, `metodos_num`):
+    ```bash
+    conda create --name metodos_num python=3.10
+    conda activate metodos_num
+    ```
+
+### 2.2. Uso de RStudio como Interfaz (Opcional)
+
+Usaremos RStudio para gestionar nuestros archivos `.Rmd` y documentos. Para ejecutar código Python dentro de R Markdown, usaremos el paquete **`reticulate`**.
+
+* **Instalación del Paquete:**
+    ```r
+    install.packages("reticulate")
+    ```
+* **Verificación del Entorno:** Una vez instalado, verifica que `reticulate` encuentre tu instalación de Python:
+    ```r
+    library(reticulate)
+    py_config()
+    ```
+
+---
+
+## 3. Python para el Cálculo Numérico
+
+### 3.1. Introducción a NumPy
+
+**NumPy (Numerical Python)** es la librería esencial para el curso. Proporciona estructuras de datos eficientes (arrays) y funciones optimizadas para realizar operaciones de Álgebra Lineal.
+
+* **Creación de un Array:**
+    ```python
+    # Bloque de código Python
+    import numpy as np
+
+    # Crear un array de 1 a 5
+    a = np.array([1, 2, 3, 4, 5])
+    print(a)
+    print(a * 2) # Operación vectorial
+    ```
+
+### 3.2. Visualización con Matplotlib
+
+Utilizaremos **Matplotlib** para graficar funciones, errores y visualizar resultados de nuestros métodos.
+
+* **Gráfico de una Función Simple:**
+    ```python
+    # Bloque de código Python
+    import matplotlib.pyplot as plt
+
+    x = np.linspace(-np.pi, np.pi, 200)
+    y = np.sin(x)
+
+    plt.plot(x, y)
+    plt.title("Función Seno")
+    plt.show()
+    ```
+
+---
+
+## 4. Repaso de Fundamentos Matemáticos
+
+### 4.1. Concepto de Error y Precisión
+
+Antes de codificar, debemos entender la fuente de nuestros errores:
+
+* **Error de Truncamiento:** Error que resulta de usar una aproximación matemática (ej., truncar una serie infinita). [Enlace a una explicación detallada del Error de Truncamiento](recursos/error_truncamiento.html)
+* **Error de Redondeo:** Error que resulta de la precisión limitada de la computadora (ej., usar números de punto flotante de 64 bits).
+
+### 4.2. Convergencia y Dominio
+
+Revisamos el concepto de **convergencia**. Muchos métodos numéricos son iterativos y solo son válidos si la secuencia de soluciones se aproxima a la respuesta verdadera. Recordamos la definición de límite:
+
+$$
+\lim_{n \to \infty} x_n = x_{verdadera}
+$$
+
+---
+
+## 5. Tarea y Próxima Semana
+
+* **Tarea:** Completar la instalación del entorno Python y verificar que los bloques de código en este módulo se ejecuten correctamente en tu sistema.
+* **Próximo Módulo:** En el **Módulo 2**, comenzaremos con la resolución de ecuaciones no lineales (métodos de Bisección y Newton).
+
+***
+
+<small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>
