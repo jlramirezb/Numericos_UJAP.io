@@ -9,3 +9,4 @@ navbar:
 output:
   html_document:
     css: css/estilos.css # 👈 ¡NUEVA LÍNEA CLAVE!
+output_dir: "docs"
