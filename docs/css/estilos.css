@@ -37,3 +37,59 @@ body {
     /* 3. Color de fondo de reserva (si la imagen no carga) */
     background-color: #f0f0f0; 
 }
+
+/* Estilo para el recuadro gris de las fórmulas */
+.recuadro-gris {
+    /* Color de fondo gris claro */
+    background-color: #ddd; 
+    
+    /* Borde sólido y sutil */
+    border: 1px solid #000; 
+    
+    /* Espacio interno (padding) para separar el contenido del borde */
+    padding: 15px; 
+    
+    /* Márgenes para separar el recuadro del texto circundante */
+    margin: 20px 0; 
+    
+    /* Opcional: Esquinas ligeramente redondeadas */
+    border-radius: 10px;
+}
+
+/* IMPORTANTE: Asegurar que el texto esté centrado dentro del recuadro */
+.recuadro-gris .math-display {
+    text-align: center;
+}
+
+/* Estilo para las cajas de ejemplo o bloques de información */
+.caja-ejemplo {
+    /* Color de fondo azul claro */
+    background-color: #e0f7fa; /* Un tono de azul cian muy claro */
+    
+    /* Borde del mismo color para un look suave */
+    border: 1px solid #b2ebf2; 
+    
+    /* Opcional: Borde izquierdo más oscuro para énfasis */
+    border-left: 5px solid #00bcd4; /* Un tono de cian más oscuro */
+    
+    /* Espaciado interno */
+    padding: 15px 20px; 
+    
+    /* Margen exterior para separarlo de otros elementos */
+    margin: 25px 0; 
+    
+    /* Esquinas ligeramente redondeadas */
+    border-radius: 8px; 
+    
+    /* Opcional: Sombra sutil para darle profundidad */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); 
+}
+
+/* Estilo para el título "Ejemplo" dentro de la caja */
+.caja-ejemplo h3 {
+    margin-top: 0; /* Elimina el margen superior por defecto del h3 */
+    color: #00838f; /* Un tono de cian oscuro para el título */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Línea sutil debajo del título */
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}

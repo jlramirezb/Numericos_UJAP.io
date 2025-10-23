@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Tu Nombre" />
+<meta name="author" content="José Luis Ramírez" />
 
 
-<title>Módulo 1: Fundamentos y Entorno de Trabajo</title>
+<title>Teoría de Errores</title>
 
 <script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -338,36 +338,217 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Módulo 1: Fundamentos y Entorno de
-Trabajo</h1>
-<h4 class="author">Tu Nombre</h4>
+<h1 class="title toc-ignore">Teoría de Errores</h1>
+<h4 class="author">José Luis Ramírez</h4>
 <h4 class="date">Octubre 2025</h4>
 
 </div>
 
 
-<div id="bienvenidos-al-módulo-1" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> 1. ¡Bienvenidos al
-Módulo 1! 🚀</h1>
-<p>Este módulo establece la base fundamental para el resto del curso.
-Nos enfocaremos en preparar nuestras herramientas de trabajo y en
-revisar los conceptos matemáticos que utilizaremos constantemente para
-implementar métodos numéricos efectivos.</p>
+<div id="motivación" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Motivación</h1>
+<ul>
+<li>La gran mayoría de los modelos matemáticos que describen procesos
+físicos no pueden resolverse analíticamente.</li>
+<li>En una situación práctica, un problema matemático deriva de un
+fenómeno físico sobre el cual se han hecho algunas suposiciones para
+simplificarlo y poderlo representar matemáticamente.</li>
+<li>Una vez formulado el problema, deben diseñarse métodos numéricos
+para resolver el problema. La selección o construcción de los algoritmos
+apropiados cae propiamente dentro del terreno del Análisis
+Numérico.</li>
+</ul>
 <hr />
-<div id="entorno-de-trabajo-python-y-rstudio" class="section level2"
-number="1.1">
-<h2><span class="header-section-number">1.1</span> 2. Entorno de
-Trabajo: Python y RStudio</h2>
-<p>El éxito en este curso depende de tener un entorno de programación
-robusto y bien configurado.</p>
-<div id="instalación-de-python-anacondaminiconda" class="section level3"
-number="1.1.1">
-<h3><span class="header-section-number">1.1.1</span> 2.1. Instalación de
-Python (Anaconda/Miniconda)</h3>
-<p>Recomendamos encarecidamente utilizar <strong>Anaconda</strong> o
-<strong>Miniconda</strong>, ya que incluyen las librerías científicas
-(<code>NumPy</code>, <code>SciPy</code>) preinstaladas y facilitan la
-gestión de entornos virtuales.</p>
+</div>
+<div id="teoría-de-errores-y-aproximación" class="section level1"
+number="2">
+<h1><span class="header-section-number">2</span> Teoría de Errores y
+Aproximación</h1>
+<p>El análisis numérico proporciona métodos computacionales para el
+estudio y solución de problemas matemáticos. Debido a que muchos
+cálculos son realizados en computadores digitales, es conveniente la
+discusión para la implementación de los métodos numéricos como programas
+de computador.</p>
+<ul>
+<li>Desafortunadamente los resultados son afectados por el uso de la
+<strong>Aritmética de Precisión Finita</strong>.</li>
+<li>Esperamos tener siempre expresiones verdaderas como <span
+class="math inline">\(2 + 2 = 4\)</span>, <span
+class="math inline">\(3^2 = 9\)</span>, <span
+class="math inline">\((\sqrt{5})^2 = 5\)</span>, pero en la aritmética
+de precisión finita <span class="math inline">\(\sqrt{5}\)</span> no
+tiene un solo número fijo y finito, que lo represente.</li>
+</ul>
+<p>Los resultados numéricos están influenciados por muchos tipos de
+errores, los cuales pueden ser catalogados a grandes rasgos en tres
+tipos básicos:</p>
+<ul>
+<li><strong>Errores inherentes</strong> que existen en los valores de
+los datos de entrada, ya sean causados por incertidumbre o por la
+naturaleza necesariamente aproximada de la representación.</li>
+<li><strong>Errores de discretización</strong> (llamados también de
+truncamiento) que surgen al reemplazar procesos límites por su resultado
+antes de alcanzar tal límite.</li>
+<li><strong>Errores de redondeo</strong> que se originan al utilizar una
+aritmética que involucra números con un número finito de dígitos.</li>
+</ul>
+<div id="errores-absolutos-y-relativos." class="section level2"
+number="2.1">
+<h2><span class="header-section-number">2.1</span> Errores Absolutos y
+Relativos.</h2>
+Sea <span class="math inline">\(x\)</span> el valor exacto de un número
+real y <span class="math inline">\(\tilde{x}\)</span> el valor
+aproximado. Contemplando todos los posibles errores, la relación entre
+el resultado exacto y el aproximado es:
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x=\tilde{x}+E
+\]</span></p>
+</div>
+Se define el error absoluto y se denota <span
+class="math inline">\(E_a\)</span> como la diferencia <span
+class="math inline">\(x − \tilde{x}\)</span>, y se expresa siempre en
+valor absoluto.
+<div class="recuadro-gris">
+<p><span class="math display">\[
+E_a = |x - \tilde{x}|
+\]</span></p>
+</div>
+Al cociente entre el error absoluto <span
+class="math inline">\(E_a\)</span> y el valor real <span
+class="math inline">\(x\)</span> se le denomina error relativo y se
+denota por <span class="math inline">\(E_r\)</span>. Se expresa también
+en valor absoluto, es decir:
+<div class="recuadro-gris">
+<p><span class="math display">\[
+E_r =\dfrac{|E_a|}{|x|} = \dfrac{|x - \tilde{x}|}{|x|}
+\]</span></p>
+</div>
+<div id="ejemplo-1" class="section level3 caja-ejemplo" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Ejemplo 1</h3>
+<ul>
+<li>Calculemos los errores absolutos y relativos para el valor <span
+class="math inline">\(x= 1234.5678\)</span>, con aproximaciones a 4
+dígitos <span class="math inline">\(x_1=1234\)</span> y <span
+class="math inline">\(x_2=1235\)</span>
+<ul>
+<li><span class="math inline">\(E_a = |x - x_1| = |1234.5678 - 1234| =
+0.5678\)</span>, <span class="math inline">\(E_r = \dfrac{|E_a|}{|x|} =
+\dfrac{0.5678}{1234.5678} \approx 5 \times 10^{-4}\)</span>.</li>
+<li><span class="math inline">\(E_a = |x - x_2| = |1234.5678 - 1235| =
+0.4322\)</span>, <span class="math inline">\(E_r = \dfrac{|E_a|}{|x|} =
+\dfrac{0.4322}{1234.5678} \approx 4 \times 10^{-4}\)</span>.</li>
+</ul></li>
+<li>Calculemos los errores absolutos y relativos para el valor <span
+class="math inline">\(x= −0.00004599881234\)</span>, con aproximaciones
+a 4 dígitos <span class="math inline">\(x_1=-0.00004599\)</span> y <span
+class="math inline">\(x_2=-0.00004600\)</span>
+<ul>
+<li><span class="math inline">\(E_a = |x - x_1| = |−0.00004599881234 +
+0.00004599| = 8.81234 \times 10^{−9}\)</span>, <span
+class="math inline">\(E_r = \dfrac{|E_a|}{|x|} =
+\dfrac{8.81234×10^{−9}}{0.00004599881234} \approx 2 \times
+10^{-4}\)</span>.</li>
+<li><span class="math inline">\(E_a = |x - x_2| = |−0.00004599881234 +
+0.00004600| = 1.18766 \times 10^{−9}\)</span>, <span
+class="math inline">\(E_r = \dfrac{|E_a|}{|x|} = \dfrac{1.18766 \times
+10^{−9}}{0.00004599881234} \approx 2.5819 \times 10^{-4}\)</span>.</li>
+</ul></li>
+</ul>
+</div>
+<p><u>Observaciones</u>:</p>
+<ul>
+<li><p>Mirando los ejemplos anteriores, vemos que los <strong>errores
+absolutos</strong> dependen de las magnitudes de los valores <span
+class="math inline">\(x\)</span>: en el primer ejemplo los errores
+absolutos son de orden de <span class="math inline">\(10^{−1}\)</span>;
+en cambio, en el segundo, son del orden de <span
+class="math inline">\(10^{−9}\)</span>.</p></li>
+<li><p>En cambio, los <strong>errores relativos</strong> no se ven
+afectados por dichas magnitudes. Por dicho motivo, si queremos estudiar
+los errores sin tener en cuenta el orden de los valores <span
+class="math inline">\(x\)</span>, hay que usar los <strong>errores
+relativos</strong>. Vemos que en los dos ejemplos los errores relativos
+son del orden de <span class="math inline">\(10^{−4}\)</span>. ya que
+recordemos que las aproxi9maciones son a 4 <strong>cifras decimales
+significativas</strong>.</p></li>
+</ul>
+</div>
+<div id="cifras-significativas." class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Cifras
+Significativas.</h2>
+Se dice que el número <span class="math inline">\(\tilde{x}\)</span>
+aproxima al número <span class="math inline">\(x\)</span> con <span
+class="math inline">\(t\)</span> dígitos (o cifras) significativas, si
+<span class="math inline">\(t\)</span> es el número entero más grande no
+negativo para el cual:
+<div class="recuadro-gris">
+<p><span class="math display">\[E_r&lt;0.5\times10^{-t} \Rightarrow
+\dfrac{|x - \tilde{x}|}{|x|} &lt; 0.5 \times 10^{-t}\]</span></p>
+</div>
+<div id="ejemplo-2" class="section level3 caja-ejemplo" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Ejemplo 2</h3>
+<p>Sea <span class="math inline">\(\tilde{x} = 3.1416\)</span> una
+aproximación al valor <span class="math inline">\(\pi\)</span>, y <span
+class="math inline">\(x = 3.1415927\)</span> una mejor aproximación.</p>
+<pre class="python"><code>import math
+import string
+from decimal import Decimal
+
+def redondear(N,signif):
+  &quot;&quot;&quot;
+      Dado un número real N y un número determinado de cifras significativas signif,
+      nos da la aproximación de este número con signif cifras significativas.
+
+        Parámetros:
+        * N: número decimal
+        * signif: número de digitos representativos
+
+        Valor de retorno
+        * número redondeado a signif número de cifras significativas
+
+   &quot;&quot;&quot;
+  if int(N)==0:
+    return float(round(Decimal(str(N)),signif))
+  else:
+    return float(round(Decimal(str(N)),signif-1-int(math.log(abs(N),10))))
+  
+def Err(num,dig):
+    &quot;&quot;&quot;
+      Dado un número real y un número determinado de cifras significativas,
+      nos da el error absoluto y relativo de dicho número.
+
+        Parámetros:
+        * num: número decimal
+        * dig: número de cifras significativas
+
+        Valor de retorno
+        * Error absoluto
+        * Error Relativo
+
+    &quot;&quot;&quot;
+    err_abs=abs(num-redondear(num,dig))
+    err_rel=err_abs/abs(redondear(num,dig))
+
+    print(&quot;El error absoluto es {}&quot;.format(err_abs))
+    print(&quot;El error relativo es {}&quot;.format(err_rel))
+
+    return (err_abs, err_rel)
+
+Err(3.1415927,5)</code></pre>
+<pre><code>## El error absoluto es 7.300000000043383e-06
+## El error relativo es 2.3236567354352506e-06
+## (7.300000000043383e-06, 2.3236567354352506e-06)</code></pre>
+<p><span class="math display">\[
+\begin{align*}
+E_a &amp; = |x - \tilde{x}| = |3.1415927 - 3.1416| = 0.0000073 \\
+E_r &amp; = \dfrac{|E_a|}{|x|} = \dfrac{0.0000073}{3.1415927} \approx
+0.232 \times 10^{-5}&lt; 0.5 \times 10^{-5}
+\end{align*}
+\]</span> Luego, <span class="math inline">\(\tilde{x}\)</span> aproxima
+a <span class="math inline">\(\pi\)</span> con 5 cifras
+significativas.</p>
+</div>
 <ul>
 <li><strong>Paso 1: Descarga e Instalación:</strong> Sigue la guía
 oficial para instalar la distribución de Anaconda: <a
@@ -378,10 +559,9 @@ Anaconda Prompt y crea un entorno virtual (por ejemplo,
 <code>metodos_num</code>):
 <code>bash     conda create --name metodos_num python=3.10     conda activate metodos_num</code></li>
 </ul>
-</div>
 <div id="uso-de-rstudio-como-interfaz-opcional" class="section level3"
-number="1.1.2">
-<h3><span class="header-section-number">1.1.2</span> 2.2. Uso de RStudio
+number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> 2.2. Uso de RStudio
 como Interfaz (Opcional)</h3>
 <p>Usaremos RStudio para gestionar nuestros archivos <code>.Rmd</code> y
 documentos. Para ejecutar código Python dentro de R Markdown, usaremos
@@ -397,11 +577,11 @@ verifica que <code>reticulate</code> encuentre tu instalación de Python:
 </div>
 </div>
 <div id="python-para-el-cálculo-numérico" class="section level2"
-number="1.2">
-<h2><span class="header-section-number">1.2</span> 3. Python para el
+number="2.3">
+<h2><span class="header-section-number">2.3</span> 3. Python para el
 Cálculo Numérico</h2>
-<div id="introducción-a-numpy" class="section level3" number="1.2.1">
-<h3><span class="header-section-number">1.2.1</span> 3.1. Introducción a
+<div id="introducción-a-numpy" class="section level3" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> 3.1. Introducción a
 NumPy</h3>
 <p><strong>NumPy (Numerical Python)</strong> es la librería esencial
 para el curso. Proporciona estructuras de datos eficientes (arrays) y
@@ -414,8 +594,8 @@ print(a * 2) # Operación vectorial ```</p></li>
 </ul>
 </div>
 <div id="visualización-con-matplotlib" class="section level3"
-number="1.2.2">
-<h3><span class="header-section-number">1.2.2</span> 3.2. Visualización
+number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> 3.2. Visualización
 con Matplotlib</h3>
 <p>Utilizaremos <strong>Matplotlib</strong> para graficar funciones,
 errores y visualizar resultados de nuestros métodos.</p>
@@ -429,12 +609,12 @@ Bloque de código Python import matplotlib.pyplot as plt</p>
 </div>
 </div>
 <div id="repaso-de-fundamentos-matemáticos" class="section level2"
-number="1.3">
-<h2><span class="header-section-number">1.3</span> 4. Repaso de
+number="2.4">
+<h2><span class="header-section-number">2.4</span> 4. Repaso de
 Fundamentos Matemáticos</h2>
 <div id="concepto-de-error-y-precisión" class="section level3"
-number="1.3.1">
-<h3><span class="header-section-number">1.3.1</span> 4.1. Concepto de
+number="2.4.1">
+<h3><span class="header-section-number">2.4.1</span> 4.1. Concepto de
 Error y Precisión</h3>
 <p>Antes de codificar, debemos entender la fuente de nuestros
 errores:</p>
@@ -448,8 +628,8 @@ precisión limitada de la computadora (ej., usar números de punto
 flotante de 64 bits).</li>
 </ul>
 </div>
-<div id="convergencia-y-dominio" class="section level3" number="1.3.2">
-<h3><span class="header-section-number">1.3.2</span> 4.2. Convergencia y
+<div id="convergencia-y-dominio" class="section level3" number="2.4.2">
+<h3><span class="header-section-number">2.4.2</span> 4.2. Convergencia y
 Dominio</h3>
 <p>Revisamos el concepto de <strong>convergencia</strong>. Muchos
 métodos numéricos son iterativos y solo son válidos si la secuencia de
@@ -461,8 +641,8 @@ definición de límite:</p>
 <hr />
 </div>
 </div>
-<div id="tarea-y-próxima-semana" class="section level2" number="1.4">
-<h2><span class="header-section-number">1.4</span> 5. Tarea y Próxima
+<div id="tarea-y-próxima-semana" class="section level2" number="2.5">
+<h2><span class="header-section-number">2.5</span> 5. Tarea y Próxima
 Semana</h2>
 <ul>
 <li><strong>Tarea:</strong> Completar la instalación del entorno Python
@@ -473,7 +653,7 @@ comenzaremos con la resolución de ecuaciones no lineales (métodos de
 Bisección y Newton).</li>
 </ul>
 <hr />
-<p><small>Última revisión: 20 de octubre, 2025</small></p>
+<p><small>Última revisión: 22 de octubre, 2025</small></p>
 </div>
 </div>
 
