@@ -1,0 +1,233 @@
+---
+title: "Teoría de Errores"
+author: "José Luis Ramírez"
+date: "Octubre 2025"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: readable 
+    css: css/estilos.css # Mantiene los estilos del navbar y body
+    number_sections: true
+---
+
+# Motivación
+
+* La gran mayoría de los modelos matemáticos que describen procesos físicos no pueden resolverse analíticamente.
+* En una situación práctica, un problema matemático deriva de un fenómeno físico sobre el cual se han hecho algunas suposiciones para simplificarlo y poderlo representar matemáticamente.
+* Una vez formulado el problema, deben diseñarse métodos numéricos para resolver el problema. La selección o construcción de los algoritmos apropiados cae propiamente dentro del terreno del Análisis Numérico.
+
+---
+
+# Teoría de Errores y Aproximación
+
+El análisis numérico proporciona métodos computacionales para el estudio y solución de problemas matemáticos. Debido a que muchos cálculos son realizados en computadores digitales, es conveniente la discusión para la implementación de los métodos numéricos como programas de computador.
+
+* Desafortunadamente los resultados son afectados por el uso de la **Aritmética de Precisión Finita**.
+* Esperamos tener siempre expresiones verdaderas como $2 + 2 = 4$, $3^2 = 9$, $(\sqrt{5})^2 = 5$, pero en la aritmética de precisión finita $\sqrt{5}$ no tiene un solo número fijo y finito, que lo represente.
+
+Los resultados numéricos están influenciados por muchos tipos de errores, los cuales pueden ser catalogados a grandes rasgos en tres tipos básicos:
+
+* **Errores inherentes** que existen en los valores de los datos de entrada, ya sean causados por incertidumbre o por la naturaleza necesariamente aproximada de la representación.
+* **Errores de discretización** (llamados también de truncamiento) que surgen al reemplazar procesos límites por su resultado antes de alcanzar tal límite.
+* **Errores de redondeo** que se originan al utilizar una aritmética que involucra números con un número finito de dígitos.
+
+## Errores Absolutos y Relativos.
+
+Sea $x$ el valor exacto de un número real y $\tilde{x}$ el valor aproximado. Contemplando todos los posibles errores, la relación entre el resultado exacto y el aproximado es:
+<div class="recuadro-gris">
+$$
+x=\tilde{x}+E
+$$
+</div>
+Se define el error absoluto y se denota $E_a$ como la diferencia $x − \tilde{x}$, y se expresa siempre en valor absoluto.
+<div class="recuadro-gris">
+$$
+E_a = |x - \tilde{x}|
+$$
+</div>
+
+Al cociente entre el error absoluto $E_a$ y el valor real $x$ se le denomina error relativo y se denota por $E_r$. Se expresa también en valor absoluto, es decir:
+<div class="recuadro-gris">
+$$
+E_r =\dfrac{|E_a|}{|x|} = \dfrac{|x - \tilde{x}|}{|x|}
+$$
+</div>
+
+<div class="caja-ejemplo">
+
+### Ejemplo 1
+
+* Calculemos los errores absolutos y relativos para el valor $x= 1234.5678$, con aproximaciones a 4 dígitos $x_1=1234$ y $x_2=1235$ 
+    -   $E_a = |x - x_1| = |1234.5678 - 1234| = 0.5678$, $E_r = \dfrac{|E_a|}{|x|} = \dfrac{0.5678}{1234.5678} \approx 5 \times 10^{-4}$.
+    -   $E_a = |x - x_2| = |1234.5678 - 1235| = 0.4322$, $E_r = \dfrac{|E_a|}{|x|} = \dfrac{0.4322}{1234.5678} \approx 4 \times 10^{-4}$.
+    
+* Calculemos los errores absolutos y relativos para el valor $x= −0.00004599881234$, con aproximaciones a 4 dígitos $x_1=-0.00004599$ y $x_2=-0.00004600$ 
+    -   $E_a = |x - x_1| = |−0.00004599881234 + 0.00004599| = 8.81234 \times 10^{−9}$, $E_r = \dfrac{|E_a|}{|x|} = \dfrac{8.81234×10^{−9}}{0.00004599881234} \approx 2 \times 10^{-4}$.
+    -   $E_a = |x - x_2| = |−0.00004599881234 + 0.00004600| = 1.18766 \times 10^{−9}$, $E_r = \dfrac{|E_a|}{|x|} = \dfrac{1.18766 \times 10^{−9}}{0.00004599881234} \approx 2.5819 \times 10^{-4}$.
+
+</div>
+
+<u>Observaciones</u>:
+
+* Mirando los ejemplos anteriores, vemos que los **errores absolutos** dependen de las magnitudes de los valores $x$: en el primer ejemplo los errores absolutos son de orden de $10^{−1}$; en cambio, en el segundo, son del orden de $10^{−9}$.
+
+* En cambio, los **errores relativos** no se ven afectados por dichas magnitudes. Por dicho motivo, si queremos estudiar los errores sin tener en cuenta el orden de los valores $x$, hay que usar los **errores relativos**. Vemos que en los dos ejemplos los errores relativos son del orden de $10^{−4}$. ya que recordemos que las aproxi9maciones son a 4 **cifras decimales significativas**.
+
+## Cifras Significativas.
+
+Se dice que el número $\tilde{x}$ aproxima al número $x$ con $t$ dígitos (o cifras) significativas, si $t$ es el número entero más grande no negativo para el cual:
+<div class="recuadro-gris">
+$$E_r<0.5\times10^{-t} \Rightarrow \dfrac{|x - \tilde{x}|}{|x|} < 0.5 \times 10^{-t}$$
+</div>
+
+<div class="caja-ejemplo">
+### Ejemplo 2
+Sea $\tilde{x} = 3.1416$ una aproximación al valor $\pi$, y $x = 3.1415927$ una mejor aproximación.
+
+``` {python, eval=TRUE, echo=TRUE}
+import math
+import string
+from decimal import Decimal
+
+def redondear(N,signif):
+  """
+      Dado un número real N y un número determinado de cifras significativas signif,
+      nos da la aproximación de este número con signif cifras significativas.
+
+
+        Parámetros:
+        * N: número decimal
+        * signif: número de digitos representativos
+
+        Valor de retorno
+        * número redondeado a signif número de cifras significativas
+
+   """
+  if int(N)==0:
+    return float(round(Decimal(str(N)),signif))
+  else:
+    return float(round(Decimal(str(N)),signif-1-int(math.log(abs(N),10))))
+  
+def Err(num,dig):
+    """
+      Dado un número real y un número determinado de cifras significativas,
+      nos da el error absoluto y relativo de dicho número.
+
+
+        Parámetros:
+        * num: número decimal
+        * dig: número de cifras significativas
+
+        Valor de retorno
+        * Error absoluto
+        * Error Relativo
+
+    """
+    err_abs=abs(num-redondear(num,dig))
+    err_rel=err_abs/abs(redondear(num,dig))
+
+    print("El error absoluto es {}".format(err_abs))
+    print("El error relativo es {}".format(err_rel))
+
+    return (err_abs, err_rel)
+
+Err(3.1415927,5)
+```
+$$
+\begin{align*}
+E_a & = |x - \tilde{x}| = |3.1415927 - 3.1416| = 0.0000073 \\
+E_r & = \dfrac{|E_a|}{|x|} = \dfrac{0.0000073}{3.1415927} \approx 0.232 \times 10^{-5}< 0.5 \times 10^{-5}
+\end{align*}
+$$
+Luego, $\tilde{x}$ aproxima a $\pi$ con 5 cifras significativas.
+
+</div>
+
+* **Paso 1: Descarga e Instalación:** Sigue la guía oficial para instalar la distribución de Anaconda: [Enlace a la Guía de Instalación de Anaconda](enlace_guia_anaconda)
+* **Paso 2: Creación del Entorno:** Abre la terminal o Anaconda Prompt y crea un entorno virtual (por ejemplo, `metodos_num`):
+    ```bash
+    conda create --name metodos_num python=3.10
+    conda activate metodos_num
+    ```
+
+### 2.2. Uso de RStudio como Interfaz (Opcional)
+
+Usaremos RStudio para gestionar nuestros archivos `.Rmd` y documentos. Para ejecutar código Python dentro de R Markdown, usaremos el paquete **`reticulate`**.
+
+* **Instalación del Paquete:**
+    ```r
+    install.packages("reticulate")
+    ```
+* **Verificación del Entorno:** Una vez instalado, verifica que `reticulate` encuentre tu instalación de Python:
+    ```r
+    library(reticulate)
+    py_config()
+    ```
+
+---
+
+## 3. Python para el Cálculo Numérico
+
+### 3.1. Introducción a NumPy
+
+**NumPy (Numerical Python)** es la librería esencial para el curso. Proporciona estructuras de datos eficientes (arrays) y funciones optimizadas para realizar operaciones de Álgebra Lineal.
+
+* **Creación de un Array:**
+    ```python
+    # Bloque de código Python
+    import numpy as np
+
+    # Crear un array de 1 a 5
+    a = np.array([1, 2, 3, 4, 5])
+    print(a)
+    print(a * 2) # Operación vectorial
+    ```
+
+### 3.2. Visualización con Matplotlib
+
+Utilizaremos **Matplotlib** para graficar funciones, errores y visualizar resultados de nuestros métodos.
+
+* **Gráfico de una Función Simple:**
+    ```python
+    # Bloque de código Python
+    import matplotlib.pyplot as plt
+
+    x = np.linspace(-np.pi, np.pi, 200)
+    y = np.sin(x)
+
+    plt.plot(x, y)
+    plt.title("Función Seno")
+    plt.show()
+    ```
+
+---
+
+## 4. Repaso de Fundamentos Matemáticos
+
+### 4.1. Concepto de Error y Precisión
+
+Antes de codificar, debemos entender la fuente de nuestros errores:
+
+* **Error de Truncamiento:** Error que resulta de usar una aproximación matemática (ej., truncar una serie infinita). [Enlace a una explicación detallada del Error de Truncamiento](recursos/error_truncamiento.html)
+* **Error de Redondeo:** Error que resulta de la precisión limitada de la computadora (ej., usar números de punto flotante de 64 bits).
+
+### 4.2. Convergencia y Dominio
+
+Revisamos el concepto de **convergencia**. Muchos métodos numéricos son iterativos y solo son válidos si la secuencia de soluciones se aproxima a la respuesta verdadera. Recordamos la definición de límite:
+
+$$
+\lim_{n \to \infty} x_n = x_{verdadera}
+$$
+
+---
+
+## 5. Tarea y Próxima Semana
+
+* **Tarea:** Completar la instalación del entorno Python y verificar que los bloques de código en este módulo se ejecuten correctamente en tu sistema.
+* **Próximo Módulo:** En el **Módulo 2**, comenzaremos con la resolución de ecuaciones no lineales (métodos de Bisección y Newton).
+
+***
+
+<small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>
