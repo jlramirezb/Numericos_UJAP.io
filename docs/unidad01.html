@@ -36,6 +36,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -328,7 +330,12 @@ div.tocify {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/jlramirezb">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -793,11 +800,106 @@ x=−1.7155762\times2^{−1008} \approx −6.25424\times10^{−304}.
 \]</span></p>
 </div>
 <hr />
+<ul>
+<li>La combinación aritmética usual <span class="math inline">\(+, −,
+\times, \div\)</span> de dos números de punto flotante no siempre
+produce un número de punto flotante.</li>
+<li>Supongamos que <span class="math inline">\(fl(x), fl(y) \in
+F\)</span>. Veamos, como ejemplo, que la suma usual <span
+class="math inline">\(fl(x) + fl(y)\)</span> no necesariamente será un
+número en <span class="math inline">\(F\)</span>.
+<ul>
+<li>Sea el conjunto <span class="math inline">\(F\)</span> dado en el
+ejemplo: <span class="math inline">\(fl(x) = 5/32 \in F\)</span>, <span
+class="math inline">\(fl(y) = 48/32 \in F\)</span>, sin embargo <span
+class="math inline">\(fl(x) + fl(y) = 5/32 + 48/32 = 53/32 \notin
+F\)</span>.</li>
+</ul></li>
+<li>Las operaciones aritméticas que realiza un computador no
+corresponden de forma exacta con las operaciones usuales. El estudio de
+lo que ocurre realmente es difı́cil de realiza y en todo caso depende de
+la máquina que se esté utilizand.o</li>
+<li>Denotando por <span class="math inline">\(\oplus, \ominus, \otimes,
+\oslash\)</span> las operaciones de suma, resta, multiplicación y
+división de la máquina. Se definen estas operaciones por:
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\begin{align*}
+x \oplus y &amp; = fl(fl(x) + fl(y))\\
+x \ominus y &amp; = fl(fl(x) - fl(y))\\
+x \otimes y &amp; = fl(fl(x) \times fl(y))\\
+x \oslash y &amp; = fl(fl(x)/fl(y))
+\end{align*}
+\]</span></p>
+</div></li>
+</ul>
 </div>
-<div id="python-para-el-cálculo-numérico" class="section level2"
+<div id="unidad-de-precisión-o-redondeo" class="section level2"
 number="2.5">
-<h2><span class="header-section-number">2.5</span> 3. Python para el
-Cálculo Numérico</h2>
+<h2><span class="header-section-number">2.5</span> Unidad de Precisión o
+Redondeo</h2>
+<ul>
+<li>En la representación en punto flotante con <span
+class="math inline">\(n\)</span> dígitos en bas <span
+class="math inline">\(\beta\)</span> y exponente <span
+class="math inline">\(e\)</span>, el error relativo en la representación
+de un número real <span class="math inline">\(x\)</span>, <span
+class="math inline">\(x \neq 0\)</span> es estimado por:
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\left|\dfrac{x-fl(x)}{x}\right| \leq \mu
+\]</span></p>
+</div></li>
+<li>donde <span class="math inline">\(\mu\)</span> se conoce como la
+unidad de precisión (o redondeo) de la máquina. El valor <span
+class="math inline">\(\mu\)</span> es una característica de la máquina,
+su sistema operativo y el modo de calcular (simple o doble
+precisión).</li>
+<li>Otra definición de <span class="math inline">\(\mu \approx
+\epsilon\)</span> (Epsilon de la máquina): <span
+class="math inline">\(\epsilon\)</span> es el número más pequeño
+positivo de la forma <span class="math inline">\(\epsilon =
+2^{-k}\)</span> tal que:
+<div class="recuadro-gris">
+<p><span class="math display">\[
+1.0+\epsilon \neq 1.0 \quad \text{(en la máquina)}
+\]</span></p>
+</div></li>
+</ul>
+<pre class="python"><code># Definición de una función para calcular el épsilon de la máquina
+def calcular_epsilon_maquina():
+    &quot;&quot;&quot;
+    Calcula el épsilon de la máquina (el número más pequeño tal que 1 + eps &gt; 1).
+    &quot;&quot;&quot;
+    epsilon = 1.0
+    
+    # Mientras 1.0 + epsilon sea reconocido como igual a 1.0,
+    # dividimos epsilon a la mitad.
+    while 1.0 + epsilon &gt; 1.0:
+        epsilon /= 2.0
+    
+    # La última división hace que 1.0 + epsilon ya no sea &gt; 1.0.
+    # Por lo tanto, el verdadero épsilon es el valor anterior (el doble).
+    return epsilon * 2.0
+
+# Ejecutar la función y mostrar el resultado
+epsilon_calculado = calcular_epsilon_maquina()
+
+print(&quot;---&quot;)</code></pre>
+<pre><code>## ---</code></pre>
+<pre class="python"><code>print(f&quot;Épsilon de la máquina (calculado): {epsilon_calculado}&quot;)</code></pre>
+<pre><code>## Épsilon de la máquina (calculado): 2.220446049250313e-16</code></pre>
+<pre class="python"><code>print(f&quot;En notación científica: {epsilon_calculado:.2e}&quot;)</code></pre>
+<pre><code>## En notación científica: 2.22e-16</code></pre>
+<pre class="python"><code>print(&quot;---&quot;)</code></pre>
+<pre><code>## ---</code></pre>
+<pre class="python"><code># Comprobación de la definición:
+# 1 + épsilon
+print(f&quot;Comprobación (1 + Épsilon): {1.0 + epsilon_calculado}&quot;)</code></pre>
+<pre><code>## Comprobación (1 + Épsilon): 1.0000000000000002</code></pre>
+<pre class="python"><code># 1 + épsilon / 2 (debería ser igual a 1)
+print(f&quot;Comprobación (1 + Épsilon / 2): {1.0 + epsilon_calculado / 2.0}&quot;)</code></pre>
+<pre><code>## Comprobación (1 + Épsilon / 2): 1.0</code></pre>
 <div id="introducción-a-numpy" class="section level3" number="2.5.1">
 <h3><span class="header-section-number">2.5.1</span> 3.1. Introducción a
 NumPy</h3>
@@ -834,7 +936,7 @@ y = np.sin(x)
 plt.plot(x, y)
 plt.title(&quot;Función Seno&quot;)
 plt.show()</code></pre>
-<p><img src="unidad01_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p></li>
+<p><img src="unidad01_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p></li>
 </ul>
 <hr />
 </div>
@@ -884,7 +986,7 @@ comenzaremos con la resolución de ecuaciones no lineales (métodos de
 Bisección y Newton).</li>
 </ul>
 <hr />
-<p><small>Última revisión: 23 de octubre, 2025</small></p>
+<p><small>Última revisión: 24 de October, 2025</small></p>
 </div>
 </div>
 

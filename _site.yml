@@ -6,7 +6,10 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
-output:
+  right:
+    - icon: fa-github # Requiere Font Awesome (íconos)
+      href: https://github.com/jlramirezb
+output: 
   html_document:
     css: css/estilos.css # 👈 ¡NUEVA LÍNEA CLAVE!
 output_dir: "docs"

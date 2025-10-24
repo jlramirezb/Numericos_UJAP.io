@@ -341,9 +341,87 @@ $$
 </div>
 ---
 
-## 3. Python para el Cálculo Numérico
+* La combinación aritmética usual $+, −, \times, \div$ de dos números de punto flotante no siempre produce un número
+de punto flotante.
+* Supongamos que $fl(x), fl(y) \in F$. Veamos, como ejemplo, que la suma usual $fl(x) + fl(y)$ no necesariamente será un
+número en $F$. 
+  - Sea el conjunto $F$ dado en el ejemplo: $fl(x) = 5/32 \in F$, $fl(y) = 48/32 \in F$, sin embargo $fl(x) + fl(y) = 5/32 + 48/32 = 53/32 \notin F$.
+* Las operaciones aritméticas que realiza un computador no corresponden de forma exacta con las operaciones usuales. El estudio de lo que ocurre realmente es difı́cil de realiza y en todo caso depende de la máquina que se esté utilizand.o
+* Denotando por $\oplus, \ominus, \otimes, \oslash$ las operaciones de suma, resta, multiplicación y división de la máquina. Se definen estas operaciones por:
+<div class="recuadro-gris">
+$$
+\begin{align*}
+x \oplus y & = fl(fl(x) + fl(y))\\
+x \ominus y & = fl(fl(x) - fl(y))\\
+x \otimes y & = fl(fl(x) \times fl(y))\\
+x \oslash y & = fl(fl(x)/fl(y))
+\end{align*}
+$$
+</div>
 
-### 3.1. Introducción a NumPy
+## Unidad de Precisión o Redondeo
+
+* En la representación en punto flotante con $n$ dígitos en bas $\beta$ y exponente $e$, el error relativo en la representación de un número real $x$, $x \neq 0$ es estimado por:
+<div class="recuadro-gris">
+$$
+\left|\dfrac{x-fl(x)}{x}\right| \leq \mu
+$$
+</div>
+* donde $\mu$ se conoce como la unidad de precisión (o redondeo) de la máquina. El valor $\mu$ es una característica de la máquina, su sistema operativo y el modo de calcular (simple o doble precisión).
+* Otra definición de $\mu \approx \epsilon$ (Epsilon de la máquina): $\epsilon$ es el número más pequeño positivo de la forma $\epsilon = 2^{-k}$ tal que:
+<div class="recuadro-gris">
+$$
+1.0+\epsilon \neq 1.0 \quad \text{(en la máquina)}
+$$
+</div>
+
+```{python}
+# Definición de una función para calcular el épsilon de la máquina
+def calcular_epsilon_maquina():
+    """
+    Calcula el épsilon de la máquina (el número más pequeño tal que 1 + eps > 1).
+    """
+    epsilon = 1.0
+    
+    # Mientras 1.0 + epsilon sea reconocido como igual a 1.0,
+    # dividimos epsilon a la mitad.
+    while 1.0 + epsilon > 1.0:
+        epsilon /= 2.0
+    
+    # La última división hace que 1.0 + epsilon ya no sea > 1.0.
+    # Por lo tanto, el verdadero épsilon es el valor anterior (el doble).
+    return epsilon * 2.0
+
+# Ejecutar la función y mostrar el resultado
+epsilon_calculado = calcular_epsilon_maquina()
+
+print("---")
+print(f"Épsilon de la máquina (calculado): {epsilon_calculado}")
+print(f"En notación científica: {epsilon_calculado:.2e}")
+print("---")
+
+# Comprobación de la definición:
+# 1 + épsilon
+print(f"Comprobación (1 + Épsilon): {1.0 + epsilon_calculado}")
+# 1 + épsilon / 2 (debería ser igual a 1)
+print(f"Comprobación (1 + Épsilon / 2): {1.0 + epsilon_calculado / 2.0}")
+```
+
+## Condicionamiento y Estabillidad
+
+* Diremos que un proceso numérico, o una operación, es inestable cuando pequeños errores en los datos de entrada, o errores de redondeo en alguna de las etapas el proceso, producen errores grandes en los datos de salida.
+* Diremos que un proceso numérico, es estable cuando no es inestable.
+* Un mismo algoritmo puede ser estable para algunos datos iniciales e inestable para otros. Entonces se dice que el algoritmo es condicionalmente estable.
+
+<div class="caja-ejemplo">
+### Ejemplo 6
+Nos planteamos calcular el valor $x_n=\frac{1}{3^n}$, donde $x_0=1$, $x_1=\frac{1}{3}$, $x_2=\frac{1}{9}$, y así sucesivamente.
+
+Existe una fórmula recursiva para calcular $x_n$
+
+$$
+x_{n+1} = Ax_n + 
+$$
 
 **NumPy (Numerical Python)** es la librería esencial para el curso. Proporciona estructuras de datos eficientes (arrays) y funciones optimizadas para realizar operaciones de Álgebra Lineal.
 
