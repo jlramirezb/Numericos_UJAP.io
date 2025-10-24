@@ -900,93 +900,176 @@ print(f&quot;Comprobación (1 + Épsilon): {1.0 + epsilon_calculado}&quot;)</cod
 <pre class="python"><code># 1 + épsilon / 2 (debería ser igual a 1)
 print(f&quot;Comprobación (1 + Épsilon / 2): {1.0 + epsilon_calculado / 2.0}&quot;)</code></pre>
 <pre><code>## Comprobación (1 + Épsilon / 2): 1.0</code></pre>
-<div id="introducción-a-numpy" class="section level3" number="2.5.1">
-<h3><span class="header-section-number">2.5.1</span> 3.1. Introducción a
-NumPy</h3>
-<p><strong>NumPy (Numerical Python)</strong> es la librería esencial
-para el curso. Proporciona estructuras de datos eficientes (arrays) y
-funciones optimizadas para realizar operaciones de Álgebra Lineal.</p>
-<ul>
-<li><p><strong>Creación de un Array:</strong></p>
-<pre class="python"><code># Bloque de código Python
-import numpy as np
-
-# Crear un array de 1 a 5
-a = np.array([1, 2, 3, 4, 5])
-print(a)</code></pre>
-<pre><code>## [1 2 3 4 5]</code></pre>
-<pre class="python"><code>print(a * 2) # Operación vectorial</code></pre>
-<pre><code>## [ 2  4  6  8 10]</code></pre></li>
-</ul>
 </div>
-<div id="visualización-con-matplotlib" class="section level3"
-number="2.5.2">
-<h3><span class="header-section-number">2.5.2</span> 3.2. Visualización
-con Matplotlib</h3>
-<p>Utilizaremos <strong>Matplotlib</strong> para graficar funciones,
-errores y visualizar resultados de nuestros métodos.</p>
-<ul>
-<li><p><strong>Gráfico de una Función Simple:</strong></p>
-<pre class="python"><code># Bloque de código Python
-import matplotlib.pyplot as plt
-
-x = np.linspace(-np.pi, np.pi, 200)
-y = np.sin(x)
-
-plt.plot(x, y)
-plt.title(&quot;Función Seno&quot;)
-plt.show()</code></pre>
-<p><img src="unidad01_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p></li>
-</ul>
-<hr />
-</div>
-</div>
-<div id="repaso-de-fundamentos-matemáticos" class="section level2"
+<div id="condicionamiento-y-estabillidad" class="section level2"
 number="2.6">
-<h2><span class="header-section-number">2.6</span> 4. Repaso de
-Fundamentos Matemáticos</h2>
-<div id="concepto-de-error-y-precisión" class="section level3"
-number="2.6.1">
-<h3><span class="header-section-number">2.6.1</span> 4.1. Concepto de
-Error y Precisión</h3>
-<p>Antes de codificar, debemos entender la fuente de nuestros
-errores:</p>
+<h2><span class="header-section-number">2.6</span> Condicionamiento y
+Estabillidad</h2>
 <ul>
-<li><strong>Error de Truncamiento:</strong> Error que resulta de usar
-una aproximación matemática (ej., truncar una serie infinita). <a
-href="recursos/error_truncamiento.html">Enlace a una explicación
-detallada del Error de Truncamiento</a></li>
-<li><strong>Error de Redondeo:</strong> Error que resulta de la
-precisión limitada de la computadora (ej., usar números de punto
-flotante de 64 bits).</li>
+<li>Diremos que un proceso numérico, o una operación, es inestable
+cuando pequeños errores en los datos de entrada, o errores de redondeo
+en alguna de las etapas el proceso, producen errores grandes en los
+datos de salida.</li>
+<li>Diremos que un proceso numérico, es estable cuando no es
+inestable.</li>
+<li>Un mismo algoritmo puede ser estable para algunos datos iniciales e
+inestable para otros. Entonces se dice que el algoritmo es
+condicionalmente estable.</li>
 </ul>
-</div>
-<div id="convergencia-y-dominio" class="section level3" number="2.6.2">
-<h3><span class="header-section-number">2.6.2</span> 4.2. Convergencia y
-Dominio</h3>
-<p>Revisamos el concepto de <strong>convergencia</strong>. Muchos
-métodos numéricos son iterativos y solo son válidos si la secuencia de
-soluciones se aproxima a la respuesta verdadera. Recordamos la
-definición de límite:</p>
+<div id="ejemplo-6" class="section level3 caja-ejemplo" number="2.6.1">
+<h3><span class="header-section-number">2.6.1</span> Ejemplo 6</h3>
+<p>Nos planteamos calcular el valor <span
+class="math inline">\(x_n=\frac{1}{3^n}\)</span>, donde <span
+class="math inline">\(x_0=1\)</span>, <span
+class="math inline">\(x_1=\frac{1}{3}\)</span>, <span
+class="math inline">\(x_2=\frac{1}{9}\)</span>, y así sucesivamente.</p>
+<p>Existe una fórmula recursiva para calcular <span
+class="math inline">\(x_n\)</span></p>
 <p><span class="math display">\[
-\lim_{n \to \infty} x_n = x_{verdadera}
-\]</span></p>
-<hr />
-</div>
-</div>
-<div id="tarea-y-próxima-semana" class="section level2" number="2.7">
-<h2><span class="header-section-number">2.7</span> 5. Tarea y Próxima
-Semana</h2>
+x_{n+1} = Ax_n + \left(\dfrac{1-3A}{9}\right)x_{n-1}
+\]</span> donde <span class="math inline">\(A\)</span> es una constante
+fija.</p>
 <ul>
-<li><strong>Tarea:</strong> Completar la instalación del entorno Python
-y verificar que los bloques de código en este módulo se ejecuten
-correctamente en tu sistema.</li>
-<li><strong>Próximo Módulo:</strong> En el <strong>Módulo 2</strong>,
-comenzaremos con la resolución de ecuaciones no lineales (métodos de
-Bisección y Newton).</li>
+<li><span class="math inline">\(\therefore\)</span> Si elegimos <span
+class="math inline">\(x_1=\frac{1}{3}\approx
+0.3333=\tilde{x}_1\)</span></li>
+<li><span class="math inline">\(\tilde{x}_1=x_1+E_1\)</span>, donde
+<span class="math inline">\(E_1\)</span> es el error de redondeo en la
+representación de <span class="math inline">\(x_1\)</span>.</li>
+<li>Calculamos <span class="math inline">\(x_2\)</span> usando la
+fórmula recursiva:
+<ul>
+<li><span class="math inline">\(\tilde{x}_2 = A\tilde{x}_1 +
+\left(\dfrac{1-3A}{9}\right)x_0\)</span></li>
+<li><span class="math inline">\(= Ax_1 + \left(\dfrac{1-3A}{9}\right)x_0
++ AE_1\)</span></li>
+<li><span class="math inline">\(= x_2 + AE_1\)</span></li>
+</ul></li>
+<li>Así, el error en el cálculo de <span
+class="math inline">\(x_2\)</span> es <span class="math inline">\(E_2 =
+AE_1\)</span>.</li>
+<li>De forma similar, el error en el cálculo de <span
+class="math inline">\(x_3\)</span> es <span class="math inline">\(E_3 =
+AE_2 = A^2E_1\)</span>.</li>
+<li>En general, el error en el cálculo de <span
+class="math inline">\(x_n\)</span> es <span class="math inline">\(E_n =
+A^{n-1}E_1\)</span>.</li>
+<li>Si <span class="math inline">\(|A| &gt; 1\)</span>, el error crece
+exponencialmente con <span class="math inline">\(n\)</span> y el proceso
+es inestable.</li>
+<li>Si <span class="math inline">\(|A| &lt; 1\)</span>, el error decrece
+con <span class="math inline">\(n\)</span> y el proceso es estable.</li>
 </ul>
+<pre class="python"><code>import pandas as pd
+
+pd.set_option(&#39;display.float_format&#39;, &#39;{:.15f}&#39;.format)
+
+def calcular_xn_tabla(A, n, x0=1.0, x1=1/3):
+    &quot;&quot;&quot;
+    Calcula x_n usando la fórmula recursiva y devuelve todos los valores en una lista.
+    &quot;&quot;&quot;
+    # Lista para almacenar los resultados: [índice, valor]
+    resultados = []
+    
+    # Valores iniciales
+    xn_minus_2 = x0
+    xn_minus_1 = x1
+    
+    # Almacenar x0 y x1
+    resultados.append({&#39;n&#39;: 0, &#39;x_n&#39;: x0})
+    resultados.append({&#39;n&#39;: 1, &#39;x_n&#39;: x1})
+    
+    # Calcular y almacenar desde n=2 hasta el valor deseado
+    for i in range(2, n + 1):
+        # Fórmula recursiva: x_n = A * x_{n-1} + ((1 - 3 * A) / 9) * x_{n-2}
+        xn = A * xn_minus_1 + ((1 - 3 * A) / 9) * xn_minus_2
+        
+        # Almacenar el resultado de la iteración actual
+        resultados.append({&#39;n&#39;: i, &#39;x_n&#39;: xn})
+        
+        # Actualizar variables para la próxima iteración
+        xn_minus_2 = xn_minus_1
+        xn_minus_1 = xn
+        
+    return resultados
+
+# Parámetros
+A = 4.0  # Coeficiente
+n = 20   # Número máximo de iteraciones
+
+# 1. Generar los datos
+datos = calcular_xn_tabla(A, n)
+
+# 2. Crear el DataFrame de pandas
+df = pd.DataFrame(datos)
+
+# 3. Imprimir la tabla
+# La simple visualización del DataFrame de pandas genera una tabla bien formateada en R Markdown.
+print(f&quot;Resultados de la recurrencia con A = {A:.15f}:&quot;)</code></pre>
+<pre><code>## Resultados de la recurrencia con A = 4.000000000000000:</code></pre>
+<pre class="python"><code>df</code></pre>
+<pre><code>##      n                x_n
+## 0    0  1.000000000000000
+## 1    1  0.333333333333333
+## 2    2  0.111111111111111
+## 3    3  0.037037037037036
+## 4    4  0.012345679012343
+## 5    5  0.004115226337439
+## 6    6  0.001371742112447
+## 7    7  0.000457247370695
+## 8    8  0.000152415789788
+## 9    9  0.000050805261637
+## 10  10  0.000016935081250
+## 11  11  0.000005645005223
+## 12  12  0.000001881588252
+## 13  13  0.000000626902180
+## 14  14  0.000000207889744
+## 15  15  0.000000065345200
+## 16  16  0.000000007293336
+## 17  17 -0.000000050693010
+## 18  18 -0.000000211686118
+## 19  19 -0.000000784786348
+## 20  20 -0.000002880417914</code></pre>
+<pre class="python"><code># Parámetros
+A = 0.5  # Coeficiente
+n = 20   # Número máximo de iteraciones
+
+# 1. Generar los datos
+datos = calcular_xn_tabla(A, n)
+
+# 2. Crear el DataFrame de pandas
+df = pd.DataFrame(datos)
+
+# 3. Imprimir la tabla
+# La simple visualización del DataFrame de pandas genera una tabla bien formateada en R Markdown.
+print(f&quot;Resultados de la recurrencia con A = {A}:&quot;)</code></pre>
+<pre><code>## Resultados de la recurrencia con A = 0.5:</code></pre>
+<pre class="python"><code>df</code></pre>
+<pre><code>##      n               x_n
+## 0    0 1.000000000000000
+## 1    1 0.333333333333333
+## 2    2 0.111111111111111
+## 3    3 0.037037037037037
+## 4    4 0.012345679012346
+## 5    5 0.004115226337449
+## 6    6 0.001371742112483
+## 7    7 0.000457247370828
+## 8    8 0.000152415790276
+## 9    9 0.000050805263425
+## 10  10 0.000016935087808
+## 11  11 0.000005645029269
+## 12  12 0.000001881676423
+## 13  13 0.000000627225474
+## 14  14 0.000000209075158
+## 15  15 0.000000069691719
+## 16  16 0.000000023230573
+## 17  17 0.000000007743524
+## 18  18 0.000000002581175
+## 19  19 0.000000000860392
+## 20  20 0.000000000286797</code></pre>
+</div>
 <hr />
-<p><small>Última revisión: 24 de October, 2025</small></p>
+<p><small>Última revisión: 24 de octubre, 2025</small></p>
 </div>
 </div>
 

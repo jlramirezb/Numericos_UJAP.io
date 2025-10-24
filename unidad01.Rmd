@@ -424,62 +424,84 @@ x_{n+1} = Ax_n + \left(\dfrac{1-3A}{9}\right)x_{n-1}
 $$
 donde $A$ es una constante fija.
 
+* $\therefore$ Si elegimos $x_1=\frac{1}{3}\approx 0.3333=\tilde{x}_1$
+* $\tilde{x}_1=x_1+E_1$, donde $E_1$ es el error de redondeo en la representación de $x_1$.
+* Calculamos $x_2$ usando la fórmula recursiva:
+  - $\tilde{x}_2 = A\tilde{x}_1 + \left(\dfrac{1-3A}{9}\right)x_0$
+  - $= Ax_1 + \left(\dfrac{1-3A}{9}\right)x_0 + AE_1$
+  - $= x_2 + AE_1$
+* Así, el error en el cálculo de $x_2$ es $E_2 = AE_1$.
+* De forma similar, el error en el cálculo de $x_3$ es $E_3 = AE_2 = A^2E_1$.
+* En general, el error en el cálculo de $x_n$ es $E_n = A^{n-1}E_1$.
+* Si $|A| > 1$, el error crece exponencialmente con $n$ y el proceso es inestable.
+* Si $|A| < 1$, el error decrece con $n$ y el proceso es estable.
 
-**NumPy (Numerical Python)** es la librería esencial para el curso. Proporciona estructuras de datos eficientes (arrays) y funciones optimizadas para realizar operaciones de Álgebra Lineal.
+```{python, eval=TRUE, echo=TRUE, message=FALSE}
+import pandas as pd
 
-* **Creación de un Array:**
-    ```{python, eval=TRUE, echo=TRUE}
-    # Bloque de código Python
-    import numpy as np
+pd.set_option('display.float_format', '{:.15f}'.format)
 
-    # Crear un array de 1 a 5
-    a = np.array([1, 2, 3, 4, 5])
-    print(a)
-    print(a * 2) # Operación vectorial
-    ```
+def calcular_xn_tabla(A, n, x0=1.0, x1=1/3):
+    """
+    Calcula x_n usando la fórmula recursiva y devuelve todos los valores en una lista.
+    """
+    # Lista para almacenar los resultados: [índice, valor]
+    resultados = []
+    
+    # Valores iniciales
+    xn_minus_2 = x0
+    xn_minus_1 = x1
+    
+    # Almacenar x0 y x1
+    resultados.append({'n': 0, 'x_n': x0})
+    resultados.append({'n': 1, 'x_n': x1})
+    
+    # Calcular y almacenar desde n=2 hasta el valor deseado
+    for i in range(2, n + 1):
+        # Fórmula recursiva: x_n = A * x_{n-1} + ((1 - 3 * A) / 9) * x_{n-2}
+        xn = A * xn_minus_1 + ((1 - 3 * A) / 9) * xn_minus_2
+        
+        # Almacenar el resultado de la iteración actual
+        resultados.append({'n': i, 'x_n': xn})
+        
+        # Actualizar variables para la próxima iteración
+        xn_minus_2 = xn_minus_1
+        xn_minus_1 = xn
+        
+    return resultados
 
-### 3.2. Visualización con Matplotlib
+# Parámetros
+A = 4.0  # Coeficiente
+n = 20   # Número máximo de iteraciones
 
-Utilizaremos **Matplotlib** para graficar funciones, errores y visualizar resultados de nuestros métodos.
+# 1. Generar los datos
+datos = calcular_xn_tabla(A, n)
 
-* **Gráfico de una Función Simple:**
-    ```{python , eval=TRUE, echo=TRUE}
-    # Bloque de código Python
-    import matplotlib.pyplot as plt
+# 2. Crear el DataFrame de pandas
+df = pd.DataFrame(datos)
 
-    x = np.linspace(-np.pi, np.pi, 200)
-    y = np.sin(x)
+# 3. Imprimir la tabla
+# La simple visualización del DataFrame de pandas genera una tabla bien formateada en R Markdown.
+print(f"Resultados de la recurrencia con A = {A:.15f}:")
+df
 
-    plt.plot(x, y)
-    plt.title("Función Seno")
-    plt.show()
-    ```
+# Parámetros
+A = 0.5  # Coeficiente
+n = 20   # Número máximo de iteraciones
 
----
+# 1. Generar los datos
+datos = calcular_xn_tabla(A, n)
 
-## 4. Repaso de Fundamentos Matemáticos
+# 2. Crear el DataFrame de pandas
+df = pd.DataFrame(datos)
 
-### 4.1. Concepto de Error y Precisión
+# 3. Imprimir la tabla
+# La simple visualización del DataFrame de pandas genera una tabla bien formateada en R Markdown.
+print(f"Resultados de la recurrencia con A = {A}:")
+df
 
-Antes de codificar, debemos entender la fuente de nuestros errores:
-
-* **Error de Truncamiento:** Error que resulta de usar una aproximación matemática (ej., truncar una serie infinita). [Enlace a una explicación detallada del Error de Truncamiento](recursos/error_truncamiento.html)
-* **Error de Redondeo:** Error que resulta de la precisión limitada de la computadora (ej., usar números de punto flotante de 64 bits).
-
-### 4.2. Convergencia y Dominio
-
-Revisamos el concepto de **convergencia**. Muchos métodos numéricos son iterativos y solo son válidos si la secuencia de soluciones se aproxima a la respuesta verdadera. Recordamos la definición de límite:
-
-$$
-\lim_{n \to \infty} x_n = x_{verdadera}
-$$
-
----
-
-## 5. Tarea y Próxima Semana
-
-* **Tarea:** Completar la instalación del entorno Python y verificar que los bloques de código en este módulo se ejecuten correctamente en tu sistema.
-* **Próximo Módulo:** En el **Módulo 2**, comenzaremos con la resolución de ecuaciones no lineales (métodos de Bisección y Newton).
+```  
+</div>
 
 ***
 
