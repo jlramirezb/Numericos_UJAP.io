@@ -35,7 +35,8 @@ body {
     background-position: center center; /* Centra la imagen */
 
     /* 3. Color de fondo de reserva (si la imagen no carga) */
-    background-color: #f0f0f0; 
+    background-color: #f0f0f0;
+    font-size: 16pt; /* O cualquier valor que desees, por defecto es ~12pt */
 }
 
 /* Estilo para el recuadro gris de las fórmulas */
