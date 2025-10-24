@@ -37,6 +37,10 @@ body {
     /* 3. Color de fondo de reserva (si la imagen no carga) */
     background-color: #f0f0f0;
     font-size: 16pt; /* O cualquier valor que desees, por defecto es ~12pt */
+    
+    /* REGLAS AÑADIDAS: Elimina el relleno lateral del body */
+    padding-left: 0;
+    padding-right: 0;
 }
 
 /* Estilo para el recuadro gris de las fórmulas */
@@ -93,4 +97,22 @@ body {
     border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Línea sutil debajo del título */
     padding-bottom: 8px;
     margin-bottom: 15px;
+}
+
+/* ---------------------------------------------------- */
+/* !!! REGLAS AÑADIDAS PARA FORZAR EL ANCHO COMPLETO !!! */
+/* ---------------------------------------------------- */
+
+/* Anula el ancho máximo de los contenedores principales (Bootstrap) */
+.container-fluid, 
+.container {
+  max-width: 100%; /* Forzar que el ancho máximo sea el 100% de la ventana */
+}
+
+.main-container {
+    max-width: 100% !important; /* <--- Esto es CRUCIAL */
+    margin-left: 1% !important;
+    margin-right: 0 !important;
+    padding-left: 1% !important;
+    padding-right: 0 !important;
 }
