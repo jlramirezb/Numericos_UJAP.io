@@ -407,7 +407,21 @@ print(f"Comprobación (1 + Épsilon): {1.0 + epsilon_calculado}")
 print(f"Comprobación (1 + Épsilon / 2): {1.0 + epsilon_calculado / 2.0}")
 ```
 
-### 3.1. Introducción a NumPy
+## Condicionamiento y Estabillidad
+
+* Diremos que un proceso numérico, o una operación, es inestable cuando pequeños errores en los datos de entrada, o errores de redondeo en alguna de las etapas el proceso, producen errores grandes en los datos de salida.
+* Diremos que un proceso numérico, es estable cuando no es inestable.
+* Un mismo algoritmo puede ser estable para algunos datos iniciales e inestable para otros. Entonces se dice que el algoritmo es condicionalmente estable.
+
+<div class="caja-ejemplo">
+### Ejemplo 6
+Nos planteamos calcular el valor $x_n=\frac{1}{3^n}$, donde $x_0=1$, $x_1=\frac{1}{3}$, $x_2=\frac{1}{9}$, y así sucesivamente.
+
+Existe una fórmula recursiva para calcular $x_n$
+
+$$
+x_{n+1} = Ax_n + 
+$$
 
 **NumPy (Numerical Python)** es la librería esencial para el curso. Proporciona estructuras de datos eficientes (arrays) y funciones optimizadas para realizar operaciones de Álgebra Lineal.
 
