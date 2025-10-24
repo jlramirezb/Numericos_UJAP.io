@@ -549,72 +549,303 @@ E_r &amp; = \dfrac{|E_a|}{|x|} = \dfrac{0.0000073}{3.1415927} \approx
 a <span class="math inline">\(\pi\)</span> con 5 cifras
 significativas.</p>
 </div>
+</div>
+<div id="aproximación-de-números." class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Aproximación de
+Números.</h2>
+<p>Sea <span class="math inline">\(x = a_n\ldots a_0.b_1b_2\ldots \in
+\mathbb{R}\)</span> (En cualquier base), para aproximar hasta el <span
+class="math inline">\(t\)</span>-ésimo decimal:</p>
 <ul>
-<li><strong>Paso 1: Descarga e Instalación:</strong> Sigue la guía
-oficial para instalar la distribución de Anaconda: <a
-href="enlace_guia_anaconda">Enlace a la Guía de Instalación de
-Anaconda</a></li>
-<li><strong>Paso 2: Creación del Entorno:</strong> Abre la terminal o
-Anaconda Prompt y crea un entorno virtual (por ejemplo,
-<code>metodos_num</code>):
-<code>bash     conda create --name metodos_num python=3.10     conda activate metodos_num</code></li>
+<li>Por <strong>truncamiento</strong>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\tilde{x}_{trunc} = a_n\ldots a_0.b_1b_2\ldots b_t
+\]</span></p>
+</div></li>
+<li>Por <strong>redondeo correcto</strong>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\tilde{x}_{redon} = \begin{cases}
+a_n\ldots a_0.b_1b_2\ldots b_t &amp; \text{si } b_{t+1} &lt; 5 \\
+a_n\ldots a_0.b_1b_2\ldots b_t + \beta^{-t} &amp; \text{si } b_{t+1}
+\geq 5
+\end{cases}
+\]</span></p>
+</div></li>
 </ul>
-<div id="uso-de-rstudio-como-interfaz-opcional" class="section level3"
-number="2.2.2">
-<h3><span class="header-section-number">2.2.2</span> 2.2. Uso de RStudio
-como Interfaz (Opcional)</h3>
-<p>Usaremos RStudio para gestionar nuestros archivos <code>.Rmd</code> y
-documentos. Para ejecutar código Python dentro de R Markdown, usaremos
-el paquete <strong><code>reticulate</code></strong>.</p>
+</div>
+<div id="forma-normalizada-de-números-en-punto-flotante"
+class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Forma Normalizada de
+Números en Punto Flotante</h2>
+Un número en punto flotante en base <span
+class="math inline">\(\beta\)</span> con precisión <span
+class="math inline">\(t\)</span> es un número que puede representarse en
+la forma:
+<div class="recuadro-gris">
+<p><span class="math display">\[x = \sigma (0.d_1d_2\ldots d_t)_{\beta}
+\times \beta^e\]</span></p>
+</div>
+<p>donde:</p>
 <ul>
-<li><strong>Instalación del Paquete:</strong>
-<code>r     install.packages("reticulate")</code></li>
-<li><strong>Verificación del Entorno:</strong> Una vez instalado,
-verifica que <code>reticulate</code> encuentre tu instalación de Python:
-<code>r     library(reticulate)     py_config()</code></li>
+<li><span class="math inline">\(\sigma\)</span> es el signo del número
+(<span class="math inline">\(+1\)</span> o <span
+class="math inline">\(-1\)</span>),</li>
+<li><span class="math inline">\(d_1d_2\ldots d_t\)</span> son los
+dígitos en base <span class="math inline">\(\beta\)</span> (con <span
+class="math inline">\(0 \leq d_i &lt; \beta\)</span> y <span
+class="math inline">\(d_1 \neq 0\)</span> para la forma
+normalizada),</li>
+<li><span class="math inline">\(e\)</span> es el exponente entero, y es
+tal que <span class="math inline">\(L \geq e \geq U\)</span> para
+ciertos enteros <span class="math inline">\(L\)</span> y <span
+class="math inline">\(U\)</span>.</li>
+<li><span class="math inline">\(t\)</span> es la precisión (número de
+dígitos significativos).</li>
 </ul>
+Una de las características de todo conjunto de punto flotante <span
+class="math inline">\(F\)</span> es que es finito y tiene:
+<div class="recuadro-gris">
+<p><span class="math display">\[
+2(\beta - 1)\beta^{t-1}(U - L + 1) + 1
+\]</span></p>
+</div>
+<p>números diferentes (incluyendo el cero), y donde los distintos de
+cero están en forma normalizada.</p>
+<div id="ejemplo-3" class="section level3 caja-ejemplo" number="2.4.1">
+<h3><span class="header-section-number">2.4.1</span> Ejemplo 3</h3>
+Sea el conjunto de punto flotante <span class="math inline">\(F\)</span>
+con parámetros <span class="math inline">\(\beta = 2\)</span>(Binario),
+<span class="math inline">\(t = 3\)</span>, <span
+class="math inline">\(L = -2\)</span>, <span class="math inline">\(U =
+2\)</span>. Tal conjunto <span class="math inline">\(F\)</span> tiene
+<div class="recuadro-gris">
+<p><span class="math display">\[2(2 - 1)2^{3 - 1}(2 - (-2) + 1) + 1 =
+41\]</span></p>
+</div>
+<p>números diferentes (incluyendo el cero). La lista completa de números
+en <span class="math inline">\(F\)</span> es:</p>
+<pre class="python"><code>import numpy as np
+import matplotlib.pyplot as plt
+def generar_punto_flotante(beta, t, L, U):
+    numeros = set()
+    for signo in [1, -1]:
+        for exponente in range(L, U + 1):
+            for d1 in range(1, beta):
+                for d2 in range(beta):
+                    for d3 in range(beta):
+                        numero = signo * (d1 * beta**(-1) + d2 * beta**(-2) + d3 * beta**(-3)) * (beta ** exponente)
+                        numeros.add(round(numero, 10))  # Redondear para evitar problemas de precisión
+    numeros.add(0)  # Incluir el cero
+    return sorted(numeros)
+
+# Parámetros del sistema de punto flotante
+beta = 2  # Base (binaria)
+t = 3     # Dígitos de la mantisa
+L = -2    # Exponente mínimo
+U = 2     # Exponente máximo
+punto_flotante = generar_punto_flotante(beta, t, L, U)
+print(&quot;Números en el conjunto de punto flotante F:{}&quot;.format(punto_flotante))</code></pre>
+<pre><code>## Números en el conjunto de punto flotante F:[-3.5, -3.0, -2.5, -2.0, -1.75, -1.5, -1.25, -1.0, -0.875, -0.75, -0.625, -0.5, -0.4375, -0.375, -0.3125, -0.25, -0.21875, -0.1875, -0.15625, -0.125, 0, 0.125, 0.15625, 0.1875, 0.21875, 0.25, 0.3125, 0.375, 0.4375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5]</code></pre>
+<pre class="python"><code># --- Visualización de la Recta Real y los Puntos ---
+plt.figure(figsize=(12, 2)) # Ajusta el tamaño de la figura (ancho, alto)
+
+# Dibuja la recta real (una línea horizontal)
+plt.axhline(0, color=&#39;gray&#39;, linestyle=&#39;-&#39;, linewidth=1) 
+
+# Dibuja los puntos generados sobre la recta &#39;o&#39; para los marcadores, &#39;b&#39; para el color azul, markersize para el tamaño
+plt.plot(punto_flotante, np.zeros_like(punto_flotante), &#39;ob&#39;, markersize=5)
+plt.plot(0, 0, &#39;go&#39;, markersize=7, label=&#39;Cero&#39;) # &#39;go&#39; = green circle
+
+# Etiquetas y Título
+plt.title(f&#39;Representación de Números de Punto Flotante (beta={beta}, t={t}, L={L}, U={U})&#39;)
+plt.xlabel(&#39;Recta Real&#39;)
+
+# Ajustes de los ejes para que los puntos sean más visibles
+min_val = min(punto_flotante) - 0.5
+max_val = max(punto_flotante) + 0.5
+x_limits = plt.xlim(min_val, max_val) # Extiende ligeramente los límites del eje X
+yticks = plt.yticks([]) # Oculta las marcas del eje Y, ya que solo es una recta horizontal
+
+# Muestra una leyenda si es necesario
+plt.legend()
+plt.grid(True, linestyle=&#39;:&#39;, alpha=0.7)
+plt.show()</code></pre>
+<p><img src="unidad01_files/figure-html/unnamed-chunk-2-1.png" width="1152" /></p>
+</div>
+<ul>
+<li>Hay un rango limitado para representar cantidades
+<ul>
+<li>Hay números grandes positivos y negativos que no pueden ser
+representados (overflow)</li>
+<li>No pueden representarse números muy pequeños (underflow)</li>
+</ul></li>
+<li>Hay sólo un número finito de cantidades que puede ser representado
+dentro de un rango
+<ul>
+<li>El grado de precisión es limitado</li>
+<li>Para aquellos que no pueden ser representados exactamente, la
+aproximación real se puede lograr: truncando o redondeando.</li>
+</ul></li>
+<li>El intervalo entre números aumenta tanto como los números crecen en
+magnitud
+<ul>
+<li>El error cuantificable más grande ocurrirá para aquellos valores que
+caigan justo debajo del límite superior de la primera serie de
+intervalos igualmente espaciados.</li>
+</ul></li>
+</ul>
+<p>Vamos a ver cómo se almacena un número real en el ordenador en
+<strong>formato binario</strong> usando <strong>64 bits</strong>.</p>
+<p>Sea <span class="math inline">\(x\)</span> un número real que
+suponemos en formato <strong>binario</strong>.</p>
+Escribimos <span class="math inline">\(x\)</span> de la forma siguiente:
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x=(−1)^s 1.f\times2^{c−1023},
+\]</span></p>
+</div>
+<p>donde</p>
+<ul>
+<li><span class="math inline">\(s\)</span> indica el signo del número,
+indicado <span class="math inline">\(s=0\)</span> para los números
+positivos y <span class="math inline">\(s=1\)</span>, para los
+negativos.</li>
+<li><span class="math inline">\(1.f\)</span> es lo que se llama la
+mantisa donde <span class="math inline">\(f\)</span> es una secuencia de
+ceros y unos, es decir,
+<div class="recuadro-gris">
+<p><span class="math display">\[
+f= f_1f_2f_3\ldots f_n, \quad f_i \in \{0,1\}
+\]</span></p>
+</div></li>
+<li><span class="math inline">\(c \geq 1\)</span> indica el exponente
+del número donde se le resta 1023 para poder representar números muy
+pequeños en valor absoluto. Escribimos <span
+class="math inline">\(c−1023\)</span> en binario como <span
+class="math inline">\(c−1023=e_1e_2\ldots e_m\)</span>, con <span
+class="math inline">\(e_i \in \{0,1\}\)</span></li>
+</ul>
+Representamos <span class="math inline">\(x\)</span> por tres cajas: el
+signo <span class="math inline">\(s\)</span>, la mantisa <span
+class="math inline">\(f\)</span> y el exponente <span
+class="math inline">\(c−1023\)</span> en binario:
+<div class="recuadro-gris">
+<p><span class="math display">\[
+|s| f_1f_2\ldots f_n| e_1e_2\ldots e_m|
+\]</span></p>
+</div>
+<div id="ejemplo-4" class="section level3 caja-ejemplo" number="2.4.2">
+<h3><span class="header-section-number">2.4.2</span> Ejemplo 4:</h3>
+<p>Representar el número <span
+class="math inline">\(x=31.53173828125\)</span> en formato de punto
+flotante de 64 bits. <span class="math display">\[
+\begin{align*}
+1. &amp; \text{ Determinar el signo } s: \text{ Como } x &gt; 0, \text{
+entonces } s = 0. \\
+2. &amp; \text{ Convertir } x \text{ a binario: } \\
+   &amp; \quad \text{Parte entera: } 31_{10} = 11111_2. \\
+   &amp; \quad \text{Parte fraccionaria: } 0.53173828125_{10} =
+0.10001000001_2. \\
+   &amp; \quad \text{Por lo tanto, } x \text{ en binario es
+aproximadamente } 11111.10001000001_2. \\
+3. &amp; \text{ Normalizar el número: } \\
+   &amp; \quad 11111.10001000001_2. = 1.111110001000001_2 \times 2^4. \\
+4. &amp; \text{ Determinar la mantisa } f: \\
+   &amp; \quad f = 111110001000001 \\
+5. &amp; \text{ Determinar el exponente } c - 1023: \\
+   &amp; \quad c = 4 + 1023 = 1027. \\
+   &amp; \quad \text{Convertir } 1027 \text{ a binario: } 1027_{10} =
+10000000011_2. \\
+6. &amp; \text{ Representar el número en formato de 64 bits: } \\
+   &amp; \quad |0|111110001000001|10000000011|. \\
+\end{align*}
+\]</span> Como sólo tenemos 64 bits para representar el número, la
+cantidad de bits usados para su representación no puede superar 64</p>
+<p>En caso que los superase, tendremos que considerar una aproximación
+del mismo.</p>
+<p>En el ejemplo se usado el número siguiente de bits:</p>
+<ul>
+<li>signo: 1 bit,</li>
+<li>mantisa: 15 bits,</li>
+<li>exponente: 11 bits,</li>
+</ul>
+<p>en total, 27 bits, por tanto, sí sería posible su representación
+exacta y no haría falta considerar una aproximación del mismo.</p>
+</div>
+<div id="ejemplo-5" class="section level3 caja-ejemplo" number="2.4.3">
+<h3><span class="header-section-number">2.4.3</span> Ejemplo 5:</h3>
+<p>Hagamos la conversión contraria.</p>
+<p>Imaginemos que nos dan el número siguiente: <span
+class="math display">\[
+|1| 101101110011| 1111|.
+\]</span> Vamos a ver a qué número <span
+class="math inline">\(x\)</span> corresponde.</p>
+<p>El signo es negativo, por tanto <span
+class="math inline">\(x&lt;0\)</span></p>
+<p>La mantisa será: <span class="math display">\[
+1.f=1+\frac{1}{2}+\frac{1}{2^3}+\frac{1}{2^4}+\frac{1}{2^6}+\frac{1}{2^7}+\frac{1}{2^8}+\frac{1}{2^{11}}+\frac{1}{2^{12}}=1.7155762.
+\]</span> El exponente <span class="math inline">\(c\)</span> vale <span
+class="math inline">\(1111_{2}−1023=1+2+2^2+2^3−1023=−1008\)</span>.</p>
+<p>El número será: <span class="math display">\[
+x=−1.7155762\times2^{−1008} \approx −6.25424\times10^{−304}.
+\]</span></p>
+</div>
 <hr />
 </div>
-</div>
 <div id="python-para-el-cálculo-numérico" class="section level2"
-number="2.3">
-<h2><span class="header-section-number">2.3</span> 3. Python para el
+number="2.5">
+<h2><span class="header-section-number">2.5</span> 3. Python para el
 Cálculo Numérico</h2>
-<div id="introducción-a-numpy" class="section level3" number="2.3.1">
-<h3><span class="header-section-number">2.3.1</span> 3.1. Introducción a
+<div id="introducción-a-numpy" class="section level3" number="2.5.1">
+<h3><span class="header-section-number">2.5.1</span> 3.1. Introducción a
 NumPy</h3>
 <p><strong>NumPy (Numerical Python)</strong> es la librería esencial
 para el curso. Proporciona estructuras de datos eficientes (arrays) y
 funciones optimizadas para realizar operaciones de Álgebra Lineal.</p>
 <ul>
-<li><p><strong>Creación de un Array:</strong> ```python # Bloque de
-código Python import numpy as np</p>
-<p># Crear un array de 1 a 5 a = np.array([1, 2, 3, 4, 5]) print(a)
-print(a * 2) # Operación vectorial ```</p></li>
+<li><p><strong>Creación de un Array:</strong></p>
+<pre class="python"><code># Bloque de código Python
+import numpy as np
+
+# Crear un array de 1 a 5
+a = np.array([1, 2, 3, 4, 5])
+print(a)</code></pre>
+<pre><code>## [1 2 3 4 5]</code></pre>
+<pre class="python"><code>print(a * 2) # Operación vectorial</code></pre>
+<pre><code>## [ 2  4  6  8 10]</code></pre></li>
 </ul>
 </div>
 <div id="visualización-con-matplotlib" class="section level3"
-number="2.3.2">
-<h3><span class="header-section-number">2.3.2</span> 3.2. Visualización
+number="2.5.2">
+<h3><span class="header-section-number">2.5.2</span> 3.2. Visualización
 con Matplotlib</h3>
 <p>Utilizaremos <strong>Matplotlib</strong> para graficar funciones,
 errores y visualizar resultados de nuestros métodos.</p>
 <ul>
-<li><p><strong>Gráfico de una Función Simple:</strong> ```python #
-Bloque de código Python import matplotlib.pyplot as plt</p>
-<p>x = np.linspace(-np.pi, np.pi, 200) y = np.sin(x)</p>
-<p>plt.plot(x, y) plt.title(“Función Seno”) plt.show() ```</p></li>
+<li><p><strong>Gráfico de una Función Simple:</strong></p>
+<pre class="python"><code># Bloque de código Python
+import matplotlib.pyplot as plt
+
+x = np.linspace(-np.pi, np.pi, 200)
+y = np.sin(x)
+
+plt.plot(x, y)
+plt.title(&quot;Función Seno&quot;)
+plt.show()</code></pre>
+<p><img src="unidad01_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p></li>
 </ul>
 <hr />
 </div>
 </div>
 <div id="repaso-de-fundamentos-matemáticos" class="section level2"
-number="2.4">
-<h2><span class="header-section-number">2.4</span> 4. Repaso de
+number="2.6">
+<h2><span class="header-section-number">2.6</span> 4. Repaso de
 Fundamentos Matemáticos</h2>
 <div id="concepto-de-error-y-precisión" class="section level3"
-number="2.4.1">
-<h3><span class="header-section-number">2.4.1</span> 4.1. Concepto de
+number="2.6.1">
+<h3><span class="header-section-number">2.6.1</span> 4.1. Concepto de
 Error y Precisión</h3>
 <p>Antes de codificar, debemos entender la fuente de nuestros
 errores:</p>
@@ -628,8 +859,8 @@ precisión limitada de la computadora (ej., usar números de punto
 flotante de 64 bits).</li>
 </ul>
 </div>
-<div id="convergencia-y-dominio" class="section level3" number="2.4.2">
-<h3><span class="header-section-number">2.4.2</span> 4.2. Convergencia y
+<div id="convergencia-y-dominio" class="section level3" number="2.6.2">
+<h3><span class="header-section-number">2.6.2</span> 4.2. Convergencia y
 Dominio</h3>
 <p>Revisamos el concepto de <strong>convergencia</strong>. Muchos
 métodos numéricos son iterativos y solo son válidos si la secuencia de
@@ -641,8 +872,8 @@ definición de límite:</p>
 <hr />
 </div>
 </div>
-<div id="tarea-y-próxima-semana" class="section level2" number="2.5">
-<h2><span class="header-section-number">2.5</span> 5. Tarea y Próxima
+<div id="tarea-y-próxima-semana" class="section level2" number="2.7">
+<h2><span class="header-section-number">2.7</span> 5. Tarea y Próxima
 Semana</h2>
 <ul>
 <li><strong>Tarea:</strong> Completar la instalación del entorno Python
@@ -653,7 +884,7 @@ comenzaremos con la resolución de ecuaciones no lineales (métodos de
 Bisección y Newton).</li>
 </ul>
 <hr />
-<p><small>Última revisión: 22 de octubre, 2025</small></p>
+<p><small>Última revisión: 23 de octubre, 2025</small></p>
 </div>
 </div>
 

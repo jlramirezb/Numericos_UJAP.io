@@ -145,27 +145,200 @@ Luego, $\tilde{x}$ aproxima a $\pi$ con 5 cifras significativas.
 
 </div>
 
-* **Paso 1: Descarga e Instalación:** Sigue la guía oficial para instalar la distribución de Anaconda: [Enlace a la Guía de Instalación de Anaconda](enlace_guia_anaconda)
-* **Paso 2: Creación del Entorno:** Abre la terminal o Anaconda Prompt y crea un entorno virtual (por ejemplo, `metodos_num`):
-    ```bash
-    conda create --name metodos_num python=3.10
-    conda activate metodos_num
-    ```
+## Aproximación de Números.
 
-### 2.2. Uso de RStudio como Interfaz (Opcional)
+Sea $x = a_n\ldots a_0.b_1b_2\ldots \in \mathbb{R}$ (En cualquier base), para aproximar hasta el $t$-ésimo decimal:
 
-Usaremos RStudio para gestionar nuestros archivos `.Rmd` y documentos. Para ejecutar código Python dentro de R Markdown, usaremos el paquete **`reticulate`**.
+* Por **truncamiento**
+<div class="recuadro-gris">
+$$
+\tilde{x}_{trunc} = a_n\ldots a_0.b_1b_2\ldots b_t
+$$
+</div>
+* Por **redondeo correcto**
+<div class="recuadro-gris">
+$$
+\tilde{x}_{redon} = \begin{cases}
+a_n\ldots a_0.b_1b_2\ldots b_t & \text{si } b_{t+1} < 5 \\
+a_n\ldots a_0.b_1b_2\ldots b_t + \beta^{-t} & \text{si } b_{t+1} \geq 5
+\end{cases}
+$$
+</div>
 
-* **Instalación del Paquete:**
-    ```r
-    install.packages("reticulate")
-    ```
-* **Verificación del Entorno:** Una vez instalado, verifica que `reticulate` encuentre tu instalación de Python:
-    ```r
-    library(reticulate)
-    py_config()
-    ```
+## Forma Normalizada de Números en Punto Flotante
 
+Un número en punto flotante en base $\beta$ con precisión $t$ es un número que puede representarse en la forma:
+<div class="recuadro-gris">
+$$x = \sigma (0.d_1d_2\ldots d_t)_{\beta} \times \beta^e$$
+</div>
+donde:
+
+* $\sigma$ es el signo del número ($+1$ o $-1$),
+* $d_1d_2\ldots d_t$ son los dígitos en base $\beta$ (con $0 \leq d_i < \beta$ y $d_1 \neq 0$ para la forma normalizada),
+* $e$ es el exponente entero, y es tal que $L \geq e \geq U$ para ciertos enteros $L$ y $U$.
+* $t$ es la precisión (número de dígitos significativos).
+
+Una de las características de todo conjunto de punto flotante $F$ es que es finito y tiene:
+<div class="recuadro-gris">
+$$
+2(\beta - 1)\beta^{t-1}(U - L + 1) + 1
+$$
+</div>
+
+números diferentes (incluyendo el cero), y donde los distintos de cero están en forma normalizada.
+
+<div class="caja-ejemplo">
+### Ejemplo 3
+Sea el conjunto de punto flotante $F$ con parámetros $\beta = 2$(Binario), $t = 3$, $L = -2$, $U = 2$. Tal conjunto $F$ tiene
+<div class="recuadro-gris">
+$$2(2 - 1)2^{3 - 1}(2 - (-2) + 1) + 1 = 41$$
+</div>
+números diferentes (incluyendo el cero). La lista completa de números en $F$ es:
+``` {python, eval=TRUE, echo=TRUE, message=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+def generar_punto_flotante(beta, t, L, U):
+    numeros = set()
+    for signo in [1, -1]:
+        for exponente in range(L, U + 1):
+            for d1 in range(1, beta):
+                for d2 in range(beta):
+                    for d3 in range(beta):
+                        numero = signo * (d1 * beta**(-1) + d2 * beta**(-2) + d3 * beta**(-3)) * (beta ** exponente)
+                        numeros.add(round(numero, 10))  # Redondear para evitar problemas de precisión
+    numeros.add(0)  # Incluir el cero
+    return sorted(numeros)
+
+# Parámetros del sistema de punto flotante
+beta = 2  # Base (binaria)
+t = 3     # Dígitos de la mantisa
+L = -2    # Exponente mínimo
+U = 2     # Exponente máximo
+punto_flotante = generar_punto_flotante(beta, t, L, U)
+print("Números en el conjunto de punto flotante F:{}".format(punto_flotante))
+
+# --- Visualización de la Recta Real y los Puntos ---
+plt.figure(figsize=(12, 2)) # Ajusta el tamaño de la figura (ancho, alto)
+
+# Dibuja la recta real (una línea horizontal)
+plt.axhline(0, color='gray', linestyle='-', linewidth=1) 
+
+# Dibuja los puntos generados sobre la recta 'o' para los marcadores, 'b' para el color azul, markersize para el tamaño
+plt.plot(punto_flotante, np.zeros_like(punto_flotante), 'ob', markersize=5)
+plt.plot(0, 0, 'go', markersize=7, label='Cero') # 'go' = green circle
+
+# Etiquetas y Título
+plt.title(f'Representación de Números de Punto Flotante (beta={beta}, t={t}, L={L}, U={U})')
+plt.xlabel('Recta Real')
+
+# Ajustes de los ejes para que los puntos sean más visibles
+min_val = min(punto_flotante) - 0.5
+max_val = max(punto_flotante) + 0.5
+x_limits = plt.xlim(min_val, max_val) # Extiende ligeramente los límites del eje X
+yticks = plt.yticks([]) # Oculta las marcas del eje Y, ya que solo es una recta horizontal
+
+# Muestra una leyenda si es necesario
+plt.legend()
+plt.grid(True, linestyle=':', alpha=0.7)
+plt.show()
+
+```
+</div>
+* Hay un rango limitado para representar cantidades
+  - Hay números grandes positivos y negativos que no pueden ser representados (overflow)
+  - No pueden representarse números muy pequeños (underflow)
+* Hay sólo un número finito de cantidades que puede ser representado dentro de un rango
+  - El grado de precisión es limitado
+  - Para aquellos que no pueden ser representados exactamente, la aproximación real se puede lograr: truncando o redondeando.
+* El intervalo entre números aumenta tanto como los números crecen en magnitud
+  - El error cuantificable más grande ocurrirá para aquellos valores que caigan justo debajo del límite superior de la primera serie de intervalos igualmente espaciados.
+
+Vamos a ver cómo se almacena un número real en el ordenador en **formato binario** usando **64 bits**.
+
+Sea $x$ un número real que suponemos en formato **binario**.
+
+Escribimos $x$ de la forma siguiente:
+<div class="recuadro-gris">
+$$
+x=(−1)^s 1.f\times2^{c−1023},
+$$
+</div>
+donde
+
+* $s$ indica el signo del número, indicado $s=0$ para los números positivos y $s=1$, para los negativos.
+* $1.f$ es lo que se llama la mantisa donde $f$ es una secuencia de ceros y unos,
+ es decir,
+<div class="recuadro-gris">
+$$
+f= f_1f_2f_3\ldots f_n, \quad f_i \in \{0,1\}
+$$
+</div>
+* $c \geq 1$ indica el exponente del número donde se le resta 1023 para poder representar números muy pequeños en valor absoluto. Escribimos $c−1023$ en binario como $c−1023=e_1e_2\ldots e_m$, con $e_i \in \{0,1\}$
+
+Representamos $x$ por tres cajas: el signo $s$, la mantisa $f$ y el exponente $c−1023$ en binario:
+<div class="recuadro-gris">
+$$
+|s| f_1f_2\ldots f_n| e_1e_2\ldots e_m|
+$$
+</div>
+
+<div class="caja-ejemplo">
+### Ejemplo 4: 
+Representar el número $x=31.53173828125$ en formato de punto flotante de 64 bits.
+$$
+\begin{align*}
+1. & \text{ Determinar el signo } s: \text{ Como } x > 0, \text{ entonces } s = 0. \\
+2. & \text{ Convertir } x \text{ a binario: } \\
+   & \quad \text{Parte entera: } 31_{10} = 11111_2. \\
+   & \quad \text{Parte fraccionaria: } 0.53173828125_{10} = 0.10001000001_2. \\
+   & \quad \text{Por lo tanto, } x \text{ en binario es aproximadamente } 11111.10001000001_2. \\
+3. & \text{ Normalizar el número: } \\
+   & \quad 11111.10001000001_2. = 1.111110001000001_2 \times 2^4. \\
+4. & \text{ Determinar la mantisa } f: \\
+   & \quad f = 111110001000001 \\
+5. & \text{ Determinar el exponente } c - 1023: \\
+   & \quad c = 4 + 1023 = 1027. \\
+   & \quad \text{Convertir } 1027 \text{ a binario: } 1027_{10} = 10000000011_2. \\
+6. & \text{ Representar el número en formato de 64 bits: } \\
+   & \quad |0|111110001000001|10000000011|. \\
+\end{align*}
+$$
+Como sólo tenemos 64 bits para representar el número, la cantidad de bits usados para su representación no puede superar 64
+
+En caso que los superase, tendremos que considerar una aproximación del mismo.
+
+En el ejemplo se usado el número siguiente de bits:
+
+* signo: 1 bit,
+* mantisa: 15 bits,
+* exponente: 11 bits,
+
+en total, 27 bits, por tanto, sí sería posible su representación exacta y no haría falta considerar una aproximación del mismo.
+</div>  
+
+<div class="caja-ejemplo">
+### Ejemplo 5:
+Hagamos la conversión contraria.
+
+Imaginemos que nos dan el número siguiente:
+$$
+|1| 101101110011| 1111|.
+$$
+Vamos a ver a qué número $x$ corresponde.
+
+El signo es negativo, por tanto $x<0$
+
+La mantisa será:
+$$
+1.f=1+\frac{1}{2}+\frac{1}{2^3}+\frac{1}{2^4}+\frac{1}{2^6}+\frac{1}{2^7}+\frac{1}{2^8}+\frac{1}{2^{11}}+\frac{1}{2^{12}}=1.7155762.
+$$
+El exponente $c$ vale $1111_{2}−1023=1+2+2^2+2^3−1023=−1008$.
+
+El número será:
+$$
+x=−1.7155762\times2^{−1008} \approx −6.25424\times10^{−304}.
+$$
+</div>
 ---
 
 ## 3. Python para el Cálculo Numérico
@@ -175,7 +348,7 @@ Usaremos RStudio para gestionar nuestros archivos `.Rmd` y documentos. Para ejec
 **NumPy (Numerical Python)** es la librería esencial para el curso. Proporciona estructuras de datos eficientes (arrays) y funciones optimizadas para realizar operaciones de Álgebra Lineal.
 
 * **Creación de un Array:**
-    ```python
+    ```{python, eval=TRUE, echo=TRUE}
     # Bloque de código Python
     import numpy as np
 
@@ -190,7 +363,7 @@ Usaremos RStudio para gestionar nuestros archivos `.Rmd` y documentos. Para ejec
 Utilizaremos **Matplotlib** para graficar funciones, errores y visualizar resultados de nuestros métodos.
 
 * **Gráfico de una Función Simple:**
-    ```python
+    ```{python , eval=TRUE, echo=TRUE}
     # Bloque de código Python
     import matplotlib.pyplot as plt
 
