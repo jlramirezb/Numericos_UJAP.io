@@ -12,7 +12,7 @@
 <meta name="author" content="José Luis Ramírez" />
 
 
-<title>Métodos Numéricos con Python</title>
+<title>Álgebra Lineal Numérica</title>
 
 <script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -345,162 +345,255 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Métodos Numéricos con Python</h1>
+<h1 class="title toc-ignore">Álgebra Lineal Numérica</h1>
 <h4 class="author">José Luis Ramírez</h4>
 <h4 class="date">Octubre 2025</h4>
 
 </div>
 
 
-<div id="métodos-numéricos-con-python" class="section level1"
-number="1">
-<h1><span class="header-section-number">1</span> Métodos Numéricos con
-Python</h1>
-<p><img src="img/Image_fx.jpg" style="width:80.0%" /></p>
-<p>Bienvenidos al Curso de Métodos Numéricos con Python!</p>
-<p>Este curso conecta la teoría matemática con la práctica de la
-programación para resolver problemas de índole matemático que son
-demasiado complejos o imposibles de abordar con soluciones analíticas
-(exactas) y la computación numérica se convierte en una herramienta
-esencial para encontrar soluciones aproximadas a estos problemas.</p>
-<hr />
-<div id="información-general-del-curso" class="section level2"
-number="1.1">
-<h2><span class="header-section-number">1.1</span> Información General
-del Curso</h2>
-<div id="objetivo" class="section level3" number="1.1.1">
-<h3><span class="header-section-number">1.1.1</span> Objetivo</h3>
-<p>El objetivo del curso consiste en describir y analizar algoritmos
-numéricos que permitan resolver problemas matemáticos con una precisión
-determinada. Identificar el tipo de problemas que requieren técnicas
-numéricas para su resolución. Analizar la propagación del error que
-pueden ocurrir cuando se aplican métodos numéricos, y aproximar con
-precisión las soluciones a algunos problemas que no pueden ser resueltos
-exactamente.</p>
-<p>Al finalizar este curso, serás capaz de:</p>
+<div id="motivación" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Motivación</h1>
 <ul>
-<li><strong>Clasificar Problemas</strong>: Identificar y diferenciar
-problemas matemáticos (en ingeniería, ciencia de datos o matemáticas
-aplicadas) que <strong>requieren soluciones aproximadas</strong>
-mediante métodos numéricos de aquellos que pueden resolverse
-analíticamente.</li>
-<li><strong>Implementación en Python</strong>: Traducir los algoritmos
-numéricos descritos teóricamente en código Python funcional, utilizando
-eficazmente librerías científicas como <strong>NumPy</strong> para el
-manejo eficiente de vectores y matrices, y <strong>SciPy</strong> para
-métodos optimizados.</li>
-<li><strong>Validación de Resultados</strong>: Aplicar pruebas de
-convergencia y utilizar herramientas de Python para validar la precisión
-de las soluciones numéricas obtenidas contra soluciones conocidas o
-mediante métodos de contraste.</li>
-<li><strong>Selección Óptima</strong>: Seleccionar el método numérico
-más eficiente y adecuado para un problema dado, considerando factores
-como el tiempo de cómputo, la complejidad del algoritmo y la precisión
-requerida.</li>
+<li>En el planteamiento matemático de muchos problemas realistas, los
+sistemas de ecuaciones algebraicas, y de una manera especial los
+lineales, aparecen de manera natural.</li>
+<li>La búsqueda de métodos de resolución de sistemas de ecuaciones
+lineales es un tema de gran importancia en la ciencia.</li>
+<li>El objetivo de este tema es desarrollar estrategias numéricas que
+permitan resolver sistemas de ecuaciones relativamente grandes de una
+manera eficiente.</li>
+<li>El estudio de los autovalores de sistemas surge por doquier en
+muchas áreas de la ciencia, ingeniería, economía …
+<ul>
+<li>Análisis de estructuras</li>
+<li>Diseño de sistemas electrónicos</li>
+<li>Análisis de sistemas eléctricos</li>
+<li>Mercados financieros.</li>
+</ul></li>
+<li>Es también muy importante para analizar el comportamiento de métodos
+numéricos.</li>
 </ul>
 </div>
-<div id="prerrequisitos" class="section level3" number="1.1.2">
-<h3><span class="header-section-number">1.1.2</span> Prerrequisitos</h3>
-<p>Para este curso se requiere que el estudiante posea niveles básicos
-de Programación y Algoritmos, para escribir código funcional, y manejo
-de elementos matemáticos vistos en Cálculo Diferencial e Integral y
-Álgebra Lineal.</p>
-<hr />
-</div>
-</div>
-<div id="contenido-del-curso" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Contenido del
-Curso</h2>
-<p>En esta sección encontrarás un enlace directo a las distintas
-unidades que cubren el contenido de la materia.</p>
-<table>
-<colgroup>
-<col width="27%" />
-<col width="36%" />
-<col width="36%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">Unidad</th>
-<th align="left">Tema Principal</th>
-<th align="left">Enlace Rápido</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left"><strong>Unidad 1</strong></td>
-<td align="left">Teoría de Errores</td>
-<td align="left"><a href="unidad01.html">Ir a Unidad 1</a></td>
-</tr>
-<tr class="even">
-<td align="left"><strong>Unidad 2</strong></td>
-<td align="left">Algebra Lineal Numèrica</td>
-<td align="left"><a href="modulos/modulo_02.html">Ir a Unidad 2</a></td>
-</tr>
-<tr class="odd">
-<td align="left"><strong>Unidad 3</strong></td>
-<td align="left">Soluciòn de Ecuaciones no Lineales</td>
-<td align="left"><a href="modulos/modulo_03.html">Ir a Unidad 3</a></td>
-</tr>
-<tr class="even">
-<td align="left"><strong>Unidad 4</strong></td>
-<td align="left">Ajuste de curvas</td>
-<td align="left"><a href="modulos/modulo_04.html">Ir a Unidad 4</a></td>
-</tr>
-<tr class="odd">
-<td align="left"><strong>Unidad 5</strong></td>
-<td align="left">Diferenciación e Integración Numérica</td>
-<td align="left"><a href="modulos/modulo_05.html">Ir a Unidad 5</a></td>
-</tr>
-<tr class="even">
-<td align="left"><strong>Unidad 6</strong></td>
-<td align="left">Soluciòn de Ecuaciones Diferenciales Ordinarias</td>
-<td align="left"><a href="modulos/modulo_06.html">Ir a Unidad 6</a></td>
-</tr>
-</tbody>
-</table>
-<div id="bibliografía-recomendada" class="section level3"
-number="1.2.1">
-<h3><span class="header-section-number">1.2.1</span> Bibliografía
-recomendada</h3>
+<div id="solución-de-sistemas-de-ecuaciones-lineales"
+class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Solución de Sistemas de
+Ecuaciones Lineales</h1>
 <ul>
-<li>R. L. Burden y J. D. Faires. Análisis Numérico. Grupo Editorial
-Iberoamérica, 1985.</li>
-<li>D. Kincaid y W. Cheney. Análisis numérico. Las matemáticas del
-cálculo científico. Athena scientific, belmont, MA, 1999.</li>
-<li>S. Chapra y R. Canale. Métodos Numéricos para Ingenieros. Editorial
-Mc Graw Hill, tercera edición, 1998.</li>
-<li>J. Mathews y K. Fink. Métodos Numéricos con MATLAB. Prentice Hall,
-tercera edición, 2000.</li>
+<li>El objetivo de este tema es desarrollar estrategias numéricas que
+permitan resolver sistemas de ecuaciones relativamente grandes de una
+manera eficiente.</li>
+<li>Además, se analizarán con detalle algunos métodos directos.</li>
+<li>Si bien existen métodos exactos como el método de Cramer, estos son
+muy costosos de aplicar en situaciones donde los sistemas a resolver
+tienen muchas ecuaciones.</li>
+<li>El número total de operaciones para resolver un sistema de dimensión
+<span class="math inline">\(n\)</span> con este método es</li>
 </ul>
-<hr />
+<div class="recuadro-gris">
+<p><span class="math display">\[
+T_C = (n+1)^2n!-1
+\]</span> <span class="math display">\[
+\begin{array}{|c|c|}\hline
+n &amp; T_C \\\hline
+5 &amp; 4319\\\hline
+10 &amp; 4\times10^{8}\\\hline
+100 &amp; 10\times10^{158}\\\hline
+\end{array}
+\]</span></p>
 </div>
-</div>
-<div id="evaluación-del-curso" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> Evaluación del
-curso</h2>
-<p>La evaluación del curso estará compuesta por examenes parciales,
-pruebas cortas y proyectos:</p>
-<ol style="list-style-type: decimal">
-<li><strong>3 Parciales</strong> (20% c/u)</li>
-<li><strong>Pruebas cortas</strong> (10% de la nota final)</li>
-<li><strong>2 Proyectos</strong> (15% c/u)</li>
-</ol>
-<hr />
-</div>
-<div id="recursos-adicionales" class="section level2" number="1.4">
-<h2><span class="header-section-number">1.4</span> Recursos
-Adicionales</h2>
-<div id="instalación-de-software" class="section level3" number="1.4.1">
-<h3><span class="header-section-number">1.4.1</span> Instalación de
-Software</h3>
-<p>Asegúrate de tener instalado el siguiente software:</p>
+<div id="introducción" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Introducción</h2>
 <ul>
-<li><strong>Python</strong> (Versión 3.14 o superior): <a
-href="https://www.python.org/">Descargar Python</a></li>
+<li>Un sistema de <span class="math inline">\(n\)</span>-ecuaciones (con
+coeficientes reales) en las <span
+class="math inline">\(n\)</span>-incógnitas <span
+class="math inline">\(x_1, x_2, \ldots , x_n\)</span> es un conjunto de
+<span class="math inline">\(n\)</span> ecuaciones de la forma:</li>
 </ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\left\{
+\begin{array}{rclclc}
+a_{11}x_{1} &amp; + &amp; a_{12}x_{2} &amp; + \cdots + &amp; a_{1n}x_{n}
+&amp; = b_{1} \\
+a_{21}x_{1} &amp; + &amp; a_{22}x_{2} &amp; + \cdots + &amp; a_{2n}x_{n}
+&amp; = b_{2} \\
+\cdots &amp; &amp; \cdots &amp; \cdots &amp; \cdots &amp; \cdots
+\\
+a_{n1}x_{1} &amp; + &amp; a_{n2}x_{2} &amp; + \cdots + &amp; a_{nn}x_{n}
+&amp; = b_{n}
+\end{array}
+\right.
+\]</span></p>
+</div>
+<ul>
+<li>A los números <span class="math inline">\(a_{ij}\)</span> se les
+denomina coeficientes del sistema y a los <span
+class="math inline">\(b_i\)</span> términos independientes.</li>
+</ul>
+<p>Si se introducen las matrices</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+A = \begin{pmatrix}
+a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n} \\
+a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2n} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+a_{n1} &amp; a_{n2} &amp; \cdots &amp; a_{nn}
+\end{pmatrix}, \quad
+x = \begin{pmatrix}
+x_{1} \\
+x_{2} \\
+\vdots \\
+x_{n}
+\end{pmatrix}, \quad
+b = \begin{pmatrix}
+b_{1} \\
+b_{2} \\
+\vdots \\
+b_{n}
+\end{pmatrix}
+\]</span></p>
+</div>
+<ul>
+<li>El sistema de ecuaciones puede escribirse de forma matricial
+como</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+Ax = b
+\]</span></p>
+</div>
+<div id="clasificación" class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Clasificación</h3>
+<p>Podemos clasificar los sistemas de ecuaciones lineales atendiendo
+a:</p>
+<ul>
+<li>Su tamaño:
+<ul>
+<li>Pequeños: <span class="math inline">\(n \leq 300\)</span> donde
+<span class="math inline">\(n\)</span> representa el número de
+ecuaciones.</li>
+<li>Grandes: <span class="math inline">\(n &gt; 300\)</span></li>
+</ul></li>
+<li>Su estructura
+<ul>
+<li>Si la matriz posee pocos elementos nulos diremos que se trata de un
+sistema lleno.</li>
+<li>Si, por el contrario, la matriz contiene muchos elementos nulos,
+diremos que la matriz, y por lo tanto, el sistema lineal es disperso o
+sparce.</li>
+</ul></li>
+</ul>
+</div>
+<div id="solución" class="section level3" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Solución</h3>
+<p>La primera opción que se plantea es</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x = A^{-1}b
+\]</span></p>
+</div>
+<ul>
+<li>No es eficiente (demasiadas operaciones).</li>
+<li>Si el determinante de <span class="math inline">\(A\)</span> es
+próximo a cero, el error de redondeo puede ser muy grande, y esto es
+dificil de estimar numéricamente</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\det(\gamma A) = \gamma^n \det(A)
+\]</span></p>
+</div>
+<ul>
+<li>Por lo tanto, se hace necesario desarrollar métodos numéricos que
+permitan resolver sistemas de ecuaciones lineales de una manera
+eficiente y con un control del error cometido.</li>
+</ul>
+</div>
+<div id="sistemas-triangulares" class="section level3" number="2.1.3">
+<h3><span class="header-section-number">2.1.3</span> Sistemas
+triangulares</h3>
+<ul>
+<li>Un sistema de ecuaciones lineales se dice que es triangular superior
+si su matriz de coeficientes <span class="math inline">\(A\)</span> es
+una matriz triangular superior, es decir, si todos los elementos
+situados por debajo de la diagonal principal son nulos.</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\left\{\begin{array}{r}
+a_{11}x_1 + a_{12}x_2 + \cdots + a_{1i}x_i + \cdots + a_{1n}x_n = b_1 \\
+a_{22}x_2 + \cdots + a_{2i}x_i + \cdots + a_{2n}x_n = b_2 \\
+\vdots \\
+a_{ii}x_i + \cdots + a_{in}x_n = b_i \\
+\vdots \\
+a_{nn}x_n = b_n\\
+\end{array}\right.
+\]</span></p>
+</div>
+<ul>
+<li>Como <span class="math inline">\(a_{n,n} \ne 0\)</span>, se puede
+despejar <span class="math inline">\(x_n\)</span> de la última ecuación,
+y se obtiene:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x_n = \dfrac{b_n}{a_{nn}}
+\]</span></p>
+</div>
+<ul>
+<li>Sustituyendo este valor en la ecuación <span
+class="math inline">\(n-1\)</span> y despejando <span
+class="math inline">\(x_{n-1}\)</span> se tiene:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[x_{n-1} = \dfrac{b_{n-1} -
+a_{n-1,n}x_n}{a_{n-1,n-1}}\]</span></p>
+</div>
+<ul>
+<li>Continuando este proceso, se obtiene la siguiente fórmula de
+recurrencia para <span class="math inline">\(i = n-1, n-2, \ldots,
+1\)</span>:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[x_i = \dfrac{b_i -
+\displaystyle\sum_{j=i+1}^{n} a_{ij}x_j}{a_{ii}}\]</span></p>
+</div>
+<ul>
+<li>Este proceso de resolución de sistemas triangulares superiores se
+denomina sustitución regresiva.</li>
+</ul>
+<div class="cuadro-alg">
+<p><strong>FUNCION Sustitucion_Regresiva(A, b):</strong></p>
+<pre><code>n = dimension de A (número de filas)
+
+# 1. Resolver la última incógnita (x_n)
+x[n] = b[n] / A[n, n]
+
+# 2. Iteración regresiva (desde n-1 hasta 1)
+PARA i = n-1 HASTA 1:
+    suma = 0
+    PARA j = i+1 HASTA n:
+        suma = suma + A[i, j] * x[j]
+    FIN PARA
+    x[i] = (b[i] - suma) / A[i, i]
+FIN PARA
+
+RETORNAR x</code></pre>
+<p>FIN FUNCION</p>
+</div>
+<pre class="python"><code>import numpy as np
+def sustitucion_regresiva(A, b):
+    n = len(b)
+    x = np.zeros(n)
+    x[n-1] = b[n-1] / A[n-1, n-1]
+    for i in range(n-2, -1, -1):
+        suma = np.dot(A[i, i+1:], x[i+1:])
+        x[i] = (b[i] - suma) / A[i, i]
+    return x</code></pre>
 <hr />
-<p><small>Última actualización: 25 de octubre, 2025</small></p>
+<p><small>Última revisión: 26 de octubre, 2025</small></p>
 </div>
 </div>
 </div>

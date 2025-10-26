@@ -626,7 +626,7 @@ df
 ```
 :::
 ## Práctica Computacional
-En la el siguiente enlace `practica1.pdf` encontrará ejercicios prácticos relacionados con el uso de python y las librerias Numpy y matplotlob para comenzar a entender el uso de estas.
+En el siguiente enlace `ejercicios1.pdf` encontrará ejercicios prácticos relacionados con el uso de python y las librerias Numpy y Matplotlib para comenzar a entender su uso para próximas asignaciones.
 
 Descargue el PDF de la Tarea aquí:
 

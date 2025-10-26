@@ -116,3 +116,23 @@ body {
     padding-left: 1% !important;
     padding-right: 0 !important;
 }
+
+/*
+ * CLASE CSS para enmarcar y resaltar algoritmos o pseudocódigo.
+ */
+.cuadro-alg {
+    border: 3px solid #388e3c;      /* Borde verde oscuro */
+    padding: 15px;                  /* Espacio interno */
+    background-color: #388e3c;      /* Fondo verde muy claro */
+    border-radius: 8px;             /* Esquinas redondeadas */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    margin-bottom: 20px;            /* Margen debajo del cuadro */
+}
+
+/* Opcional: Estilo para el texto del algoritmo dentro del cuadro */
+.cuadro-alg pre {
+    font-family: monospace;
+    font-size: 1em;
+    color: #1b5e20; /* Color de texto verde más oscuro */
+    margin: 0; /* Elimina el margen interno por defecto del <pre> */
+}

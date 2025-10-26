@@ -1,0 +1,210 @@
+---
+title: "Álgebra Lineal Numérica"
+author: "José Luis Ramírez"
+date: "Octubre 2025"
+output:
+  html_document:
+    self_contained: true
+    mathjax: default
+    pandoc_args: "--mathjax"
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: readable
+    css: css/estilos.css
+    number_sections: true
+  pdf_document:
+    toc: true
+    toc_depth: '3'
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Motivación
+
+* En el planteamiento matemático de muchos problemas realistas, los sistemas de ecuaciones algebraicas, y de una manera especial los lineales, aparecen de manera natural.
+* La búsqueda de métodos de resolución de sistemas de ecuaciones lineales es un tema de gran importancia en la ciencia.
+* El objetivo de este tema es desarrollar estrategias numéricas que permitan resolver sistemas de ecuaciones relativamente grandes de una manera eficiente.
+* El estudio de los autovalores de sistemas surge por doquier en muchas áreas de la ciencia, ingeniería, economía ...
+  - Análisis de estructuras
+  - Diseño de sistemas electrónicos
+  - Análisis de sistemas eléctricos
+  - Mercados financieros.
+* Es también muy importante para analizar el comportamiento de métodos numéricos.
+
+# Solución de Sistemas de Ecuaciones Lineales
+* El objetivo de este tema es desarrollar estrategias numéricas que permitan resolver sistemas de ecuaciones relativamente grandes de una manera eficiente.
+* Además, se analizarán con detalle algunos métodos directos.
+* Si bien existen métodos exactos como el método de Cramer, estos son muy costosos de aplicar en situaciones donde los sistemas a resolver tienen muchas ecuaciones.
+* El número total de operaciones para resolver un sistema de dimensión $n$ con este método es
+
+::: recuadro-gris
+$$
+T_C = (n+1)^2n!-1
+$$
+$$
+\begin{array}{|c|c|}\hline
+n & T_C \\\hline
+5 & 4319\\\hline
+10 & 4\times10^{8}\\\hline
+100 & 10\times10^{158}\\\hline
+\end{array}
+$$
+:::
+
+## Introducción
+* Un sistema de $n$-ecuaciones (con coeficientes reales) en las $n$-incógnitas $x_1, x_2, \ldots , x_n$ es un conjunto de $n$ ecuaciones de la forma:
+
+::: recuadro-gris
+$$
+\left\{
+\begin{array}{rclclc}
+a_{11}x_{1} & + & a_{12}x_{2} & + \cdots + & a_{1n}x_{n} & = b_{1} \\
+a_{21}x_{1} & + & a_{22}x_{2} & + \cdots + & a_{2n}x_{n} & = b_{2} \\
+\cdots & & \cdots & \cdots & \cdots & \cdots
+\\ 
+a_{n1}x_{1} & + & a_{n2}x_{2} & + \cdots + & a_{nn}x_{n} & = b_{n}
+\end{array}
+\right.
+$$
+:::
+* A los números $a_{ij}$ se les denomina coeficientes del sistema y a los $b_i$ términos independientes.
+
+Si se introducen las matrices
+
+::: recuadro-gris
+$$
+A = \begin{pmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1} & a_{n2} & \cdots & a_{nn}
+\end{pmatrix}, \quad
+x = \begin{pmatrix}
+x_{1} \\
+x_{2} \\
+\vdots \\
+x_{n}
+\end{pmatrix}, \quad
+b = \begin{pmatrix}
+b_{1} \\
+b_{2} \\
+\vdots \\
+b_{n}
+\end{pmatrix}
+$$
+:::
+
+* El sistema de ecuaciones puede escribirse de forma matricial como
+
+::: recuadro-gris
+$$
+Ax = b
+$$
+:::
+
+### Clasificación
+Podemos clasificar los sistemas de ecuaciones lineales atendiendo a:
+
+* Su tamaño:
+  - Pequeños: $n \leq 300$ donde $n$ representa el número de ecuaciones.
+  - Grandes: $n > 300$
+* Su estructura
+  - Si la matriz posee pocos elementos nulos diremos que se trata de un sistema lleno.
+  - Si, por el contrario, la matriz contiene muchos elementos nulos, diremos que la matriz, y por lo tanto, el sistema lineal es disperso o sparce.
+  
+### Solución
+La primera opción que se plantea es
+
+::: recuadro-gris
+$$
+x = A^{-1}b
+$$
+:::
+
+* No es eficiente (demasiadas operaciones).
+* Si el determinante de $A$ es próximo a cero, el error de redondeo puede ser muy grande, y esto es dificil de estimar numéricamente
+
+::: recuadro-gris
+$$
+\det(\gamma A) = \gamma^n \det(A)
+$$
+:::
+
+* Por lo tanto, se hace necesario desarrollar métodos numéricos que permitan resolver sistemas de ecuaciones lineales de una manera eficiente y con un control del error cometido.
+
+### Sistemas triangulares
+* Un sistema de ecuaciones lineales se dice que es triangular superior si su matriz de coeficientes $A$ es una matriz triangular superior, es decir, si todos los elementos situados por debajo de la diagonal principal son nulos.
+
+::: recuadro-gris
+$$
+\left\{\begin{array}{r}
+a_{11}x_1 + a_{12}x_2 + \cdots + a_{1i}x_i + \cdots + a_{1n}x_n = b_1 \\
+a_{22}x_2 + \cdots + a_{2i}x_i + \cdots + a_{2n}x_n = b_2 \\
+\vdots \\
+a_{ii}x_i + \cdots + a_{in}x_n = b_i \\
+\vdots \\
+a_{nn}x_n = b_n\\
+\end{array}\right.
+$$
+:::
+
+* Como $a_{n,n} \ne 0$, se puede despejar $x_n$ de la última ecuación, y se obtiene:
+
+::: recuadro-gris
+$$
+x_n = \dfrac{b_n}{a_{nn}}
+$$
+:::
+
+* Sustituyendo este valor en la ecuación $n-1$ y despejando $x_{n-1}$ se tiene:
+
+::: recuadro-gris
+$$x_{n-1} = \dfrac{b_{n-1} - a_{n-1,n}x_n}{a_{n-1,n-1}}$$
+:::
+
+* Continuando este proceso, se obtiene la siguiente fórmula de recurrencia para $i = n-1, n-2, \ldots, 1$:
+
+::: recuadro-gris
+$$x_i = \dfrac{b_i - \displaystyle\sum_{j=i+1}^{n} a_{ij}x_j}{a_{ii}}$$
+::: 
+
+* Este proceso de resolución de sistemas triangulares superiores se denomina sustitución regresiva.
+
+::: cuadro-alg
+**FUNCION Sustitucion_Regresiva(A, b):**
+
+    n = dimension de A (número de filas)
+
+    # 1. Resolver la última incógnita (x_n)
+    x[n] = b[n] / A[n, n]
+
+    # 2. Iteración regresiva (desde n-1 hasta 1)
+    PARA i = n-1 HASTA 1:
+        suma = 0
+        PARA j = i+1 HASTA n:
+            suma = suma + A[i, j] * x[j]
+        FIN PARA
+        x[i] = (b[i] - suma) / A[i, i]
+    FIN PARA
+
+    RETORNAR x
+FIN FUNCION
+:::
+
+```{python}
+import numpy as np
+def sustitucion_regresiva(A, b):
+    n = len(b)
+    x = np.zeros(n)
+    x[n-1] = b[n-1] / A[n-1, n-1]
+    for i in range(n-2, -1, -1):
+        suma = np.dot(A[i, i+1:], x[i+1:])
+        x[i] = (b[i] - suma) / A[i, i]
+    return x
+```
+
+------------------------------------------------------------------------
+
+<small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>
