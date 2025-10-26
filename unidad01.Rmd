@@ -3,9 +3,6 @@ title: "Teoría de Errores"
 author: "José Luis Ramírez"
 date: "Octubre 2025"
 output:
-  pdf_document:
-    toc: true
-    toc_depth: '3'
   html_document:
     self_contained: true
     mathjax: default
@@ -16,9 +13,6 @@ output:
     theme: readable
     css: css/estilos.css
     number_sections: true
-editor_options: 
-  markdown: 
-    wrap: 72
 ---
 
 # Motivación
