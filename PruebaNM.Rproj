@@ -15,5 +15,5 @@ LaTeX: pdfLaTeX
 BuildType: Website
 
 PythonType: system
-PythonVersion: 3.8.17
-PythonPath: /usr/local/bin/python
+PythonVersion: 3.14.0
+PythonPath: C:/Users/USUARIO/AppData/Local/Python/bin/python.exe

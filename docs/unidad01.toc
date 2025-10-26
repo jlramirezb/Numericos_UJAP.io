@@ -1,0 +1,14 @@
+\contentsline {section}{Motivación}{1}{section*.2}%
+\contentsline {section}{Teoría de Errores y Aproximación}{1}{section*.3}%
+\contentsline {subsection}{Errores Absolutos y Relativos.}{2}{section*.4}%
+\contentsline {subsubsection}{Ejemplo 1}{2}{section*.5}%
+\contentsline {subsection}{Cifras Significativas.}{3}{section*.6}%
+\contentsline {subsubsection}{Ejemplo 2}{3}{section*.7}%
+\contentsline {subsection}{Aproximación de Números.}{4}{section*.8}%
+\contentsline {subsection}{Forma Normalizada de Números en Punto Flotante}{4}{section*.9}%
+\contentsline {subsubsection}{Ejemplo 3}{4}{section*.10}%
+\contentsline {subsubsection}{Ejemplo 4:}{7}{section*.11}%
+\contentsline {subsubsection}{Ejemplo 5:}{7}{section*.12}%
+\contentsline {subsection}{Unidad de Precisión o Redondeo}{8}{section*.13}%
+\contentsline {subsection}{Condicionamiento y Estabillidad}{9}{section*.14}%
+\contentsline {subsubsection}{Ejemplo 6}{9}{section*.15}%
