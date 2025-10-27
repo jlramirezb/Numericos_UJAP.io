@@ -91,7 +91,7 @@ body {
 }
 
 /* Estilo para el título "Ejemplo" dentro de la caja */
-.caja-ejemplo h3 {
+.caja-ejemplo h3, h4 {
     margin-top: 0; /* Elimina el margen superior por defecto del h3 */
     color: #00838f; /* Un tono de cian oscuro para el título */
     border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Línea sutil debajo del título */

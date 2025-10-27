@@ -511,8 +511,11 @@ permitan resolver sistemas de ecuaciones lineales de una manera
 eficiente y con un control del error cometido.</li>
 </ul>
 </div>
-<div id="sistemas-triangulares" class="section level3" number="2.1.3">
-<h3><span class="header-section-number">2.1.3</span> Sistemas
+</div>
+<div id="métodos-directos" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Métodos directos</h2>
+<div id="sistemas-triangulares" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Sistemas
 triangulares</h3>
 <ul>
 <li>Un sistema de ecuaciones lineales se dice que es triangular superior
@@ -581,7 +584,7 @@ PARA i = n-1 HASTA 1:
 FIN PARA
 
 RETORNAR x</code></pre>
-<p>FIN FUNCION</p>
+<p><strong>FIN FUNCION</strong></p>
 </div>
 <pre class="python"><code>import numpy as np
 def sustitucion_regresiva(A, b):
@@ -592,9 +595,473 @@ def sustitucion_regresiva(A, b):
         suma = np.dot(A[i, i+1:], x[i+1:])
         x[i] = (b[i] - suma) / A[i, i]
     return x</code></pre>
+<ul>
+<li>En el caso de sistemas triangulares inferiores, el proceso es
+análogo, pero se realiza una sustitución progresiva.</li>
+<li>La fórmula de recurrencia para <span class="math inline">\(i = 1, 2,
+\ldots, n-1, n\)</span> es: ::: recuadro-gris <span
+class="math display">\[x_i = \dfrac{b_i - \displaystyle\sum_{j=1}^{i-1}
+a_{ij}x_j}{a_{ii}}\]</span> :::</li>
+<li>El proceso de resolución de sistemas triangulares inferiores se
+denomina sustitución progresiva.</li>
+</ul>
+<div class="cuadro-alg">
+<p><strong>FUNCION Sustitucion_Progresiva(A, b):</strong></p>
+<pre><code>n = dimension de A (número de filas)
+
+# 1. Resolver la primera incógnita (x_1)
+x[1] = b[1] / A[1, 1]
+
+# 2. Iteración progresiva (desde 2 hasta n)
+PARA i = 2 HASTA n:
+    suma = 0
+    PARA j = 1 HASTA i-1:
+        suma = suma + A[i, j] * x[j]
+    FIN PARA
+    x[i] = (b[i] - suma) / A[i, i]
+FIN PARA
+
+RETORNAR x</code></pre>
+<p><strong>FIN FUNCION</strong></p>
+</div>
+</div>
+<div id="eliminación-gaussiana" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Eliminación
+Gaussiana</h3>
+<ul>
+<li>Suponiendo que <span class="math inline">\(A\)</span> no posee una
+estructura triangular, y es tal que no requiere intercambio de filas
+para transformar el sistema original en otro equivalente que sí la posea
+forma triangular.</li>
+<li>Una forma de resolver el sistema es transformar la matriz <span
+class="math inline">\(A\)</span> en una matriz triangular superior <span
+class="math inline">\(U\)</span> mediante operaciones elementales sobre
+las filas de la matriz.</li>
+<li>Digamos que el sistema original es:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+Ax = b \equiv \left\{
+\begin{array}{l}
+E_1: a_{11}x_{1}  +  a_{12}x_{2}  + \cdots +  a_{1n}x_{n}  = b_{1} \\
+E_2: a_{21}x_{1}  +  a_{22}x_{2}  + \cdots +  a_{2n}x_{n}  = b_{2} \\
+\cdots  \cdots  \cdots  \cdots  \cdots \cdots \cdots\\
+E_n: a_{n1}x_{1}  +  a_{n2}x_{2}  + \cdots +  a_{nn}x_{n}  = b_{n}
+\end{array}
+\right.
+\]</span></p>
+</div>
+<ul>
+<li>Para eliminar la incógnita <span class="math inline">\(x_1\)</span>
+de las ecuaciones <span class="math inline">\(E_2, E_3, \ldots,
+E_n\)</span>, se pueden realizar las siguientes operaciones elementales
+sobre las filas:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+E_i \leftarrow E_i - \dfrac{a_{i1}}{a_{11}} E_1 \quad \text{para } i =
+2, 3, \ldots, n
+\]</span></p>
+</div>
+<ul>
+<li><p>Los números <span
+class="math inline">\(\dfrac{a_{i1}}{a_{11}}\)</span> se denominan
+multiplicadores de eliminación.</p></li>
+<li><p>Después de aplicar estas operaciones, se obtiene un nuevo sistema
+equivalente:<br />
+::: recuadro-gris <span class="math display">\[
+A^{(1)}x = b^{(1)} \equiv \left\{
+\begin{array}{l}
+E_1: a_{11}x_{1}  +  a_{12}x_{2}  + \cdots +  a_{1n}x_{n}  = b_{1} \\
+E_2: 0  +  a_{22}^{(1)}x_{2}  + \cdots +  a_{2n}^{(1)}x_{n}  =
+b_{2}^{(1)} \\
+\cdots  \cdots  \cdots  \cdots  \cdots \cdots \cdots\\
+E_n: 0  +  a_{n2}^{(1)}x_{2}  + \cdots +  a_{nn}^{(1)}x_{n}  =
+b_{n}^{(1)}
+\end{array}
+\right.
+\]</span><br />
+:::</p></li>
+<li><p>Repitiendo este proceso para las incógnitas <span
+class="math inline">\(x_2, x_3, \ldots, x_{n-1}\)</span>, se obtiene
+finalmente un sistema triangular superior:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+Ux = y \equiv \left\{
+\begin{array}{l}
+E_1: u_{11}x_{1}  +  u_{12}x_{2}  + \cdots +  u_{1n}x_{n}  = y_{1} \\
+E_2: 0  +  u_{22}x_{2}  + \cdots +  u_{2n}x_{n}  = y_{2} \\
+\cdots  \cdots  \cdots  \cdots  \cdots \cdots \cdots\\
+E_n: 0  +  0  + \cdots +  u_{nn}x_{n}  = y_{n}
+\end{array}
+\right.
+\]</span></p>
+</div>
+<ul>
+<li>Donde <span class="math inline">\(U\)</span> es una matriz
+triangular superior y <span class="math inline">\(y\)</span> es el nuevo
+vector de términos independientes.</li>
+<li>La solución del sistema original <span class="math inline">\(Ax =
+b\)</span> se obtiene resolviendo primero el sistema triangular superior
+<span class="math inline">\(Ux = y\)</span> mediante sustitución
+regresiva.</li>
+</ul>
+<div class="cuadro-alg">
+<p><strong>FUNCION Eliminacion_Gauss(A, b):</strong></p>
+<pre><code>n = dimension de A (número de filas)
+
+# 1. Eliminación hacia adelante
+PARA k = 1 HASTA n-1:
+    PARA i = k+1 HASTA n:
+        multiplicador = A[i, k] / A[k, k]
+        A[i, k] = 0  # Elemento eliminado
+        PARA j = k+1 HASTA n:
+            A[i, j] = A[i, j] - multiplicador * A[k, j]
+        FIN PARA
+        b[i] = b[i] - multiplicador * b[k]
+    FIN PARA
+FIN PARA
+RETORNAR A, b</code></pre>
+<p><strong>FIN FUNCION</strong></p>
+</div>
+<div id="ejemplo-1" class="section level4 caja-ejemplo"
+number="2.2.2.1">
+<h4><span class="header-section-number">2.2.2.1</span> Ejemplo 1:</h4>
+<p>Resolver el sistema de ecuaciones lineales utilizando el método de
+eliminación de Gauss: <span class="math display">\[
+\left\{
+\begin{array}{rcl}
+2x_1 + x_2 + x_3 &amp; = &amp; -3 \\
+x_1 -2x_2 + 3x_3 &amp; = &amp; 6 \\
+x_1  - x_2 - x_3 &amp; = &amp; 6
+\end{array}
+\right.
+\]</span></p>
+<pre class="python"><code>import numpy as np
+A = np.array([[2, 1, 1],
+              [1, -2, 3],
+              [1, -1, -1]], dtype=float)
+b = np.array([-3, 6, 6], dtype=float)
+def eliminacion_gauss(A, b):
+    n = len(b)
+    for k in range(n-1):
+        for i in range(k+1, n):
+            multiplicador = A[i, k] / A[k, k]
+            A[i, k] = 0  # Elemento eliminado
+            for j in range(k+1, n):
+                A[i, j] = A[i, j] - multiplicador * A[k, j]
+            b[i] = b[i] - multiplicador * b[k]
+    return A, b
+A_triangular, b_modificado = eliminacion_gauss(A, b)
+print(&quot;Matriz triangular superior U:&quot;)</code></pre>
+<pre><code>## Matriz triangular superior U:</code></pre>
+<pre class="python"><code>print(A_triangular)</code></pre>
+<pre><code>## [[ 2.   1.   1. ]
+##  [ 0.  -2.5  2.5]
+##  [ 0.   0.  -3. ]]</code></pre>
+<pre class="python"><code>print(&quot;Vector modificado y:&quot;)</code></pre>
+<pre><code>## Vector modificado y:</code></pre>
+<pre class="python"><code>print(b_modificado)</code></pre>
+<pre><code>## [-3.   7.5  3. ]</code></pre>
+<pre class="python"><code>def sustitucion_regresiva(A, b):
+    n = len(b)
+    x = np.zeros(n)
+    x[n-1] = b[n-1] / A[n-1, n-1]
+    for i in range(n-2, -1, -1):
+        suma = np.dot(A[i, i+1:], x[i+1:])
+        x[i] = (b[i] - suma) / A[i, i]
+    return x
+solucion = sustitucion_regresiva(A_triangular, b_modificado)
+print(&quot;Solución del sistema:&quot;)</code></pre>
+<pre><code>## Solución del sistema:</code></pre>
+<pre class="python"><code>print(solucion)</code></pre>
+<pre><code>## [ 1. -4. -1.]</code></pre>
+</div>
+</div>
+<div id="pivoteo" class="section level3" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Pivoteo</h3>
+<ul>
+<li>En la eliminación gaussiana, es posible que durante el proceso de
+eliminación se encuentren elementos pivote que sean cero o muy pequeños,
+lo que puede llevar a errores numéricos significativos.</li>
+</ul>
+<div id="ejemplo-2" class="section level4 caja-ejemplo"
+number="2.2.3.1">
+<h4><span class="header-section-number">2.2.3.1</span> Ejemplo 2:</h4>
+<p>Considere el siguiente sistema de ecuaciones lineales en una
+aritmética de punto flotante a 4 dígitos con redondeo correcto: <span
+class="math display">\[
+\left\{
+\begin{array}{rcl}
+0.003000x_1 + 59.14x_2 &amp; = &amp; 59.17 \\
+5.291x_1 - 6.130x_2 &amp; = &amp; 46.78
+\end{array}
+\right.
+\]</span></p>
+<p>cuya solución exacta es <span class="math inline">\(x_1 = 10\)</span>
+y <span class="math inline">\(x_2 = 1\)</span>.</p>
+<ul>
+<li>Aplicando la eliminación gaussiana sin pivoteo, se obtiene el
+siguiente resultado <span
+class="math inline">\(\tilde{x}_1=-10.00\)</span> y <span
+class="math inline">\(\tilde{x}_2=1.001\)</span>.</li>
+<li>El error relativo en la solución es:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\begin{array}{l}
+\text{Error relativo en } x_1 = \dfrac{|\tilde{x}_1 - x_1|}{|x_1|} =
+\dfrac{|-10.00 - 10|}{|10|} = 2.0 \\
+\text{Error relativo en } x_2 = \dfrac{|\tilde{x}_2 - x_2|}{|x_2|} =
+\dfrac{|1.001 - 1|}{|1|} = 0.001
+\end{array}
+\]</span></p>
+</div>
+<ul>
+<li>El error tan grande de la solución numérica de <span
+class="math inline">\(x_1\)</span>, resulta del error pequeño de <span
+class="math inline">\(0.001\)</span> al resolver para <span
+class="math inline">\(x_2\)</span>.</li>
+</ul>
+</div>
+<ul>
+<li>Ahora, si se elige como pivote el máximo entre <span
+class="math inline">\(a_{1,1}\)</span> y <span
+class="math inline">\(a_{2,1}\)</span>.</li>
+<li>Pivote =max(|0.003|; |5.291|) = 5.291, por tanto se realiza un
+intercambio de filas quedando el sistema de la siguiente manera:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\left\{
+\begin{array}{rcl}
+5.291x_1 − 6.130x_2 &amp;=&amp; 46.78\\
+0.003000x_1 + 59.14x_2 &amp;=&amp; 59.17
+\end{array}\right.
+\]</span></p>
+</div>
+<ul>
+<li>cuya solución aproximada es <span class="math inline">\(\tilde{x}_2
+= 1 = x_2\)</span> y <span class="math inline">\(\tilde{x}_1 = 10 =
+x_1\)</span>.</li>
+<li>Por tanto para cada paso de eliminación Gaussiana tenemos que:
+<ul>
+<li>Seleccionar como pivote el elemento de mayor valor absoluto en la
+columna correspondiente, desde la fila actual hasta la última fila.</li>
+<li>Intercambiar la fila actual con la fila que contiene el pivote
+seleccionado.</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\text{Pivoteo parcial: } \quad
+E_i \leftrightarrow E_p \quad \text{donde } p = \underset{i \leq k \leq
+n}{\mathrm{argmax}} |a_{k,i}|
+\]</span></p>
+</div></li>
+</ul>
+</div>
+<div id="conteo-de-operaciones" class="section level3" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> Conteo de
+operaciones</h3>
+<ul>
+<li>El número total de operaciones (sumas, restas, multiplicaciones y
+divisiones) necesarias para resolver un sistema de <span
+class="math inline">\(n\)</span> ecuaciones con <span
+class="math inline">\(n\)</span> incógnitas mediante el método de
+eliminación gaussiana es aproximadamente:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math inline">\((+/-)\)</span> <span
+class="math display">\[
+\sum_{k=1}^{n-1} ((n-k)^2 + (n-k)) = \dfrac{1}{3}n^3 - \dfrac{1}{3}n
+\approx \mathcal{O}(n^3)
+\]</span> <span class="math inline">\((×/÷)\)</span> <span
+class="math display">\[
+\sum_{k=1}^{n-1} (2(n-k) + (n-k)^2) = \dfrac{2n^3+3n^2-5n}{6} \approx
+\mathcal{O}(n^3)
+\]</span></p>
+</div>
+</div>
+<div id="número-de-condición" class="section level3" number="2.2.5">
+<h3><span class="header-section-number">2.2.5</span> Número de
+condición</h3>
+<ul>
+<li>¿Cómo se evalua el buen o mal condicionamiento de la matriz de
+coeficientes?</li>
+<li>El número de condioción de una matriz permite cuantificar su nivel
+de condicionamiento.</li>
+<li>El número de condición de una matriz <span
+class="math inline">\(A\)</span> se define como:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[\kappa(A) = ||A|| \cdot ||A^{-1}||
+\]</span></p>
+</div>
+<ul>
+<li>Donde <span class="math inline">\(||\cdot||\)</span> denota una
+norma matricial.</li>
+<li>Si <span class="math inline">\(\kappa(A)\)</span> es cercano a 1, la
+matriz está bien condicionada.</li>
+<li>Si <span class="math inline">\(\kappa(A)\)</span> es grande, la
+matriz está mal condicionada.</li>
+</ul>
+<div id="ejemplo-3" class="section level4 caja-ejemplo"
+number="2.2.5.1">
+<h4><span class="header-section-number">2.2.5.1</span> Ejemplo 3:</h4>
+<p>Calcular el número de condición de la siguiente matriz utilizando la
+norma 2: <span class="math display">\[A = \begin{pmatrix}
+2 &amp; 3.01 \\
+4 &amp; 6
+\end{pmatrix}\]</span></p>
+<pre class="python"><code>import numpy as np
+A = np.array([[2, 3.01],
+              [4, 6]], dtype=float)
+def numero_de_condicion(A):
+    norma_A = np.linalg.norm(A, 2)
+    norma_A_inv = np.linalg.norm(np.linalg.inv(A), 2)
+    kappa = norma_A * norma_A_inv
+    return kappa
+kappa_A = numero_de_condicion(A)
+print(&quot;Número de condición de A:&quot;, kappa_A)</code></pre>
+<pre><code>## Número de condición de A: 1626.501885183655</code></pre>
+<pre class="python"><code># Alternativamente, usando la función cond de NumPy
+print(np.linalg.cond(A, 2))</code></pre>
+<pre><code>## 1626.5018851838065</code></pre>
+</div>
+<ul>
+<li>Una cota válida para el nuúmero de condición es:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[\kappa(A) \geq 1 \]</span></p>
+</div>
+<ul>
+<li>Si <span class="math inline">\(\kappa(A)\)</span> es muy grande,
+pequeños errores en los datos de entrada pueden provocar grandes errores
+en la solución del sistema.</li>
+</ul>
+</div>
+</div>
+<div id="descomposición-de-matrices" class="section level2"
+number="2.3">
+<h2><span class="header-section-number">2.3</span> Descomposición de
+Matrices</h2>
+<ul>
+<li>Al aplicar el método de Gauss al sistema <span
+class="math inline">\(Ax = b\)</span> se realizan transformaciones
+elementales para triangularizar la matriz del sistema.</li>
+<li>Si este proceso puede realizarse sin intercambios de filas, la
+matriz triangular superior <span class="math inline">\(U\)</span>
+obtenida viene determinada por el producto de un número finito de
+transformaciones filas <span class="math inline">\(N_{n−1}N_{n−2}\cdots
+N_2N_1\)</span> aplicadas a la matriz <span
+class="math inline">\(A\)</span>. Llamando <span
+class="math inline">\(L^{−1} = N_{n−1}N_{n−2}\cdots N_2N_1\)</span> se
+tiene que</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+L^{−1}A = U \Rightarrow A = LU.
+\]</span></p>
+</div>
+<ul>
+<li>Además <span class="math inline">\(L\)</span> es una matriz
+triangular inferior con unos en la diagonal.</li>
+<li>Entonces para resolver el sistema <span class="math inline">\(Ax =
+b\)</span>, sabiendo que <span class="math inline">\(A\)</span> posee
+descomposición <span class="math inline">\(LU\)</span>, debemos hacer lo
+siguiente:
+<ul>
+<li><span class="math inline">\(Ax = b \Rightarrow LUx = b\)</span>,
+llamando <span class="math inline">\(z\)</span> al producto <span
+class="math inline">\(Ux\)</span> tenemos que:</li>
+<li><span class="math inline">\(Lz = b \Rightarrow\)</span> sustitución
+progresiva.</li>
+<li><span class="math inline">\(Ux = z \Rightarrow\)</span> sustitución
+regresiva.</li>
+</ul></li>
+</ul>
+<p>Si <span class="math inline">\(A\)</span> es estrictamente diagonal
+dominante entonces <span class="math inline">\(A\)</span> admite una
+descomposición <span class="math inline">\(LU\)</span> que se obtiene
+mediante el proceso de eliminación Gaussiana.</p>
+<div class="recuadro-gris">
+<p>Se dice que una matriz <span class="math inline">\(A\)</span> es
+diagonalmente dominante si <span class="math display">\[
+|a_{ii}| &gt; \sum_{\substack{j=1 \\ j \ne i}}^{n} |a_{ij}| \quad
+\text{para } i = 1, 2, \ldots, n
+\]</span></p>
+</div>
+<div class="cuadro-alg">
+<p><strong>FUNCION Descomposicion_LU(A):</strong></p>
+<pre><code>n = dimension de A (número de filas)
+
+# 1. Inicializar L como la matriz identidad y U como una copia de A
+L = Matriz identidad de tamaño n
+U = Copia de A
+
+# 2. Proceso de eliminación para obtener U y L
+PARA k = 1 HASTA n-1:
+    PARA i = k+1 HASTA n:
+        multiplicador = U[i, k] / U[k, k]
+        L[i, k] = multiplicador
+        U[i, k] = 0  # Elemento eliminado
+        PARA j = k+1 HASTA n:
+            U[i, j] = U[i, j] - multiplicador * U[k, j]
+        FIN PARA
+    FIN PARA
+FIN PARA
+
+RETORNAR L, U</code></pre>
+<p><strong>FIN FUNCION</strong></p>
+</div>
+<div id="ejemplo-4" class="section level4 caja-ejemplo"
+number="2.3.0.1">
+<h4><span class="header-section-number">2.3.0.1</span> Ejemplo 4:</h4>
+<p>Realizar la descomposición LU de la siguiente matriz: <span
+class="math display">\[A = \begin{pmatrix}
+1 &amp; 2 &amp; 0 \\
+-1 &amp; 1 &amp; 3 \\
+2 &amp; 1 &amp; -1
+\end{pmatrix}\]</span></p>
+<pre class="python"><code>import numpy as np
+A = np.array([[1, 2, 0],
+              [-1, 1, 3],
+              [2, 1, -1]], dtype=float)
+def descomposicion_LU(A):
+    n = A.shape[0]
+    L = np.eye(n)
+    U = A.copy()
+    for k in range(n-1):
+        for i in range(k+1, n):
+            multiplicador = U[i, k] / U[k, k]
+            L[i, k] = multiplicador
+            U[i, k] = 0  # Elemento eliminado
+            for j in range(k+1, n):
+                U[i, j] = U[i, j] - multiplicador * U[k, j]
+    return L, U
+L, U = descomposicion_LU(A)
+print(&quot;Matriz L:&quot;)</code></pre>
+<pre><code>## Matriz L:</code></pre>
+<pre class="python"><code>print(L)</code></pre>
+<pre><code>## [[ 1.  0.  0.]
+##  [-1.  1.  0.]
+##  [ 2. -1.  1.]]</code></pre>
+<pre class="python"><code>print(&quot;Matriz U:&quot;)</code></pre>
+<pre><code>## Matriz U:</code></pre>
+<pre class="python"><code>print(U)</code></pre>
+<pre><code>## [[1. 2. 0.]
+##  [0. 3. 3.]
+##  [0. 0. 2.]]</code></pre>
+<pre class="python"><code>print(&quot;Verificación A = LU:&quot;)</code></pre>
+<pre><code>## Verificación A = LU:</code></pre>
+<pre class="python"><code>print(np.dot(L, U))</code></pre>
+<pre><code>## [[ 1.  2.  0.]
+##  [-1.  1.  3.]
+##  [ 2.  1. -1.]]</code></pre>
+</div>
 <hr />
 <p><small>Última revisión: 26 de octubre, 2025</small></p>
-</div>
 </div>
 </div>
 
@@ -647,7 +1114,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3",
+      selectors: "h1,h2,h3,h4",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
