@@ -504,26 +504,52 @@ $$
 :::
 
 ::: cuadro-alg
-**FUNCION Descomposicion_LU(A):**
-    
+**FUNCION Factorizacion_LU_Doolittle(A):**
+    # Asume que A es una matriz cuadrada (n x n)
     n = dimension de A (número de filas)
+    L = Matriz Identidad n x n
+    U = Matriz n x n (copia de A, que será modificada)
 
-    # 1. Inicializar L como la matriz identidad y U como una copia de A
-    L = Matriz identidad de tamaño n
-    U = Copia de A
+    # El algoritmo se ejecuta en A y sus elementos modificados forman L y U.
+    # Por simplicidad, calculamos U in-place en A y L en una matriz separada.
 
-    # 2. Proceso de eliminación para obtener U y L
-    PARA k = 1 HASTA n-1:
-        PARA i = k+1 HASTA n:
-            multiplicador = U[i, k] / U[k, k]
-            L[i, k] = multiplicador
-            U[i, k] = 0  # Elemento eliminado
-            PARA j = k+1 HASTA n:
-                U[i, j] = U[i, j] - multiplicador * U[k, j]
+    PARA k = 1 HASTA n:
+
+        # 1. Cálculo de U_{k,k} (Elemento Pivote de la fila k)
+        #    u_{k,k} = a_{k,k} - SUM_{p=1}^{k-1} l_{k,p} * u_{p,k}
+        
+        # El elemento pivote u_kk ya está en A[k,k] si no hay pivoteo parcial.
+
+        # 2. CÁLCULO DE LA FILA k DE U: (j = k+1 hasta n)
+        PARA j = k+1 HASTA n:
+            # u_{k,j} = a_{k,j} - SUM_{p=1}^{k-1} l_{k,p} * u_{p,j}
+            suma_U = 0
+            PARA p = 1 HASTA k-1:
+                suma_U = suma_U + L[k, p] * U[p, j] 
             FIN PARA
+            U[k, j] = A[k, j] - suma_U  # Guardamos el resultado en U
         FIN PARA
-    FIN PARA
 
+        # 3. CÁLCULO DE LA COLUMNA k DE L: (i = k+1 hasta n)
+        # L_{i,k} = (1 / U_{k,k}) * [ a_{i,k} - SUM_{p=1}^{k-1} l_{i,p} * u_{p,k} ]
+        SI U[k, k] es CASI CERO ENTONCES
+            RETORNAR "Falla: Pivoteo necesario o matriz singular."
+        FIN SI
+
+        factor = 1.0 / U[k, k]
+
+        PARA i = k+1 HASTA n:
+            # l_{i,k}
+            suma_L = 0
+            PARA p = 1 HASTA k-1:
+                suma_L = suma_L + L[i, p] * U[p, k]
+            FIN PARA
+            
+            L[i, k] = factor * (A[i, k] - suma_L) 
+        FIN PARA
+
+    FIN PARA
+    
     RETORNAR L, U
 **FIN FUNCION**
 :::
@@ -541,27 +567,56 @@ import numpy as np
 A = np.array([[1, 2, 0],
               [-1, 1, 3],
               [2, 1, -1]], dtype=float)
-def descomposicion_LU(A):
+def factorizacion_LU_doolittle(A):
     n = A.shape[0]
     L = np.eye(n)
-    U = A.copy()
-    for k in range(n-1):
+    U = np.zeros((n, n))
+    for k in range(n):
+        suma_U = sum(L[k, p] * U[p, k] for p in range(k))
+        U[k, k] = A[k, k] - suma_U
+        for j in range(k+1, n):
+            suma_U = sum(L[k, p] * U[p, j] for p in range(k))
+            U[k, j] = A[k, j] - suma_U
+        factor = 1.0 / U[k, k]
         for i in range(k+1, n):
-            multiplicador = U[i, k] / U[k, k]
-            L[i, k] = multiplicador
-            U[i, k] = 0  # Elemento eliminado
-            for j in range(k+1, n):
-                U[i, j] = U[i, j] - multiplicador * U[k, j]
+            suma_L = sum(L[i, p] * U[p, k] for p in range(k))
+            L[i, k] = factor * (A[i, k] - suma_L)
     return L, U
-L, U = descomposicion_LU(A)
+L, U = factorizacion_LU_doolittle(A)
 print("Matriz L:")
 print(L)
 print("Matriz U:")
 print(U)
-print("Verificación A = LU:")
+print("Verificación LU:")
 print(np.dot(L, U))
 ```
 :::
+
+### Factorización LU con pivoteo
+* En la práctica, para garantizar la estabilidad numérica del proceso de eliminación Gaussiana, es necesario incorporar el pivoteo parcial en la descomposición LU.
+* Esto implica que durante el proceso de eliminación, se selecciona el pivote como el elemento de mayor valor absoluto en la columna actual, y se intercambian las filas correspondientes.
+* Al utilizar eliminación Gaussiana con pivoteo en cada paso se introduce una matriz de permutación (que puede ser la identidad) de modo que:
+
+::: recuadro-gris
+$$
+N_{n-1}P_{n-1}N_{n-2}P_{n-2}\cdots N_2P_2N_1P_1A = U 
+$$
+
+:::
+* Donde $P_i$ es la matriz de permutación que intercambia las filas correspondientes en el paso $i$.
+* Llamando $P = P_1P_2\cdots P_{n-1}$ y $L^{-1} = N_{n-1}N_{n-2}\cdots N_2N_1$ se tiene que:
+
+::: recuadro-gris
+$$  
+PA = U \Rightarrow A = P^{-1}LU
+$$
+:::
+
+* Por lo tanto para resolver el sistema $Ax = b$ premultiplicando por $P$, queda $PAx = Pb$, y dado que $PA = LU$, entonces:
+  - $LUx = Pb$, llamando $z$ al producto $Ux$ tenemos que:
+  - $Lz = Pb \Rightarrow$ sustitución progresiva.
+  - $Ux = z \Rightarrow$ sustitución regresiva.
+
 
 ------------------------------------------------------------------------
   
