@@ -1114,11 +1114,12 @@ permutación que intercambia las filas correspondientes en el paso <span
 class="math inline">\(i\)</span>.</li>
 <li>Llamando <span class="math inline">\(P = P_1P_2\cdots
 P_{n-1}\)</span> y <span class="math inline">\(L^{-1} =
-N_{n-1}N_{n-2}\cdots N_2N_1\)</span> se tiene que:</li>
+N_{n-1}P_{n-1}N_{n-2}P_{n-2}\cdots N_2P_2N_1P_1\)</span> se tiene
+que:</li>
 </ul>
 <div class="recuadro-gris">
 <p><span class="math display">\[  
-PA = U \Rightarrow A = P^{-1}LU
+L^{-1}A = U \Rightarrow PA = PP^{-1}LU \Rightarrow PA = LU
 \]</span></p>
 </div>
 <ul>
@@ -1137,6 +1138,83 @@ progresiva.</li>
 regresiva.</li>
 </ul></li>
 </ul>
+<div id="ejemplo-5" class="section level4 caja-ejemplo"
+number="2.3.1.1">
+<h4><span class="header-section-number">2.3.1.1</span> Ejemplo 5:</h4>
+<p>Realizar la descomposición <span class="math inline">\(PA=LU\)</span>
+con pivoteo de la siguiente matriz: <span class="math display">\[
+A = \begin{pmatrix}
+0 &amp; 2 &amp; 0 \\
+-1 &amp; 1 &amp; 3 \\
+2 &amp; 1 &amp; -1
+\end{pmatrix}
+\]</span></p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+P_1 = \begin{pmatrix}
+0 &amp; 0 &amp; 1 \\
+0 &amp; 1 &amp; 0 \\
+1 &amp; 0 &amp; 0
+\end{pmatrix} \qquad P_1A = \begin{pmatrix}
+2 &amp; 1 &amp; -1 \\
+-1 &amp; 1 &amp; 3 \\
+0 &amp; 2 &amp; 0
+\end{pmatrix}
+\]</span> <span class="math display">\[
+N_1= \begin{pmatrix}
+1 &amp; 0 &amp; 0 \\
+0.5 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 1
+\end{pmatrix} \qquad N_1P_1A = \begin{pmatrix}
+2 &amp; 1 &amp; -1 \\
+0 &amp; 1.5 &amp; 2.5 \\
+0 &amp; 2 &amp; 0
+\end{pmatrix}
+\]</span> <span class="math display">\[
+P_2 = \begin{pmatrix}
+1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 \\
+0 &amp; 1 &amp; 0
+\end{pmatrix} \qquad P_2N_1P_1A = \begin{pmatrix}
+2 &amp; 1 &amp; -1 \\
+0 &amp; 2 &amp; 0 \\
+0 &amp; 1.5 &amp; 2.5
+\end{pmatrix}
+\]</span> <span class="math display">\[
+N_2 = \begin{pmatrix}
+1 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 \\
+0 &amp; -0.75 &amp; 1
+\end{pmatrix} \qquad N_2P_2N_1P_1A = \begin{pmatrix}
+2 &amp; 1 &amp; -1 \\
+0 &amp; 2 &amp; 0 \\
+0 &amp; 0 &amp; 2.5
+\end{pmatrix} = U
+\]</span> <span class="math display">\[
+L^{-1} = N_2P_2N_1P_1 = \begin{pmatrix}
+0 &amp; 0 &amp; 1 \\
+1 &amp; 0 &amp; 0 \\
+-0.75 &amp; 1 &amp; 0.5
+\end{pmatrix} \Rightarrow L = \begin{pmatrix}
+0 &amp; 1 &amp; 0 \\
+-0.5 &amp; 0.75 &amp; 1 \\
+1 &amp; 0 &amp; 0
+\end{pmatrix}
+\]</span> <span class="math display">\[
+PA = LU \quad \text{con} \quad P = P_2P_1 = \begin{pmatrix}
+0 &amp; 0 &amp; 1 \\
+1 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0
+\end{pmatrix} \qquad
+\]</span> <span class="math display">\[
+LU = \begin{pmatrix}
+2 &amp; 1 &amp; -1 \\
+0 &amp; 2 &amp; 0 \\
+-1 &amp; 1 &amp; 3
+\end{pmatrix} = PA
+\]</span></p>
+</div>
+</div>
 <hr />
 <p><small>Última revisión: 27 de octubre, 2025</small></p>
 </div>

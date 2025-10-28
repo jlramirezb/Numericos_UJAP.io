@@ -604,11 +604,11 @@ $$
 
 :::
 * Donde $P_i$ es la matriz de permutación que intercambia las filas correspondientes en el paso $i$.
-* Llamando $P = P_1P_2\cdots P_{n-1}$ y $L^{-1} = N_{n-1}N_{n-2}\cdots N_2N_1$ se tiene que:
+* Llamando $P = P_1P_2\cdots P_{n-1}$ y $L^{-1} = N_{n-1}P_{n-1}N_{n-2}P_{n-2}\cdots N_2P_2N_1P_1$ se tiene que:
 
 ::: recuadro-gris
 $$  
-PA = U \Rightarrow A = P^{-1}LU
+L^{-1}A = U \Rightarrow PA = PP^{-1}LU \Rightarrow PA = LU
 $$
 :::
 
@@ -617,6 +617,91 @@ $$
   - $Lz = Pb \Rightarrow$ sustitución progresiva.
   - $Ux = z \Rightarrow$ sustitución regresiva.
 
+::: caja-ejemplo
+#### Ejemplo 5:
+Realizar la descomposición $PA=LU$ con pivoteo de la siguiente matriz:
+$$
+A = \begin{pmatrix}
+0 & 2 & 0 \\
+-1 & 1 & 3 \\
+2 & 1 & -1
+\end{pmatrix}
+$$
+
+::: recuadro-gris
+$$
+P_1 = \begin{pmatrix}
+0 & 0 & 1 \\
+0 & 1 & 0 \\
+1 & 0 & 0
+\end{pmatrix} \qquad P_1A = \begin{pmatrix}
+2 & 1 & -1 \\
+-1 & 1 & 3 \\
+0 & 2 & 0
+\end{pmatrix}
+$$
+$$
+N_1= \begin{pmatrix}
+1 & 0 & 0 \\
+0.5 & 1 & 0 \\
+0 & 0 & 1
+\end{pmatrix} \qquad N_1P_1A = \begin{pmatrix}
+2 & 1 & -1 \\
+0 & 1.5 & 2.5 \\
+0 & 2 & 0
+\end{pmatrix}
+$$
+$$
+P_2 = \begin{pmatrix}
+1 & 0 & 0 \\
+0 & 0 & 1 \\
+0 & 1 & 0 
+\end{pmatrix} \qquad P_2N_1P_1A = \begin{pmatrix}
+2 & 1 & -1 \\
+0 & 2 & 0 \\
+0 & 1.5 & 2.5
+\end{pmatrix}
+$$
+$$
+N_2 = \begin{pmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & -0.75 & 1
+\end{pmatrix} \qquad N_2P_2N_1P_1A = \begin{pmatrix}
+2 & 1 & -1 \\
+0 & 2 & 0 \\
+0 & 0 & 2.5
+\end{pmatrix} = U
+$$
+$$
+L^{-1} = N_2P_2N_1P_1 = \begin{pmatrix}
+0 & 0 & 1 \\
+1 & 0 & 0 \\
+-0.75 & 1 & 0.5
+\end{pmatrix} \Rightarrow L = \begin{pmatrix}
+0 & 1 & 0 \\
+-0.5 & 0.75 & 1 \\
+1 & 0 & 0
+\end{pmatrix}
+$$
+$$
+PA = LU \quad \text{con} \quad P = P_2P_1 = \begin{pmatrix}
+0 & 0 & 1 \\
+1 & 0 & 0 \\
+0 & 1 & 0
+\end{pmatrix} \qquad 
+$$
+$$
+LU = \begin{pmatrix}
+2 & 1 & -1 \\
+0 & 2 & 0 \\
+-1 & 1 & 3
+\end{pmatrix} = PA
+$$
+
+:::
+
+:::
 
 ------------------------------------------------------------------------
   
