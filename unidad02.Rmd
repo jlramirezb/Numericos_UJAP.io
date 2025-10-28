@@ -592,9 +592,23 @@ print(np.dot(L, U))
 ```
 :::
 
-### Factorización LU con pivoteo
+### Factorización LU con Pivoteo
 * En la práctica, para garantizar la estabilidad numérica del proceso de eliminación Gaussiana, es necesario incorporar el pivoteo parcial en la descomposición LU.
 * Esto implica que durante el proceso de eliminación, se selecciona el pivote como el elemento de mayor valor absoluto en la columna actual, y se intercambian las filas correspondientes.
+
+Definición de matriz de permutación. Diremos que una matriz $P_{ij}=(p_{kl})_{k,l=1,\ldots,n$, $n\times n$, es una **matriz de permutación** si
+
+::: recuadro-gris
+$$
+p_{kl} = \begin{cases}
+1, & \text{si }k=l\neq i,j,\\
+1, & \text{si }k=i,l= j,\\
+1 & \text{si }k=j, l=i,\\
+0 & \text{en caso contrario}
+\end{cases}
+$$
+:::
+
 * Al utilizar eliminación Gaussiana con pivoteo en cada paso se introduce una matriz de permutación (que puede ser la identidad) de modo que:
 
 ::: recuadro-gris

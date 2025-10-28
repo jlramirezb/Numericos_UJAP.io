@@ -11,8 +11,5 @@ navbar:
       href: https://github.com/jlramirezb
 output: 
   html_document:
-    self_contained: true # <-- Asegura que todos los scripts se incrusten
-    mathjax: default
-    pandoc_args: "--mathjax"
     css: css/estilos.css # 👈 ¡NUEVA LÍNEA CLAVE!
 output_dir: "docs"
