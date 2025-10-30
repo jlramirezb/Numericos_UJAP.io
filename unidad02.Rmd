@@ -567,7 +567,116 @@ x_1 & = 2 - 1(1.5847) - (-3)(0.63559) - (-1)(0.11017) - (-2)(-0.97457) = 0.48310
 $$
 :::
 
-::: 
+:::
+
+* **Pivoteo Completo o Total**
+* Una manera de optimizar el error de redondeo cometido cuando aplicamos el algoritmo de Gauss es realizar un pivotaje global:
+  -es decir, modificar el algoritmo de Gauss en el $k$-ésimo paso eligiendo el máximo valor en valor absoluto de la submatriz de $A^(k)$ formada por las filas $k,k+1,\ldots,n$ y por las columnas $k,k+1,\ldots,n$.
+  - Concretamente hallamos $i_{\max}$,$j_{\max}$ tal que:
+
+::: recuadro-gris
+$$
+\left|a^{(k)}_{i_{\max},j_{\max}}\right| = \max_{i,j=k,\ldots,n}\left|a^{(k)_{i,j}}\right|
+$$
+:::
+
+* A continuación, realizamos un cambio entre las filas $k$ y $i_{\max}$ y un cambio entre las columnas $k$ y $j_{\max}$.
+* **Permutar filas** no afecta a las soluciones del sistema de ecuaciones al obtener un sistema de ecuaciones equivalente. Sin embargo, **permutar columnas** equivale a permutar los valores de las variables correspondientes.
+* Concretamente, cuando cambiamos las columnas $k$ y $j_{\max}$, intercambiamos el “papel” de las variables $x_k$
+ y $x_{j_{\max}}$.
+* Por tanto, necesitamos recordar todos los cambios de columnas para realizar el cambio inverso en la solución final.
+
+::: caja-ejemplo
+#### Ejemplo 4
+Aplicando esta tecnica de pivoteo al ejemplo anterior
+
+::: recuadro-gris
+$$
+\left\{
+\begin{array}{rrrrrrcr}
+E_1:  & x_1 & + x_2 & - 3x_3  & -x_4 & -2x_5 & = & 2 \\
+E_2:  & x_1 & + 2x_2 & + 2x_3  &  & + 3x_5 & = & 2 \\
+E_3:  & x_1 & -x_2 & +3x_3  & +2x_4 & - x_5 & = & 2 \\
+E_4:  &  & x_2 &   & + 4x_4 & -x_5 & = & 3 \\
+E_5:  & x_1 & + 3x_2 & + x_3  &  & + 5x_5 & = & 1 \\
+\end{array}
+\right. \equiv
+\left(\begin{array}{rrrrr|r}
+1 & 1 & -3 & -1 & -2 & 2\\
+1 & 2 & 2 & 0 & 3 & 2\\
+1 & -1 & 3 & 2& -1 & 2\\
+0 & 1 & 0 & 4 & -1 & 3\\
+1 & 3 & 1 & 0 & 5 & 1\\
+\end{array}\right)
+$$
+:::
+
+* Paso 1. El máximo valor de la submatriz del sistema formada por las 5 primeras filas y columnas vale 5
+ que corresponde a la fila 5 y a la columna 5. Entonces permutamos la fila 1 con la 5 y a continuación la columna 1
+ con la 5 y aplicamos el algoritmo de Gauss obteniendo la matriz siguiente:
+ 
+::: recuadro-gris
+ $$
+ \left(\begin{array}{rrrrr|r}
+  5 & 3 & 1 & 0 & 1 & 1\\
+  0 & 0.2 & 1.4 & 0 & 0.4 & 1.4\\
+  0 & -0.4 & 3.2 & 2 & 1.2 & 2.2\\
+  0 & 1.6 & 0.2 & 4 & 0.2 & 3.2\\
+  0 & 2.2 & -2.6 & -1 & 1.4 & 2.4
+  \end{array}\right)
+ $$
+:::
+ 
+* Las variables del sistema anterior quedan en el siguiente orden $x_5$, $x_2$, $x_3$, $x_4$ y $x_1$.
+ 
+* Paso 2. El máximo valor de la submatriz del sistema formada por las 4 últimas filas y columnas vale 4 que corresponde a la fila 4 y a la columna 4. Entonces permutamos la fila 2 con la 4 y a continuación la columna 2 con la 4 y aplicamos el algoritmo de Gauss obteniendo la matriz siguiente:
+ 
+::: recuadro-gris
+ $$
+ \left(\begin{array}{rrrrr|r}
+   5 & 0 & 1 & 3 & 1 & 1\\
+   0 & 4 & 0.2 & 1.6 & 0.2 & 3.2\\
+   0 & 0 & 3.1 & -1.2 & 1.1 & 0.6\\
+   0 & 0 & 1.4 & 0.2 & 0.4 & 1.4\\
+   0 & 0 & -2.55 & 2.6 & 1.45 & 3.2
+ \end{array}
+ \right)
+ $$
+:::
+ 
+* Las variables del sistema anterior son las siguientes $x_5$, $x_4$, $x_3$, $x_2$ y $x_1$.
+ 
+* Paso 3. El máximo valor de la submatriz del sistema formada por las 3 últimas filas y columnas vale $3.1$ que corresponde a la fila 3 y a la columna 3. Entonces no realizamos ninguna permutación y aplicamos el algoritmo de Gauss obteniendo la matriz siguiente:
+ 
+::: recuadro-gris
+ $$
+ \left(
+ \begin{array}{rrrrr|r}
+  5 & 0 & 1 & 3 & 1 & 1\\
+  0 & 4 & 0.2 & 1.6 & 0.2 & 3.2\\
+  0 & 0 & 3.1 & -1.2 & 1.1 & 0.6\\
+  0 & 0 & 0 & 0.74194 & -0.096774 & 1.1290\\
+  0 & 0 & 0 & 1.6129 & 2.3548 & 3.6935\\
+ \end{array}
+ \right)
+ $$
+:::
+
+* Paso 4. El máximo valor de la submatriz del sistema formada por las 2 últimas filas y columnas vale $2.3548$ que corresponde a la fila 5 y a la columna 5. Entonces permutamos la fila 4 con la 5 y a continuación la columna 4 con la 5
+ y aplicamos el algoritmo de Gauss obteniendo la matriz siguiente: 
+
+::: recuadro-gris
+$$
+\left(\begin{array}{rrrrr|r}
+   5 & 0 & 1 & 1 & 3 & 1\\
+   0 & 4 & 0.2 & 0.2 & 1.6 & 3.2\\
+   0 & 0 & 3.1 & 1.1 & -1.2 & 0.6\\
+   0 & 0 & 0 & 2.3548 & 1.6129 & 3.6935\\
+   0 & 0 & 0 & 0 & 0.80822 & 1.2808
+\end{array}\right)
+$$
+:::
+:::
 
 
 ### Conteo de operaciones
