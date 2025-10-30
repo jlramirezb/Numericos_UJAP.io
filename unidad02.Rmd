@@ -62,6 +62,7 @@ a_{n1}x_{1} & + & a_{n2}x_{2} & + \cdots + & a_{nn}x_{n} & = b_{n}
 \end{array}
 \right.
 $$
+
 :::
 * A los números $a_{ij}$ se les denomina coeficientes del sistema y a los $b_i$ términos independientes.
 
@@ -203,6 +204,7 @@ def sustitucion_regresiva(A, b):
 
 * En el caso de sistemas triangulares inferiores, el proceso es análogo, pero se realiza una sustitución progresiva.
 * La fórmula de recurrencia para $i = 1, 2, \ldots, n-1, n$ es:
+
 ::: recuadro-gris
 $$x_i = \dfrac{b_i - \displaystyle\sum_{j=1}^{i-1} a_{ij}x_j}{a_{ii}}$$
 ::: 
@@ -356,7 +358,8 @@ print(solucion)
 ```
 ::: 
 
-### Pivoteo
+### Estrategias de Pivoteo
+* **Pivoteo Parcial**
 * En la eliminación gaussiana, es posible que durante el proceso de eliminación se encuentren elementos pivote que sean cero o muy pequeños, lo que puede llevar a errores numéricos significativos.
 
 ::: caja-ejemplo
@@ -384,6 +387,7 @@ $$
 \end{array}
 $$
 :::
+
 * El error tan grande de la solución numérica de $x_1$, resulta del error pequeño de $0.001$ al resolver para $x_2$.
 :::
 
@@ -412,6 +416,159 @@ $$
 E_i \leftrightarrow E_p \quad \text{donde } p = \underset{i \leq k \leq n}{\mathrm{argmax}} |a_{k,i}|
 $$
 :::
+
+* **Pivoteo Parcial Escalado**
+* Modificando ligeramente el **pivotaje parcial** de la siguiente forma.
+
+* Concretamente, en primer lugar, se calcula el valor máximo en valor absoluto de cada fila $i$-ésima de la matriz del sistema a resolver $A$, $n\times n$:
+
+::: recuadro-gris
+$$
+s_i = \max_{1 \leq j \leq n} |a_{ij}| \quad \text{para } i = 1, 2, \ldots, n
+$$
+:::
+
+*Dichos valores $s_i$ sólo se calculan una vez al principio del algoritmo y no aumentan demasiado el coste computacional del mismo.
+
+* A continuación, imaginemos que estamos en el $k$-ésimo pase del **algoritmo de Gauss**. Entonces, en lugar de hallar el máximo de $|a^{(k)}_{ji}|$ desde $j=k$ hasta $j=n$, se halla el máximo de $\left|\frac{a^{(k)}_{ji}}{s_j}\right|$ desde $j=i$ hasta $j=n$:
+
+::: recuadro-gris
+$$
+\max_{k \leq j \leq n} \left|\dfrac{a^{(k)}_{ji}}{s_j}\right|
+$$
+:::
+
+* Es decir, “escalamos” cada fila por el valor $s_j$  y hallamos el máximo de los valores escalados.
+* Llamemos $j_{\max}$ a dicho valor.
+* Igual que en el pivoto parcial, realizamos un cambio entre las filas $k$ y $j_{\max}$: $E_k \leftrightarrow E_{j_{\max}}$.
+* El **pivoteo parcial escalado** es especialmente útil cuando los elementos de la matriz del sistema varían mucho en magnitud.
+
+::: caja-ejemplo
+#### Ejemplo 3:
+Resolvamos el siguiente sistema usando pivotaje parcial escalado:
+
+::: recuadro-gris
+$$
+\left\{
+\begin{array}{rrrrrrcr}
+E_1:  & x_1 & + x_2 & - 3x_3  & -x_4 & -2x_5 & = & 2 \\
+E_2:  & x_1 & + 2x_2 & + 2x_3  &  & + 3x_5 & = & 2 \\
+E_3:  & x_1 & -x_2 & +3x_3  & +2x_4 & - x_5 & = & 2 \\
+E_4:  &  & x_2 &   & + 4x_4 & -x_5 & = & 3 \\
+E_5:  & x_1 & + 3x_2 & + x_3  &  & + 5x_5 & = & 1 \\
+\end{array}
+\right.
+$$
+:::
+
+Los valores $s_i$ son en este caso:
+$$
+s_1 = 3, \quad s_2 = 3, \quad s_3 = 3, \quad s_4 = 4, \quad s_5 = 5
+$$
+* Primer paso (no se ha realizado ningún cambio de filas ya que el máximo valor entre los valores
+$$
+\left|\dfrac{1}{3}\right|, \left|\dfrac{1}{3}\right|, \left|\dfrac{1}{3}\right|, 0, \left|\dfrac{1}{5}\right|
+$$
+
+es $\dfrac{1}{3}$. Aplicamos la eliminación gaussiana para obtener:
+
+::: recuadro-gris
+$$
+A^{(2)} = \begin{pmatrix}
+1 & 1 & -3 & -1 & -2 \\
+0 & 1 & 5 & 1 & 5 \\
+0 & -2 & 6 & 3 & 2 \\
+0 & 1 & 0 & 4 & -1 \\
+0 & 2 & 4 & 1 & 7
+\end{pmatrix}, \quad
+b^{(2)} = \begin{pmatrix}
+2 \\
+0 \\ 0 \\ 3 \\ -1
+\end{pmatrix}
+$$
+:::
+
+* Segundo paso (cambiando las filas 2 y 3 ya que el máximo valor entre los valores
+$$
+\left|\dfrac{1}{5}\right|, \left|\dfrac{-2}{6}\right|, \left|\dfrac{1}{4}\right|, \left|\dfrac{2}{7}\right|
+$$
+es $\dfrac{-2}{6}=\dfrac{1}{3}$. Aplicamos la eliminación gaussiana para obtener:
+
+::: recuadro-gris
+$$
+A^{(3)} = \begin{pmatrix}
+1 & 1 & -3 & -1 & -2 \\
+0 & -2 & 6 & 3 & 2 \\
+0 & 0 & 8 & 2.5 & 6  \\
+0 & 0 & 3 & 5.5 & 0 \\
+0 & 0 & 10 & 4 & 9
+\end{pmatrix}, \quad
+b^{(3)} = \begin{pmatrix}
+2 \\
+0 \\ 0 \\ 3 \\ -1
+\end{pmatrix}
+$$
+:::
+
+* Tercer paso (no hay cambio de filas ya que el máximo valor entre los valores
+$$
+\left|\dfrac{8}{8}\right|, \left|\dfrac{3}{5.5}\right|, \left|\dfrac{10}{10}\right|
+$$
+es $\dfrac{8}{8}=1$. Aplicamos la eliminación gaussiana para obtener:
+
+::: recuadro-gris
+$$
+A^{(4)} = \begin{pmatrix}
+1 & 1 & -3 & -1 & -2 \\
+0 & -2 & 6 & 3 & 2 \\
+0 & 0 & 8 & 2.5 & 6  \\
+0 & 0 & 0 & 4.5625 & -2.25\\
+0 & 0 & 0 & 0.875 & 1.5
+\end{pmatrix}, \quad
+b^{(4)} = \begin{pmatrix}
+2 \\
+0 \\ 0 \\ 3 \\ -1
+\end{pmatrix}
+$$
+:::
+
+* Cuarto paso (no hay cambio de filas ya que el máximo valor entre los valores
+$$
+\left|\dfrac{4.5625}{4.5625}\right|, \left|\dfrac{0.875}{1.5}\right|
+$$
+es $\dfrac{4.5625}{4.5625}=1$. Aplicamos la eliminación gaussiana para obtener: 
+
+::: recuadro-gris
+$$
+U = A^{(5)} = \begin{pmatrix}
+1 & 1 & -3 & -1 & -2 \\
+0 & -2 & 6 & 3 & 2 \\
+0 & 0 & 8 & 2.5 & 6  \\
+0 & 0 & 0 & 4.5625 & -2.25\\
+0 & 0 & 0 & 0 & 1.931507
+\end{pmatrix}, \quad
+y = b^{(5)} = \begin{pmatrix}
+2 \\
+0 \\ 0 \\ 3 \\ -1.575342
+\end{pmatrix}
+$$
+:::
+* Finalmente, resolvemos el sistema triangular superior $Ux = y$ mediante sustitución regresiva para obtener la solución del sistema original:
+
+::: recuadro-gris
+$$
+\begin{align*}
+x_5 & = \dfrac{-1.575342}{1.931507} = -0.815603 \\
+x_4 & = \dfrac{3 - (-2.25)(-0.8156)}{4.5625} = 0.25 \\
+x_3 & = \dfrac{0 - 2.5(0.25) - 6(-0.8156)}{8} = 0.5 \\
+x_2 & = \dfrac{0 - 6(0.5) - 2(-0.8156)}{-2} = 1 \\
+x_1 & = 2 - 1 - (-3)(0.5) - (-1)(0.25) - (-2)(-0.8156) = 1
+\end{align*}
+$$
+:::
+
+::: 
+
 
 ### Conteo de operaciones
 * El número total de operaciones (sumas, restas, multiplicaciones y divisiones) necesarias para resolver un sistema de $n$ ecuaciones con $n$ incógnitas mediante el método de eliminación gaussiana es aproximadamente:
@@ -596,7 +753,7 @@ print(np.dot(L, U))
 * En la práctica, para garantizar la estabilidad numérica del proceso de eliminación Gaussiana, es necesario incorporar el pivoteo parcial en la descomposición LU.
 * Esto implica que durante el proceso de eliminación, se selecciona el pivote como el elemento de mayor valor absoluto en la columna actual, y se intercambian las filas correspondientes.
 
-Definición de matriz de permutación. Diremos que una matriz $P_{ij}=(p_{kl})_{k,l=1,\ldots,n$, $n\times n$, es una **matriz de permutación** si
+Definición de matriz de permutación. Diremos que una matriz $P_{ij}=(p_{kl})\, k,l=1,\ldots,n$, $n\times n$, es una **matriz de permutación** si
 
 ::: recuadro-gris
 $$
