@@ -474,14 +474,14 @@ es $\dfrac{1}{3}$. Aplicamos la eliminación gaussiana para obtener:
 
 ::: recuadro-gris
 $$
-A^{(2)} = \begin{pmatrix}
+A^{(1)} = \begin{pmatrix}
 1 & 1 & -3 & -1 & -2 \\
 0 & 1 & 5 & 1 & 5 \\
 0 & -2 & 6 & 3 & 1 \\
 0 & 1 & 0 & 4 & -1 \\
 0 & 2 & 4 & 1 & 7
 \end{pmatrix}, \quad
-b^{(2)} = \begin{pmatrix}
+b^{(1)} = \begin{pmatrix}
 2 \\
 0 \\ 0 \\ 3 \\ -1
 \end{pmatrix}
@@ -496,14 +496,14 @@ es $\dfrac{2}{6}=\dfrac{1}{3}$. Aplicamos la eliminación gaussiana para obtener
 
 ::: recuadro-gris
 $$
-A^{(3)} = \begin{pmatrix}
+A^{(2)} = \begin{pmatrix}
 1 & 1 & -3 & -1 & -2 \\
 0 & -2 & 6 & 3 & 1 \\
 0 & 0 & 8 & 2.5 & 5.5  \\
 0 & 0 & 3 & 5.5 & -0.5 \\
 0 & 0 & 10 & 4 & 8
 \end{pmatrix}, \quad
-b^{(3)} = \begin{pmatrix}
+b^{(2)} = \begin{pmatrix}
 2 \\
 0 \\ 0 \\ 3 \\ -1
 \end{pmatrix}
@@ -518,14 +518,14 @@ es $\dfrac{8}{8}=1$. Aplicamos la eliminación gaussiana para obtener:
 
 ::: recuadro-gris
 $$
-A^{(4)} = \begin{pmatrix}
+A^{(3)} = \begin{pmatrix}
 1 & 1 & -3 & -1 & -2 \\
 0 & -2 & 6 & 3 & 1 \\
 0 & 0 & 8 & 2.5 & 5.5  \\
 0 & 0 & 0 & 4.5625 & -2.5625\\
 0 & 0 & 0 & 0.8750 & 1.1250
 \end{pmatrix}, \quad
-b^{(4)} = \begin{pmatrix}
+b^{(3)} = \begin{pmatrix}
 2 \\
 0 \\ 0 \\ 3 \\ -1
 \end{pmatrix}
@@ -540,14 +540,14 @@ es $\dfrac{4.5625}{4.5625}=1$. Aplicamos la eliminación gaussiana para obtener:
 
 ::: recuadro-gris
 $$
-U = A^{(5)} = \begin{pmatrix}
+U = A^{(4)} = \begin{pmatrix}
 1 & 1 & -3 & -1 & -2 \\
 0 & -2 & 6 & 3 & 1 \\
 0 & 0 & 8 & 2.5 & 5.5  \\
 0 & 0 & 0 & 4.5625 & -2.5625\\
 0 & 0 & 0 & 0 & 1.6164
 \end{pmatrix}, \quad
-y = b^{(5)} = \begin{pmatrix}
+y = b^{(4)} = \begin{pmatrix}
 2 \\
 0 \\ 0 \\ 3 \\ -1.5753
 \end{pmatrix}
@@ -558,11 +558,11 @@ $$
 ::: recuadro-gris
 $$
 \begin{align*}
-x_5 & = \dfrac{-1.5753}{1.6164} = -0.97457 \\
-x_4 & = \dfrac{3 - (-2.5625)(-0.97457)}{4.5625} = 0.11017 \\
-x_3 & = \dfrac{0 - 2.5(0.11017) - 5.5(-0.97457)}{8} = 0.63559 \\
-x_2 & = \dfrac{0 - 6(0.63559) - 3(0.11017)-1(-0.97457)}{-2} = 1.5847 \\
-x_1 & = 2 - 1(1.5847) - (-3)(0.63559) - (-1)(0.11017) - (-2)(-0.97457) = 0.48310
+x_5 & = \dfrac{-1.5753}{1.6164} \approx -0.97457 \\
+x_4 & = \dfrac{3 - (-2.5625)(-0.97457)}{4.5625} \approx 0.11018 \\
+x_3 & = \dfrac{0 - 2.5(0.11018) - 5.5(-0.97457)}{8} \approx 0.63559 \\
+x_2 & = \dfrac{0 - 6(0.63559) - 3(0.11018)-1(-0.97457)}{-2} \approx 1.5848 \\
+x_1 & = 2 - 1(1.5848) - (-3)(0.63559) - (-1)(0.11018) - (-2)(-0.97457) \approx 0.48310
 \end{align*}
 $$
 :::
@@ -617,7 +617,7 @@ $$
  
 ::: recuadro-gris
  $$
- \left(\begin{array}{rrrrr|r}
+ A^{(1)}=\left(\begin{array}{rrrrr|r}
   5 & 3 & 1 & 0 & 1 & 1\\
   0 & 0.2 & 1.4 & 0 & 0.4 & 1.4\\
   0 & -0.4 & 3.2 & 2 & 1.2 & 2.2\\
@@ -633,7 +633,7 @@ $$
  
 ::: recuadro-gris
  $$
- \left(\begin{array}{rrrrr|r}
+ A^{(2)}=\left(\begin{array}{rrrrr|r}
    5 & 0 & 1 & 3 & 1 & 1\\
    0 & 4 & 0.2 & 1.6 & 0.2 & 3.2\\
    0 & 0 & 3.1 & -1.2 & 1.1 & 0.6\\
@@ -650,7 +650,7 @@ $$
  
 ::: recuadro-gris
  $$
- \left(
+ A^{(3)}\left(
  \begin{array}{rrrrr|r}
   5 & 0 & 1 & 3 & 1 & 1\\
   0 & 4 & 0.2 & 1.6 & 0.2 & 3.2\\
@@ -667,7 +667,7 @@ $$
 
 ::: recuadro-gris
 $$
-\left(\begin{array}{rrrrr|r}
+A^{(4)}\left(\begin{array}{rrrrr|r}
    5 & 0 & 1 & 1 & 3 & 1\\
    0 & 4 & 0.2 & 0.2 & 1.6 & 3.2\\
    0 & 0 & 3.1 & 1.1 & -1.2 & 0.6\\
@@ -676,6 +676,22 @@ $$
 \end{array}\right)
 $$
 :::
+* Las variables del sistema anterior son las siguientes $x_5$, $x_4$, $x_3$, $x_1$ y $x_2$.
+
+* La solución del sistema será usando el método de sustitución hacia atrás:
+
+::: recuadro-gris
+$$
+\begin{align*}
+x_2 & = \dfrac{1.2808}{0.80822} \approx 1.5847 \\
+x_1 & = \dfrac{3.6935 - 1.6129(1.5847)}{2.3548} \approx 0.48306 \\
+x_3 & = \dfrac{0.6 - (1.1)(0.48306) +1.2 (1.5847)}{3.1} \approx 0.63555 \\
+x_4 & = \dfrac{3.2 - 0.2(0.63555) - 0.2(0.48306) - 1.6(1.5847)}{4.0} \approx 0.11020 \\
+x_5 & = \dfrac{1 - 0(0.11020) - 1(0.63555) - 1(0.48306) - 3(1.5847)}{0.5} \approx -0.97456
+\end{align*}
+$$
+:::
+
 :::
 
 
@@ -708,7 +724,7 @@ $$
 * Si $\kappa(A)$ es grande, la matriz está mal condicionada.
 
 ::: caja-ejemplo
-#### Ejemplo 3:
+#### Ejemplo 5:
 Calcular el número de condición de la siguiente matriz utilizando la norma 2:
 $$A = \begin{pmatrix}
 2 & 3.01 \\
@@ -821,7 +837,7 @@ $$
 :::
 
 ::: caja-ejemplo
-#### Ejemplo 4:
+#### Ejemplo 6:
 Realizar la descomposición LU de la siguiente matriz:
 $$A = \begin{pmatrix}
 1 & 2 & 0 \\
@@ -898,7 +914,7 @@ $$
   - $Ux = z \Rightarrow$ sustitución regresiva.
 
 ::: caja-ejemplo
-#### Ejemplo 5:
+#### Ejemplo 7:
 Realizar la descomposición $PA=LU$ con pivoteo de la siguiente matriz:
 $$
 A = \begin{pmatrix}
@@ -978,10 +994,31 @@ LU = \begin{pmatrix}
 -1 & 1 & 3
 \end{pmatrix} = PA
 $$
-
+:::
 :::
 
+### Factorización de Cholesky
+
+* La factorización de Cholesky es un método de descomposición de matrices que permite expresar una **matriz simétrica** y **definida positiva** como el producto de una matriz triangular inferior y su transpuesta.
+* Este método es especialmente útil en la resolución de sistemas de ecuaciones lineales, optimización y simulaciones en estadística y finanzas, facilitando cálculos en diversos campos como la estadística y la ingeniería.
+
+**Proposición (Criterio de Sylvester de matriz definida positiva)**
+
+Sea $A$ una matriz real simétrica $n \times n$. Dicha matriz es definida positiva si y sólo si todos sus menores principales son positivos, es decir,  para todo $k=1,\ldots,n$, $\det(A_k)>0$, donde $A_k$ recordemos que es la submatriz formada por las $k$ primeras filas y columnas de la matriz $A$.
+
+Partiendo de que $A = LU$ y $A$ es simétrica tenemos que:
+
+::: recuadro-gris
+$$
+\begin{align*}
+LU = A = A^T = (LU)^T = U^TL^T & \Rightarrow LU = U^TL^T\\
+LU(L^T)^{−1} = U^TL^T(L^T)^{−1} & \Rightarrow LU(L^T)^{−1} = U^T\\
+L^{−1}LU(L^T)^{−1} = L^{−1}U^T & \Rightarrow U(L^T)^{−1} = L^{−1}U^T\\
+U(L^T)^{−1} = D \Rightarrow U(L^T)^{−1}L^T = DL^T & \Rightarrow U = DL^T \Rightarrow A = LDL^T
+\end{align*}
+$$
 :::
+
 
 ------------------------------------------------------------------------
   
