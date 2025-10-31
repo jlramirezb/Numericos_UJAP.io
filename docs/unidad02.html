@@ -2085,6 +2085,245 @@ Ax=b \Leftrightarrow (D+(L+U))x = b \Leftrightarrow Dx = -(L+U)x+b
 x=-D^{-1}(L+U)x+D^{-1}b.
 \]</span></p>
 </div>
+<ul>
+<li>Así, se calcula la solución del sistema, como el límite de la
+sucesión <span class="math inline">\(\{x^{(k)}\}_{k\in
+\mathbb{N}}\)</span> donde se define el término <span
+class="math inline">\((k+1)\)</span>-ésimo como:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x^{(k+1)} =
+\underbrace{-D^{-1}(L+U)}_{T_J}x^{(k)}+\underbrace{D^{-1}b}_{c_J}
+\]</span></p>
+</div>
+<ul>
+<li>La fórmula escalar para el método de Jacobi es:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x_i^{(k+1)} = \dfrac{1}{a_{ii}} \left( b_i - \sum_{\substack{j=1 \\ j
+\neq i}}^{n} a_{ij}x_j^{(k)} \right), \quad \text{para } i = 1, 2,
+\ldots, n
+\]</span></p>
+</div>
+<div class="cuadro-alg">
+<p><strong>FUNCION Metodo_Jacobi(A, b, x0, tol, max_iter):</strong></p>
+<pre><code>n = dimension de A (número de filas)
+x = x0  # Vector de solución inicial
+
+PARA k = 1 HASTA max_iter:
+    x_anterior = x
+    x = nuevo vector de ceros de tamaño n
+
+    # Calcular cada componente de la nueva solución
+    PARA i = 1 HASTA n:
+        suma = 0
+        PARA j = 1 HASTA n:
+            SI i != j ENTONCES
+                suma = suma + A[i, j] * x_anterior[j]
+            FIN SI
+        FIN PARA
+        x[i] = (b[i] - suma) / A[i, i]
+    FIN PARA
+
+    # Criterio de parada (error absoluto)
+    SI norma(x - x_anterior) &lt; tol ENTONCES
+        RETORNAR x  # Solución encontrada
+    FIN SI
+FIN PARA
+
+RETORNAR &quot;El método no convergió en max_iter iteraciones&quot;</code></pre>
+<p><strong>FIN FUNCION</strong></p>
+</div>
+<div id="ejemplo-9" class="section level4 caja-ejemplo"
+number="2.4.2.1">
+<h4><span class="header-section-number">2.4.2.1</span> Ejemplo 9</h4>
+<p>Considerese el siguiente sistema de 4 ecuaciones con 4 incógnitas:
+<span class="math display">\[
+\begin{align*}
+E_1: &amp; 22x_1 + 5x_1 + 5x_3 + 6x_4 = 5\\
+E_2: &amp; 5x_1 + 19x_2 + 3x_3 + 6x_4 = 7\\
+E_3: &amp; 5x_1 + 5x_2 + 24x_3 + 5x_4 = 8\\
+E_4: &amp; 7x_1 + 7x_2 + 4x_3 + 25x_4 = 5
+\end{align*}
+\]</span></p>
+<p>Para aplicar el método de Jacobi al sistema anterior, despejamos las
+incógnitas <span class="math inline">\(x_i\)</span> de sus respectivas
+ecuaciones: <span class="math display">\[
+\begin{align*}
+E_1: &amp; x_1 =
+\dfrac{5}{22}-\left(\dfrac{5}{22}x_2+\dfrac{5}{22}x_3+\dfrac{6}{22}x_4\right)\\
+E_2: &amp; x_2 =
+\dfrac{7}{19}-\left(\dfrac{5}{19}x_1+\dfrac{3}{19}x_3+\dfrac{6}{19}x_4\right)\\
+E_3: &amp; x_3 =
+\dfrac{8}{24}-\left(\dfrac{5}{24}x_1+\dfrac{5}{24}x_2+\dfrac{5}{24}x_4\right)\\
+E_4: &amp; x_4 =
+\dfrac{5}{25}-\left(\dfrac{7}{25}x_1+\dfrac{7}{25}x_2+\dfrac{4}{25}x_3\right)\\
+\end{align*}
+\]</span></p>
+<pre class="python"><code>import numpy as np
+
+def stopCriterion(x, x0, A, b, criterion = &quot;ABS&quot;):
+  &quot;&quot;&quot;
+  Esta función devuelve el valor según el criterio de parada
+
+  Args:
+    x: Array unidimensional que representa el punto actual de iteración
+    x0: Array unidimensional que representa el punto anterior de iteración
+    A: Matriz del sistema
+    b: Vector de términos independientes
+    criterion: String (Criterio de parada: ABS, REL, RES)
+
+  Returns:
+    Float (error absoluto, relativo o residual, en función de criterion)
+  &quot;&quot;&quot;
+
+  if criterion.upper() == &quot;ABS&quot;:
+    return np.linalg.norm(x - x0)
+  elif criterion.upper() == &quot;REL&quot;:
+    return np.linalg.norm(x - x0) / np.linalg.norm(x)
+  elif criterion.upper() == &quot;RES&quot;:
+    return np.linalg.norm(np.dot(A, x) - b)
+  else:
+    # Por defecto, devuelve el error absoluto si el criterio no es reconocido
+    return np.linalg.norm(x - x0)
+
+def jacobi(A, b, x0, TOL=1e-07, nmax=100, stop=&quot;ABS&quot;, verbose=False):
+  &quot;&quot;&quot;
+  Esta función resuelve un sistema lineal Ax = b mediante el método
+  de Jacobi
+
+  Args:
+    A: Array bidimensional de numpy (Matriz de coeficientes)
+    b: Array unidimensional (Vector de términos independientes)
+    x0: Array unidimensional (Valor inicial)
+    TOL: Float (Tolerancia)
+    nmax: Float (Número máximo de iteraciones)
+    stop: String (Criterio de parada: ABS, REL o RES)
+    verbose: Booleano para mostrar o no los resultados relevantes
+  
+  Returns:
+    x: Array unidimensional (Solución del sistema)
+  &quot;&quot;&quot;
+  n = A.shape[0]
+  x = np.empty(n)
+  
+  if stop.upper() not in [&quot;ABS&quot;, &quot;REL&quot;, &quot;RES&quot;]:
+    print(&quot;El criterio de parada introducido no es válido&quot;)
+    return
+  
+  k = 1 # Contador de iteraciones
+  while k &lt;= nmax:
+    for i in range(n):
+      suma = 0
+      for j in range(n):
+        if j != i:
+          suma += A[i, j] * x0[j]
+      x[i] = (b[i] - suma) / A[i, i]
+      
+    if verbose:
+      print(&quot;x^({}) = {}&quot;.format(k, x))
+      
+    if stopCriterion(x, x0, A, b, criterion=stop) &lt; TOL:
+      print(&quot;Número total de iteraciones:&quot;, k)
+      print(&quot;x =&quot;, x)
+      return x
+      
+    k += 1
+    x0 = x.copy()
+    
+  print(&quot;Número máximo de iteraciones alcanzado.&quot;)
+  print(&quot;El método no converge.&quot;)
+  return
+
+A = np.array([[22., 5., 5., 6.],
+             [5., 19., 3., 6.],
+             [5., 5., 24., 5.],
+             [7., 7., 4., 25.]])
+
+b = np.array([5., 7., 8., 5.])
+x0 = np.zeros(A.shape[0])
+
+print(&quot;--- Solución con Criterio de Parada Absoluto (ABS) ---&quot;)</code></pre>
+<pre><code>## --- Solución con Criterio de Parada Absoluto (ABS) ---</code></pre>
+<pre class="python"><code>jacobi(A, b, x0.copy(), stop=&quot;ABS&quot;, verbose=False)</code></pre>
+<pre><code>## Número total de iteraciones: 46
+## x = [0.09157774 0.28873163 0.24271059 0.05467965]
+## array([0.09157774, 0.28873163, 0.24271059, 0.05467965])</code></pre>
+<pre class="python"><code>print(&quot;\n&quot; + &quot;=&quot;*50 + &quot;\n&quot;)</code></pre>
+<pre><code>## 
+## ==================================================</code></pre>
+<pre class="python"><code>print(&quot;--- Solución con Criterio de Parada Relativo (REL) ---&quot;)</code></pre>
+<pre><code>## --- Solución con Criterio de Parada Relativo (REL) ---</code></pre>
+<pre class="python"><code>jacobi(A, b, x0.copy(), stop=&quot;REL&quot;, verbose=False)</code></pre>
+<pre><code>## Número total de iteraciones: 49
+## x = [0.09157777 0.28873166 0.24271061 0.05467967]
+## array([0.09157777, 0.28873166, 0.24271061, 0.05467967])</code></pre>
+<pre class="python"><code>print(&quot;\n&quot; + &quot;=&quot;*50 + &quot;\n&quot;)</code></pre>
+<pre><code>## 
+## ==================================================</code></pre>
+<pre class="python"><code>print(&quot;--- Solución con Criterio de Parada Residual (RES) ---&quot;)</code></pre>
+<pre><code>## --- Solución con Criterio de Parada Residual (RES) ---</code></pre>
+<pre class="python"><code>jacobi(A, b, x0.copy(), stop=&quot;RES&quot;, verbose=True)</code></pre>
+<pre><code>## x^(1) = [0.22727273 0.36842105 0.33333333 0.2       ]
+## x^(2) = [ 0.01323764  0.19282297  0.1675638  -0.02012759]
+## x^(3) = [0.15085599 0.3448361  0.29459729 0.11549282]
+## x^(4) = [0.05044891 0.24573533 0.20600314 0.01407065]
+## x^(5) = [0.12076744 0.31817485 0.2686969  0.08410791]
+## x^(6) = [0.07095426 0.26765393 0.22436454 0.03410465]
+## x^(7) = [0.10614908 0.30355301 0.25568482 0.06929138]
+## x^(8) = [0.08127557 0.27823431 0.23354303 0.04437384]
+## x^(9) = [0.09885774 0.29614474 0.24919089 0.06197035]
+## x^(10) = [0.08643181 0.28349034 0.23813066 0.04952876]
+## x^(11) = [0.09521465 0.2924356  0.24594773 0.05832089]
+## x^(12) = [0.08900718 0.28611359 0.24042268 0.05210629]
+## x^(13) = [0.09339459 0.29058202 0.24432769 0.05649856]
+## x^(14) = [0.09029364 0.28742382 0.24156768 0.05339412]
+## x^(15) = [0.09248535 0.289656   0.24351842 0.05558828]
+## x^(16) = [0.09093628 0.28807833 0.24213966 0.05403747]
+## x^(17) = [0.09203115 0.28919341 0.24311415 0.05513356]
+## x^(18) = [0.09125731 0.28840529 0.24242539 0.05435886]
+## x^(19) = [0.09180425 0.28896232 0.2429122  0.05490641]
+## x^(20) = [0.09141768 0.28856862 0.24256813 0.05451941]
+## x^(21) = [0.0916909  0.28884688 0.24281131 0.05479294]
+## x^(22) = [0.09149779 0.28865021 0.24263943 0.05459961]
+## x^(23) = [0.09163428 0.28878921 0.24276091 0.05473625]
+## x^(24) = [0.09153781 0.28869097 0.24267505 0.05463968]
+## x^(25) = [0.09160599 0.28876041 0.24273574 0.05470793]
+## x^(26) = [0.0915578  0.28871133 0.24269285 0.05465969]
+## x^(27) = [0.09159186 0.28874602 0.24272316 0.05469379]
+## x^(28) = [0.09156779 0.2887215  0.24270174 0.05466969]
+## x^(29) = [0.0915848  0.28873883 0.24271688 0.05468672]
+## x^(30) = [0.09157278 0.28872658 0.24270618 0.05467468]
+## x^(31) = [0.09158128 0.28873524 0.24271374 0.05468319]
+## x^(32) = [0.09157527 0.28872912 0.24270839 0.05467718]
+## x^(33) = [0.09157952 0.28873344 0.24271217 0.05468143]
+## x^(34) = [0.09157652 0.28873039 0.2427095  0.05467842]
+## x^(35) = [0.09157864 0.28873255 0.24271139 0.05468055]
+## x^(36) = [0.09157714 0.28873102 0.24271006 0.05467905]
+## x^(37) = [0.0915782  0.2887321  0.242711   0.05468011]
+## x^(38) = [0.09157745 0.28873134 0.24271033 0.05467936]
+## x^(39) = [0.09157798 0.28873187 0.2427108  0.05467989]
+## x^(40) = [0.0915776  0.28873149 0.24271047 0.05467951]
+## x^(41) = [0.09157787 0.28873176 0.24271071 0.05467978]
+## x^(42) = [0.09157768 0.28873157 0.24271054 0.05467959]
+## x^(43) = [0.09157781 0.28873171 0.24271066 0.05467972]
+## x^(44) = [0.09157772 0.28873161 0.24271057 0.05467963]
+## x^(45) = [0.09157779 0.28873168 0.24271063 0.0546797 ]
+## x^(46) = [0.09157774 0.28873163 0.24271059 0.05467965]
+## x^(47) = [0.09157777 0.28873167 0.24271062 0.05467968]
+## x^(48) = [0.09157775 0.28873164 0.2427106  0.05467966]
+## x^(49) = [0.09157777 0.28873166 0.24271061 0.05467967]
+## x^(50) = [0.09157775 0.28873165 0.2427106  0.05467966]
+## x^(51) = [0.09157776 0.28873165 0.24271061 0.05467967]
+## x^(52) = [0.09157776 0.28873165 0.24271061 0.05467967]
+## x^(53) = [0.09157776 0.28873165 0.24271061 0.05467967]
+## x^(54) = [0.09157776 0.28873165 0.24271061 0.05467967]
+## Número total de iteraciones: 54
+## x = [0.09157776 0.28873165 0.24271061 0.05467967]
+## array([0.09157776, 0.28873165, 0.24271061, 0.05467967])</code></pre>
+</div>
 <hr />
 <p><small>Última revisión: 31 de octubre, 2025</small></p>
 </div>

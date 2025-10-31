@@ -1343,6 +1343,172 @@ x=-D^{-1}(L+U)x+D^{-1}b.
 $$
 :::
 
+* Así, se calcula la solución del sistema, como el límite de la sucesión $\{x^{(k)}\}_{k\in \mathbb{N}}$ donde se define el término $(k+1)$-ésimo como:
+
+::: recuadro-gris
+$$
+x^{(k+1)} = \underbrace{-D^{-1}(L+U)}_{T_J}x^{(k)}+\underbrace{D^{-1}b}_{c_J}
+$$
+:::
+
+* La fórmula escalar para el método de Jacobi es:
+
+::: recuadro-gris
+$$
+x_i^{(k+1)} = \dfrac{1}{a_{ii}} \left( b_i - \sum_{\substack{j=1 \\ j \neq i}}^{n} a_{ij}x_j^{(k)} \right), \quad \text{para } i = 1, 2, \ldots, n
+$$
+:::
+
+::: cuadro-alg
+**FUNCION Metodo_Jacobi(A, b, x0, tol, max_iter):**
+
+    n = dimension de A (número de filas)
+    x = x0  # Vector de solución inicial
+
+    PARA k = 1 HASTA max_iter:
+        x_anterior = x
+        x = nuevo vector de ceros de tamaño n
+
+        # Calcular cada componente de la nueva solución
+        PARA i = 1 HASTA n:
+            suma = 0
+            PARA j = 1 HASTA n:
+                SI i != j ENTONCES
+                    suma = suma + A[i, j] * x_anterior[j]
+                FIN SI
+            FIN PARA
+            x[i] = (b[i] - suma) / A[i, i]
+        FIN PARA
+
+        # Criterio de parada (error absoluto)
+        SI norma(x - x_anterior) < tol ENTONCES
+            RETORNAR x  # Solución encontrada
+        FIN SI
+    FIN PARA
+
+    RETORNAR "El método no convergió en max_iter iteraciones"
+**FIN FUNCION**
+:::
+
+::: caja-ejemplo
+#### Ejemplo 9
+Considerese el siguiente sistema de 4 ecuaciones con 4 incógnitas:
+$$
+\begin{align*}
+E_1: & 22x_1 + 5x_1 + 5x_3 + 6x_4 = 5\\
+E_2: & 5x_1 + 19x_2 + 3x_3 + 6x_4 = 7\\
+E_3: & 5x_1 + 5x_2 + 24x_3 + 5x_4 = 8\\
+E_4: & 7x_1 + 7x_2 + 4x_3 + 25x_4 = 5 
+\end{align*}
+$$
+
+Para aplicar el método de Jacobi al sistema anterior, despejamos las incógnitas $x_i$ de sus respectivas ecuaciones:
+$$
+\begin{align*}
+E_1: & x_1 = \dfrac{5}{22}-\left(\dfrac{5}{22}x_2+\dfrac{5}{22}x_3+\dfrac{6}{22}x_4\right)\\
+E_2: & x_2 = \dfrac{7}{19}-\left(\dfrac{5}{19}x_1+\dfrac{3}{19}x_3+\dfrac{6}{19}x_4\right)\\
+E_3: & x_3 = \dfrac{8}{24}-\left(\dfrac{5}{24}x_1+\dfrac{5}{24}x_2+\dfrac{5}{24}x_4\right)\\
+E_4: & x_4 = \dfrac{5}{25}-\left(\dfrac{7}{25}x_1+\dfrac{7}{25}x_2+\dfrac{4}{25}x_3\right)\\
+\end{align*}
+$$
+
+``` {python, echo=TRUE}
+import numpy as np
+
+def stopCriterion(x, x0, A, b, criterion = "ABS"):
+  """
+  Esta función devuelve el valor según el criterio de parada
+
+  Args:
+    x: Array unidimensional que representa el punto actual de iteración
+    x0: Array unidimensional que representa el punto anterior de iteración
+    A: Matriz del sistema
+    b: Vector de términos independientes
+    criterion: String (Criterio de parada: ABS, REL, RES)
+
+  Returns:
+    Float (error absoluto, relativo o residual, en función de criterion)
+  """
+
+  if criterion.upper() == "ABS":
+    return np.linalg.norm(x - x0)
+  elif criterion.upper() == "REL":
+    return np.linalg.norm(x - x0) / np.linalg.norm(x)
+  elif criterion.upper() == "RES":
+    return np.linalg.norm(np.dot(A, x) - b)
+  else:
+    # Por defecto, devuelve el error absoluto si el criterio no es reconocido
+    return np.linalg.norm(x - x0)
+
+def jacobi(A, b, x0, TOL=1e-07, nmax=100, stop="ABS", verbose=False):
+  """
+  Esta función resuelve un sistema lineal Ax = b mediante el método
+  de Jacobi
+
+  Args:
+    A: Array bidimensional de numpy (Matriz de coeficientes)
+    b: Array unidimensional (Vector de términos independientes)
+    x0: Array unidimensional (Valor inicial)
+    TOL: Float (Tolerancia)
+    nmax: Float (Número máximo de iteraciones)
+    stop: String (Criterio de parada: ABS, REL o RES)
+    verbose: Booleano para mostrar o no los resultados relevantes
+  
+  Returns:
+    x: Array unidimensional (Solución del sistema)
+  """
+  n = A.shape[0]
+  x = np.empty(n)
+  
+  if stop.upper() not in ["ABS", "REL", "RES"]:
+    print("El criterio de parada introducido no es válido")
+    return
+  
+  k = 1 # Contador de iteraciones
+  while k <= nmax:
+    for i in range(n):
+      suma = 0
+      for j in range(n):
+        if j != i:
+          suma += A[i, j] * x0[j]
+      x[i] = (b[i] - suma) / A[i, i]
+      
+    if verbose:
+      print("x^({}) = {}".format(k, x))
+      
+    if stopCriterion(x, x0, A, b, criterion=stop) < TOL:
+      print("Número total de iteraciones:", k)
+      print("x =", x)
+      return x
+      
+    k += 1
+    x0 = x.copy()
+    
+  print("Número máximo de iteraciones alcanzado.")
+  print("El método no converge.")
+  return
+
+A = np.array([[22., 5., 5., 6.],
+             [5., 19., 3., 6.],
+             [5., 5., 24., 5.],
+             [7., 7., 4., 25.]])
+
+b = np.array([5., 7., 8., 5.])
+x0 = np.zeros(A.shape[0])
+
+print("--- Solución con Criterio de Parada Absoluto (ABS) ---")
+jacobi(A, b, x0.copy(), stop="ABS", verbose=False)
+print("\n" + "="*50 + "\n")
+print("--- Solución con Criterio de Parada Relativo (REL) ---")
+jacobi(A, b, x0.copy(), stop="REL", verbose=False)
+print("\n" + "="*50 + "\n")
+print("--- Solución con Criterio de Parada Residual (RES) ---")
+jacobi(A, b, x0.copy(), stop="RES", verbose=True)
+
+```
+
+:::
+
 ------------------------------------------------------------------------
   
 <small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>
