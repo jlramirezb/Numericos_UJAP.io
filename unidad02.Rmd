@@ -260,6 +260,7 @@ $$
 
 * Los números $\dfrac{a_{i1}}{a_{11}}$ se denominan multiplicadores de eliminación.
 * Después de aplicar estas operaciones, se obtiene un nuevo sistema equivalente:  
+
 ::: recuadro-gris
 $$
 A^{(1)}x = b^{(1)} \equiv \left\{
@@ -691,7 +692,6 @@ x_5 & = \dfrac{1 - 0(0.11020) - 1(0.63555) - 1(0.48306) - 3(1.5847)}{0.5} \appro
 \end{align*}
 $$
 :::
-
 :::
 
 
@@ -744,8 +744,6 @@ kappa_A = numero_de_condicion(A)
 print("Número de condición de A:", kappa_A)
 # Alternativamente, usando la función cond de NumPy
 print(np.linalg.cond(A, 2))
-
-
 ```
 :::
 
@@ -899,6 +897,7 @@ N_{n-1}P_{n-1}N_{n-2}P_{n-2}\cdots N_2P_2N_1P_1A = U
 $$
 
 :::
+
 * Donde $P_i$ es la matriz de permutación que intercambia las filas correspondientes en el paso $i$.
 * Llamando $P = P_1P_2\cdots P_{n-1}$ y $L^{-1} = N_{n-1}P_{n-1}N_{n-2}P_{n-2}\cdots N_2P_2N_1P_1$ se tiene que:
 
@@ -936,6 +935,7 @@ P_1 = \begin{pmatrix}
 0 & 2 & 0
 \end{pmatrix}
 $$
+
 $$
 N_1= \begin{pmatrix}
 1 & 0 & 0 \\
@@ -947,6 +947,7 @@ N_1= \begin{pmatrix}
 0 & 2 & 0
 \end{pmatrix}
 $$
+
 $$
 P_2 = \begin{pmatrix}
 1 & 0 & 0 \\
@@ -958,6 +959,7 @@ P_2 = \begin{pmatrix}
 0 & 1.5 & 2.5
 \end{pmatrix}
 $$
+
 $$
 N_2 = \begin{pmatrix}
 1 & 0 & 0 \\
@@ -969,6 +971,7 @@ N_2 = \begin{pmatrix}
 0 & 0 & 2.5
 \end{pmatrix} = U
 $$
+
 $$
 L^{-1} = N_2P_2N_1P_1 = \begin{pmatrix}
 0 & 0 & 1 \\
@@ -980,6 +983,7 @@ L^{-1} = N_2P_2N_1P_1 = \begin{pmatrix}
 1 & 0 & 0
 \end{pmatrix}
 $$
+
 $$
 PA = LU \quad \text{con} \quad P = P_2P_1 = \begin{pmatrix}
 0 & 0 & 1 \\
@@ -987,6 +991,7 @@ PA = LU \quad \text{con} \quad P = P_2P_1 = \begin{pmatrix}
 0 & 1 & 0
 \end{pmatrix} \qquad 
 $$
+
 $$
 LU = \begin{pmatrix}
 2 & 1 & -1 \\
@@ -994,11 +999,12 @@ LU = \begin{pmatrix}
 -1 & 1 & 3
 \end{pmatrix} = PA
 $$
+
 :::
+
 :::
 
 ### Factorización de Cholesky
-
 * La factorización de Cholesky es un método de descomposición de matrices que permite expresar una **matriz simétrica** y **definida positiva** como el producto de una matriz triangular inferior y su transpuesta.
 * Este método es especialmente útil en la resolución de sistemas de ecuaciones lineales, optimización y simulaciones en estadística y finanzas, facilitando cálculos en diversos campos como la estadística y la ingeniería.
 
@@ -1019,6 +1025,171 @@ U(L^T)^{−1} = D \Rightarrow U(L^T)^{−1}L^T = DL^T & \Rightarrow U = DL^T \Ri
 $$
 :::
 
+* Donde $D$ es una matriz diagonal.
+* Si $A$ es definida positiva, los elementos diagonales de $D$ son positivos, por lo que podemos escribir $D = D^{1/2}D^{1/2}$.
+* Entonces:
+
+::: recuadro-gris
+$$
+A = LDL^T = (LD^{1/2})(D^{1/2}L^T) = LL^T
+$$
+:::
+
+* Donde $L = LD^{1/2}$ es una matriz triangular inferior con elementos positivos en la diagonal.
+* Por tanto, la factorización de Cholesky de una matriz simétrica definida positiva $A$ es $A = LL^T$.
+* La factorización de Cholesky se puede calcular mediante el siguiente algoritmo:
+
+::: cuadro-alg
+**FUNCION Factorizacion_Cholesky(A):**
+    # Asume que A es una matriz simétrica definida positiva (n x n)
+    n = dimension de A (número de filas)
+    L = Matriz n x n (inicializada a ceros)
+
+    PARA i = 1 HASTA n:
+        # Cálculo de los elementos de la fila i de L
+        PARA j = 1 HASTA i:
+            suma = 0
+            PARA k = 1 HASTA j-1:
+                suma = suma + L[i, k] * L[j, k]
+            FIN PARA
+            
+            SI i == j ENTONCES
+                L[i, j] = sqrt(A[i, i] - suma)  # Elemento diagonal
+            SINO
+                L[i, j] = (1 / L[j, j]) * (A[i, j] - suma)  # Elemento fuera de la diagonal
+            FIN SI
+        FIN PARA
+    FIN PARA
+    
+    RETORNAR L
+**FIN FUNCION**
+:::
+
+::: caja-ejemplo
+#### Ejemplo 8
+Determine si la siguiente matriz es simétrica y postiva definida
+$$
+A=\begin{pmatrix}
+5 & 2 & -2 & -1 & -1\\
+2 & 7 & 1 & 1 & 6\\
+-2 & 1 & 9 & 2 & 1\\
+-1 & 1 & 2 & 11 & -1\\
+-1 & 6 & 1 & -1 & 13
+\end{pmatrix}
+$$
+
+``` {python, eval=TRUE}
+import numpy as np
+
+def is_square(A):
+    A = np.asarray(A)
+    return A.ndim == 2 and A.shape[0] == A.shape[1]
+
+def is_symmetric_by_transpose(A, tol=1e-8):
+    """
+    Comprueba simetría comparando A y A.T con tolerancia absoluta.
+    """
+    A = np.asarray(A, dtype=float)
+    if not is_square(A):
+        return False
+    return np.allclose(A, A.T, atol=tol, rtol=0)
+
+def is_positive_definite_by_principal_minors(A, tol=1e-12):
+    """
+    Comprueba que todos los menores principales (determinantes de A[:k,:k], k=1..n)
+    son positivos. Esto es una condición necesaria y suficiente para simetría
+    y positividad definida en matrices reales simétricas.
+    """
+    A = np.asarray(A, dtype=float)
+    if not is_symmetric_by_transpose(A):
+        return False
+    n = A.shape[0]
+    for k in range(1, n+1):
+        minor = A[:k, :k]
+        det = np.linalg.det(minor)
+        if det <= tol:
+            return False
+    return True
+
+def check_matrix_simple(A, tol_sym=1e-8, tol_minor=1e-12):
+    A = np.asarray(A, dtype=float)
+    square = is_square(A)
+    symmetric = square and is_symmetric_by_transpose(A, tol=tol_sym)
+    pd = False
+    if symmetric:
+        pd = is_positive_definite_by_principal_minors(A, tol=tol_minor)
+    return {
+        "square": square,
+        "symmetric": symmetric,
+        "positive_definite": pd
+    }
+
+# Ejemplo: usar la matriz A del enunciado (5x5) y calcular la factorización de Cholesky
+if __name__ == "__main__":
+    A = np.array([[5, 2, -2, -1, -1],
+                  [2, 7, 1, 1, 6],
+                  [-2, 1, 9, 2, 1],
+                  [-1, 1, 2, 11, -1],
+                  [-1, 6, 1, -1, 13]], dtype=float)
+
+    print("Matriz A:")
+    print(A)
+
+    res = check_matrix_simple(A)
+    print("square:", res["square"]) 
+    print("symmetric:", res["symmetric"]) 
+    print("positive_definite (por menores principales):", res["positive_definite"]) 
+
+    # Mostrar determinantes de los menores principales para diagnóstico
+    if res["symmetric"]:
+        print("Determinantes de los menores principales:")
+        for k in range(1, A.shape[0] + 1):
+            det = np.linalg.det(A[:k, :k])
+            print(f"det(A[:{k},:{k}]) = {det:.8f}")
+
+    # Implementación explícita del algoritmo de Cholesky (tal como aparece en el Rmd)
+    def factorizacion_cholesky(A, tol=1e-12):
+        A = np.asarray(A, dtype=float)
+        if A.ndim != 2 or A.shape[0] != A.shape[1]:
+            raise ValueError("La matriz debe ser cuadrada")
+        n = A.shape[0]
+        L = np.zeros((n, n), dtype=float)
+        for i in range(n):
+            for j in range(i+1):
+                suma = 0.0
+                for k in range(j):
+                    suma += L[i, k] * L[j, k]
+                if i == j:
+                    val = A[i, i] - suma
+                    if val <= tol:
+                        # No es definida positiva (o es numéricamente no PD)
+                        raise np.linalg.LinAlgError(f"No es definida positiva: diagonal negativa en i={i}, valor={val}")
+                    L[i, j] = np.sqrt(val)
+                else:
+                    L[i, j] = (A[i, j] - suma) / L[j, j]
+        return L
+
+    # Intentar la factorización y mostrar resultados
+    try:
+        L = factorizacion_cholesky(A)
+        print("\nFactor L (Cholesky):")
+        print(L)
+        recon = L.dot(L.T)
+        print("\nReconstrucción L @ L.T:")
+        print(recon)
+        err = np.max(np.abs(A - recon))
+        print(f"\nMáximo error |A - LL^T| = {err:.3e}")
+    except Exception as e:
+        print("Error al calcular Cholesky:", e)
+```
+:::
+
+* Al ser la factorización de Cholesky una factorización $LU$, para resolver el sistema lineal $Ax=b$  y al ser $A=LL^T$, se sigue el siguiente procedimiento:
+    - $Ax=b \Rightarrow LL^Tx=b \Rightarrow L(L^Tx)=b$, llamando $z=L^Tx$, se resuelve $Lz=b$ aplicando sustitución progresiva.
+    - Hallado los valores de $z$, se devuelve el cambio planteado resolviendo $L^Tx=z$ aplicando sustitución regresiva.
+
+## Métodos Iterativos
+Aqui va la parte de Iterativos
 
 ------------------------------------------------------------------------
   

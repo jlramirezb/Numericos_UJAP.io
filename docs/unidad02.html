@@ -668,12 +668,14 @@ E_i \leftarrow E_i - \dfrac{a_{i1}}{a_{11}} E_1 \quad \text{para } i =
 \]</span></p>
 </div>
 <ul>
-<li><p>Los números <span
+<li>Los números <span
 class="math inline">\(\dfrac{a_{i1}}{a_{11}}\)</span> se denominan
-multiplicadores de eliminación.</p></li>
-<li><p>Después de aplicar estas operaciones, se obtiene un nuevo sistema
-equivalente:<br />
-::: recuadro-gris <span class="math display">\[
+multiplicadores de eliminación.</li>
+<li>Después de aplicar estas operaciones, se obtiene un nuevo sistema
+equivalente:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
 A^{(1)}x = b^{(1)} \equiv \left\{
 \begin{array}{l}
 E_1: a_{11}x_{1}  +  a_{12}x_{2}  + \cdots +  a_{1n}x_{n}  = b_{1} \\
@@ -684,11 +686,12 @@ E_n: 0  +  a_{n2}^{(1)}x_{2}  + \cdots +  a_{nn}^{(1)}x_{n}  =
 b_{n}^{(1)}
 \end{array}
 \right.
-\]</span><br />
-:::</p></li>
-<li><p>Repitiendo este proceso para las incógnitas <span
+\]</span></p>
+</div>
+<ul>
+<li>Repitiendo este proceso para las incógnitas <span
 class="math inline">\(x_2, x_3, \ldots, x_{n-1}\)</span>, se obtiene
-finalmente un sistema triangular superior:</p></li>
+finalmente un sistema triangular superior:</li>
 </ul>
 <div class="recuadro-gris">
 <p><span class="math display">\[
@@ -1549,7 +1552,8 @@ P_1 = \begin{pmatrix}
 -1 &amp; 1 &amp; 3 \\
 0 &amp; 2 &amp; 0
 \end{pmatrix}
-\]</span> <span class="math display">\[
+\]</span></p>
+<p><span class="math display">\[
 N_1= \begin{pmatrix}
 1 &amp; 0 &amp; 0 \\
 0.5 &amp; 1 &amp; 0 \\
@@ -1559,7 +1563,8 @@ N_1= \begin{pmatrix}
 0 &amp; 1.5 &amp; 2.5 \\
 0 &amp; 2 &amp; 0
 \end{pmatrix}
-\]</span> <span class="math display">\[
+\]</span></p>
+<p><span class="math display">\[
 P_2 = \begin{pmatrix}
 1 &amp; 0 &amp; 0 \\
 0 &amp; 0 &amp; 1 \\
@@ -1569,7 +1574,8 @@ P_2 = \begin{pmatrix}
 0 &amp; 2 &amp; 0 \\
 0 &amp; 1.5 &amp; 2.5
 \end{pmatrix}
-\]</span> <span class="math display">\[
+\]</span></p>
+<p><span class="math display">\[
 N_2 = \begin{pmatrix}
 1 &amp; 0 &amp; 0 \\
 0 &amp; 1 &amp; 0 \\
@@ -1579,7 +1585,8 @@ N_2 = \begin{pmatrix}
 0 &amp; 2 &amp; 0 \\
 0 &amp; 0 &amp; 2.5
 \end{pmatrix} = U
-\]</span> <span class="math display">\[
+\]</span></p>
+<p><span class="math display">\[
 L^{-1} = N_2P_2N_1P_1 = \begin{pmatrix}
 0 &amp; 0 &amp; 1 \\
 1 &amp; 0 &amp; 0 \\
@@ -1589,13 +1596,15 @@ L^{-1} = N_2P_2N_1P_1 = \begin{pmatrix}
 -0.5 &amp; 0.75 &amp; 1 \\
 1 &amp; 0 &amp; 0
 \end{pmatrix}
-\]</span> <span class="math display">\[
+\]</span></p>
+<p><span class="math display">\[
 PA = LU \quad \text{con} \quad P = P_2P_1 = \begin{pmatrix}
 0 &amp; 0 &amp; 1 \\
 1 &amp; 0 &amp; 0 \\
 0 &amp; 1 &amp; 0
 \end{pmatrix} \qquad
-\]</span> <span class="math display">\[
+\]</span></p>
+<p><span class="math display">\[
 LU = \begin{pmatrix}
 2 &amp; 1 &amp; -1 \\
 0 &amp; 2 &amp; 0 \\
@@ -1644,9 +1653,225 @@ DL^T \Rightarrow A = LDL^T
 \end{align*}
 \]</span></p>
 </div>
-<hr />
-<p><small>Última revisión: 30 de octubre, 2025</small></p>
+<ul>
+<li>Donde <span class="math inline">\(D\)</span> es una matriz
+diagonal.</li>
+<li>Si <span class="math inline">\(A\)</span> es definida positiva, los
+elementos diagonales de <span class="math inline">\(D\)</span> son
+positivos, por lo que podemos escribir <span class="math inline">\(D =
+D^{1/2}D^{1/2}\)</span>.</li>
+<li>Entonces:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+A = LDL^T = (LD^{1/2})(D^{1/2}L^T) = LL^T
+\]</span></p>
 </div>
+<ul>
+<li>Donde <span class="math inline">\(L = LD^{1/2}\)</span> es una
+matriz triangular inferior con elementos positivos en la diagonal.</li>
+<li>Por tanto, la factorización de Cholesky de una matriz simétrica
+definida positiva <span class="math inline">\(A\)</span> es <span
+class="math inline">\(A = LL^T\)</span>.</li>
+<li>La factorización de Cholesky se puede calcular mediante el siguiente
+algoritmo:</li>
+</ul>
+<div class="cuadro-alg">
+<p><strong>FUNCION Factorizacion_Cholesky(A):</strong> # Asume que A es
+una matriz simétrica definida positiva (n x n) n = dimension de A
+(número de filas) L = Matriz n x n (inicializada a ceros)</p>
+<pre><code>PARA i = 1 HASTA n:
+    # Cálculo de los elementos de la fila i de L
+    PARA j = 1 HASTA i:
+        suma = 0
+        PARA k = 1 HASTA j-1:
+            suma = suma + L[i, k] * L[j, k]
+        FIN PARA
+        
+        SI i == j ENTONCES
+            L[i, j] = sqrt(A[i, i] - suma)  # Elemento diagonal
+        SINO
+            L[i, j] = (1 / L[j, j]) * (A[i, j] - suma)  # Elemento fuera de la diagonal
+        FIN SI
+    FIN PARA
+FIN PARA
+
+RETORNAR L</code></pre>
+<p><strong>FIN FUNCION</strong></p>
+</div>
+<div id="ejemplo-8" class="section level4 caja-ejemplo"
+number="2.3.2.1">
+<h4><span class="header-section-number">2.3.2.1</span> Ejemplo 8</h4>
+<p>Determine si la siguiente matriz es simétrica y postiva definida
+<span class="math display">\[
+A=\begin{pmatrix}
+5 &amp; 2 &amp; -2 &amp; -1 &amp; -1\\
+2 &amp; 7 &amp; 1 &amp; 1 &amp; 6\\
+-2 &amp; 1 &amp; 9 &amp; 2 &amp; 1\\
+-1 &amp; 1 &amp; 2 &amp; 11 &amp; -1\\
+-1 &amp; 6 &amp; 1 &amp; -1 &amp; 13
+\end{pmatrix}
+\]</span></p>
+<pre class="python"><code>import numpy as np
+
+def is_square(A):
+    A = np.asarray(A)
+    return A.ndim == 2 and A.shape[0] == A.shape[1]
+
+def is_symmetric_by_transpose(A, tol=1e-8):
+    &quot;&quot;&quot;
+    Comprueba simetría comparando A y A.T con tolerancia absoluta.
+    &quot;&quot;&quot;
+    A = np.asarray(A, dtype=float)
+    if not is_square(A):
+        return False
+    return np.allclose(A, A.T, atol=tol, rtol=0)
+
+def is_positive_definite_by_principal_minors(A, tol=1e-12):
+    &quot;&quot;&quot;
+    Comprueba que todos los menores principales (determinantes de A[:k,:k], k=1..n)
+    son positivos. Esto es una condición necesaria y suficiente para simetría
+    y positividad definida en matrices reales simétricas.
+    &quot;&quot;&quot;
+    A = np.asarray(A, dtype=float)
+    if not is_symmetric_by_transpose(A):
+        return False
+    n = A.shape[0]
+    for k in range(1, n+1):
+        minor = A[:k, :k]
+        det = np.linalg.det(minor)
+        if det &lt;= tol:
+            return False
+    return True
+
+def check_matrix_simple(A, tol_sym=1e-8, tol_minor=1e-12):
+    A = np.asarray(A, dtype=float)
+    square = is_square(A)
+    symmetric = square and is_symmetric_by_transpose(A, tol=tol_sym)
+    pd = False
+    if symmetric:
+        pd = is_positive_definite_by_principal_minors(A, tol=tol_minor)
+    return {
+        &quot;square&quot;: square,
+        &quot;symmetric&quot;: symmetric,
+        &quot;positive_definite&quot;: pd
+    }
+
+# Ejemplo: usar la matriz A del enunciado (5x5) y calcular la factorización de Cholesky
+if __name__ == &quot;__main__&quot;:
+    A = np.array([[5, 2, -2, -1, -1],
+                  [2, 7, 1, 1, 6],
+                  [-2, 1, 9, 2, 1],
+                  [-1, 1, 2, 11, -1],
+                  [-1, 6, 1, -1, 13]], dtype=float)
+
+    print(&quot;Matriz A:&quot;)
+    print(A)
+
+    res = check_matrix_simple(A)
+    print(&quot;square:&quot;, res[&quot;square&quot;]) 
+    print(&quot;symmetric:&quot;, res[&quot;symmetric&quot;]) 
+    print(&quot;positive_definite (por menores principales):&quot;, res[&quot;positive_definite&quot;]) 
+
+    # Mostrar determinantes de los menores principales para diagnóstico
+    if res[&quot;symmetric&quot;]:
+        print(&quot;Determinantes de los menores principales:&quot;)
+        for k in range(1, A.shape[0] + 1):
+            det = np.linalg.det(A[:k, :k])
+            print(f&quot;det(A[:{k},:{k}]) = {det:.8f}&quot;)
+
+    # Implementación explícita del algoritmo de Cholesky (tal como aparece en el Rmd)
+    def factorizacion_cholesky(A, tol=1e-12):
+        A = np.asarray(A, dtype=float)
+        if A.ndim != 2 or A.shape[0] != A.shape[1]:
+            raise ValueError(&quot;La matriz debe ser cuadrada&quot;)
+        n = A.shape[0]
+        L = np.zeros((n, n), dtype=float)
+        for i in range(n):
+            for j in range(i+1):
+                suma = 0.0
+                for k in range(j):
+                    suma += L[i, k] * L[j, k]
+                if i == j:
+                    val = A[i, i] - suma
+                    if val &lt;= tol:
+                        # No es definida positiva (o es numéricamente no PD)
+                        raise np.linalg.LinAlgError(f&quot;No es definida positiva: diagonal negativa en i={i}, valor={val}&quot;)
+                    L[i, j] = np.sqrt(val)
+                else:
+                    L[i, j] = (A[i, j] - suma) / L[j, j]
+        return L
+
+    # Intentar la factorización y mostrar resultados
+    try:
+        L = factorizacion_cholesky(A)
+        print(&quot;\nFactor L (Cholesky):&quot;)
+        print(L)
+        recon = L.dot(L.T)
+        print(&quot;\nReconstrucción L @ L.T:&quot;)
+        print(recon)
+        err = np.max(np.abs(A - recon))
+        print(f&quot;\nMáximo error |A - LL^T| = {err:.3e}&quot;)
+    except Exception as e:
+        print(&quot;Error al calcular Cholesky:&quot;, e)</code></pre>
+<pre><code>## Matriz A:
+## [[ 5.  2. -2. -1. -1.]
+##  [ 2.  7.  1.  1.  6.]
+##  [-2.  1.  9.  2.  1.]
+##  [-1.  1.  2. 11. -1.]
+##  [-1.  6.  1. -1. 13.]]
+## square: True
+## symmetric: True
+## positive_definite (por menores principales): True
+## Determinantes de los menores principales:
+## det(A[:1,:1]) = 5.00000000
+## det(A[:2,:2]) = 31.00000000
+## det(A[:3,:3]) = 238.00000000
+## det(A[:4,:4]) = 2451.00000000
+## det(A[:5,:5]) = 13247.00000000
+## 
+## Factor L (Cholesky):
+## [[ 2.23606798  0.          0.          0.          0.        ]
+##  [ 0.89442719  2.48997992  0.          0.          0.        ]
+##  [-0.89442719  0.7228974   2.77081565  0.          0.        ]
+##  [-0.4472136   0.56225353  0.43075705  3.20909946  0.        ]
+##  [-0.4472136   2.57030185 -0.45404122 -0.76332313  2.32480811]]
+## 
+## Reconstrucción L @ L.T:
+## [[ 5.  2. -2. -1. -1.]
+##  [ 2.  7.  1.  1.  6.]
+##  [-2.  1.  9.  2.  1.]
+##  [-1.  1.  2. 11. -1.]
+##  [-1.  6.  1. -1. 13.]]
+## 
+## Máximo error |A - LL^T| = 8.882e-16</code></pre>
+</div>
+<ul>
+<li>Al ser la factorización de Cholesky una factorización <span
+class="math inline">\(LU\)</span>, para resolver el sistema lineal <span
+class="math inline">\(Ax=b\)</span> y al ser <span
+class="math inline">\(A=LL^T\)</span>, se sigue el siguiente
+procedimiento:
+<ul>
+<li><span class="math inline">\(Ax=b \Rightarrow LL^Tx=b \Rightarrow
+L(L^Tx)=b\)</span>, llamando <span
+class="math inline">\(z=L^Tx\)</span>, se resuelve <span
+class="math inline">\(Lz=b\)</span> aplicando sustitución
+progresiva.</li>
+<li>Hallado los valores de <span class="math inline">\(z\)</span>, se
+devuelve el cambio planteado resolviendo <span
+class="math inline">\(L^Tx=z\)</span> aplicando sustitución
+regresiva.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="métodos-iterativos" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Métodos
+Iterativos</h2>
+<p>Aqui va la parte de Iterativos</p>
+<hr />
+<p><small>Última revisión: 31 de octubre, 2025</small></p>
 </div>
 </div>
 
