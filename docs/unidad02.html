@@ -1869,9 +1869,225 @@ regresiva.</li>
 <div id="métodos-iterativos" class="section level2" number="2.4">
 <h2><span class="header-section-number">2.4</span> Métodos
 Iterativos</h2>
-<p>Aqui va la parte de Iterativos</p>
+<ul>
+<li><p>Dado un sistema lineal <span class="math inline">\(Ax=b\)</span>,
+un <strong>método iterativo</strong> para resolver dicho sistema
+consiste en hallar una sucesión de <strong>soluciones
+aproximadas</strong> <span
+class="math inline">\(\{x^{(k)}\}_{k=0}^{\infty}\)</span> tal que <span
+class="math inline">\(\displaystyle\lim_{k\to\infty}x^{(k)}=x\)</span>
+donde <span class="math inline">\(x\)</span> es la solución del
+sistema.</p></li>
+<li><p>Cuando se escribe que <span
+class="math inline">\(\displaystyle\lim_{k\to\infty}x^{(k)}=x\)</span>,
+se quiere decir que dada una norma matricial <span
+class="math inline">\(\|\cdot\|\)</span>, <span
+class="math inline">\(\displaystyle\lim_{k\to\infty}\|x^{(k)}-x\|=0\)</span>.</p></li>
+</ul>
+<p>Los algoritmos numéricos basado en <strong>métodos
+iterativos</strong> tienen las propiedades siguientes:</p>
+<ul>
+<li>Se obtiene una <strong>solución aproximada</strong>, al contrario de
+lo que pasaba con los métodos directos que hallan una solución exacta
+del sistema lineal. Es decir, suponiendo que no hay errores en los datos
+ni en las operaciones aritméticas, la solución obtenida por un método
+iterativo es aproximada.</li>
+<li>El número de pasos que hay que realizar para hallar la solución de
+un sistema lineal no está predeterminado de entrada.</li>
+</ul>
+<p>Al ser un método iterativo hay que establecer un criterio de parada
+en términos de un cierto <strong>umbral de error</strong> <span
+class="math inline">\(\epsilon\)</span>.</p>
+<ul>
+<li>Se pueden establecer 3 criterios de parada:
+<ul>
+<li>hallar el entero <span class="math inline">\(k\)</span> tal que
+<span class="math inline">\(\||x^{(k)}-x^{(k-1)}\|&lt;\epsilon\)</span>,
+(criterio del error absoluto)</li>
+<li>hallar el entero <span class="math inline">\(k\)</span> tal que
+<span
+class="math inline">\(\dfrac{\|x^{(k)}-x^{(k-1)}\|}{\|x^{(k)}\|}&lt;\epsilon\)</span>,
+(criterio del error relativo)</li>
+<li>hallar el entero <span class="math inline">\(k\)</span> tal que
+<span class="math inline">\(\|Ax^{(k)}-b\|&lt;\epsilon\)</span>,
+(criterio del residual)</li>
+</ul></li>
+</ul>
+<div id="construcción-de-la-sucesión." class="section level3"
+number="2.4.1">
+<h3><span class="header-section-number">2.4.1</span> Construcción de la
+Sucesión.</h3>
+<p>Supongase un el Sistema Lineal <span class="math inline">\(Ax =
+b\)</span>, se busca una matriz <span class="math inline">\(T \in
+\mathcal{M}_n\)</span> y un vector <span class="math inline">\(c \in
+\mathbb{R}^n\)</span>, de forma que la matriz <span
+class="math inline">\(I - T\)</span> sea inversible y que la única
+solución del sistema lineal</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\underbrace{x = Tx + c}_{(I−T)x=c}
+\]</span></p>
+</div>
+<p>es la solución de <span class="math inline">\(Ax = b\)</span>.</p>
+<p>Considerando <span class="math inline">\(x^{(0)} \in
+\mathbb{R}^n\)</span> un vector arbitrario, se construye una sucesión de
+vectores <span class="math inline">\(\{x\}_{k=0}^{\infty}\)</span> dada
+por</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x^{(k+1)} = Tx^{(k)} + c;\quad k \in \mathbb{N} \cup \{0\}
+\]</span></p>
+</div>
+<p>y se pretende que la sucesión <span
+class="math inline">\(\{x\}_k\)</span> converja a la solución del
+sistema lineal.</p>
+<p>Donde <span class="math inline">\(T\)</span> es la llamada matriz de
+iteración y c el vector independiente del método iterativo en
+cuestión.</p>
+</div>
+<div id="método-de-jacobi" class="section level3" number="2.4.2">
+<h3><span class="header-section-number">2.4.2</span> Método de
+Jacobi</h3>
+<ul>
+<li><p>Suponse que los coeficientes <span
+class="math inline">\(a_{ii}\)</span> de la matriz <span
+class="math inline">\(A=(a_{ij})_{i,j=1,\ldots,n}\)</span> del sistema
+<span class="math inline">\(Ax=b\)</span> son distintos de
+cero.</p></li>
+<li><p>Siempre existe una permutación de filas para que dicha condición
+se cumpla ya que, en caso contrario, la matriz del sistema sería
+singular y el sistema no tendría solución única.</p></li>
+<li><p>Entonces para transformar el sistema <span
+class="math inline">\(Ax=b\)</span> en un sistema equivalente de la
+forma <span class="math inline">\(x=Tx+c\)</span>, se puede despejar las
+incógnitas <span class="math inline">\(x_i\)</span> de la <span
+class="math inline">\(i\)</span>-ésima ecuación de la forma
+siguiente:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\begin{align*}
+E_i: &amp; a_{i1}x_1 + a_{i2}x_2 + \cdots + a_{ii}x_i + \cdots +
+a_{in}x_n = b_i, \Rightarrow\\
+&amp; x_i = \dfrac{1}{a_{ii}}\left(b_i
+-(a_{i1}x_1+\cdots+a_{i,i-1}x_{i-1}+a_{i,i+1}x_{i+1}+\cdots+a_{in}x_n)\right)
+\end{align*}
+\]</span></p>
+</div>
+<ul>
+<li>Entonces, la matriz de iteración <strong><span
+class="math inline">\(T_J\)</span></strong> y el vector independiente
+<strong><span class="math inline">\(c_J\)</span></strong> serán los
+siguientes:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+T_J = \begin{pmatrix}
+0 &amp; -\dfrac{a_{12}}{a_{11}} &amp; \cdots &amp;
+-\dfrac{a_{1n}}{a_{11}}\\
+-\dfrac{a_{21}}{a_{22}} &amp; 0 &amp; \cdots &amp;
+-\dfrac{a_{2n}}{a_{22}}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+-\dfrac{a_{n1}}{a_{nn}} &amp; -\dfrac{a_{n2}}{a_{nn}} &amp; \cdots &amp;
+0  
+\end{pmatrix}, \quad c_J = \begin{pmatrix}
+\dfrac{b_1}{a_{11}}\\ \dfrac{b_2}{a_{22}}\\ \vdots\\
+\dfrac{b_n}{a_{nn}}\\
+\end{pmatrix}
+\]</span></p>
+</div>
+<p>La sucesión <span class="math inline">\(x^{(k)}\)</span> se generará
+de la forma siguiente:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\begin{pmatrix}
+x_1^{(k)}\\
+x_2^{(k)}\\
+\vdots\\
+x_n^{(k)}\end{pmatrix} =  \begin{pmatrix}
+0 &amp; -\frac{a_{12}}{a_{11}} &amp; \cdots &amp;
+-\frac{a_{1n}}{a_{11}}\\
+-\frac{a_{21}}{a_{22}} &amp; 0 &amp; \cdots &amp;
+-\frac{a_{2n}}{a_{22}}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+-\frac{a_{n1}}{a_{nn}} &amp; -\frac{a_{n2}}{a_{nn}} &amp; \cdots &amp;
+0  
+\end{pmatrix}\begin{pmatrix}
+x_1^{(k-1)}\\
+x_2^{(k-1)}\\
+\vdots\\
+x_n^{(k-1)}\end{pmatrix} + \begin{pmatrix}
+\frac{b_1}{a_{11}}\\ \frac{b_2}{a_{22}}\\ \vdots\\ \frac{b_n}{a_{nn}}\\
+\end{pmatrix}
+\]</span></p>
+</div>
+<ul>
+<li><p>Otra manera de escribir la <strong>matriz de iteración del método
+de Jacobi</strong> es la siguiente.</p></li>
+<li><p>Descomponemos la matriz del sistema <span
+class="math inline">\(A=(a_{ij})_{i,j=1,\ldots,n\)</span> de la forma
+siguiente: <span class="math display">\[
+A=D+L+U,
+\]</span> donde las matrices <span class="math inline">\(D\)</span>,
+<span class="math inline">\(L\)</span> y <span
+class="math inline">\(U\)</span> contienen los <strong>elementos
+diagonales</strong>, los elementos por <strong>debajo de la
+diagonal</strong> y por <strong>encima de la diagonal</strong>
+respectivamente:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+D = \begin{pmatrix}
+a_{11} &amp; 0 &amp; \cdots &amp; 0\\
+0 &amp; a_{22} &amp; \cdots &amp; 0\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; \cdots &amp; a_{nn}
+\end{pmatrix}, \quad L = \begin{pmatrix}
+0 &amp; 0 &amp; \cdots &amp; 0\\
+a_{21} &amp; 0 &amp; \cdots &amp; 0\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+a_{n1} &amp; a_{n2} &amp; \cdots &amp; 0
+\end{pmatrix}, \quad U = \begin{pmatrix}
+0 &amp; a_{12} &amp; \cdots &amp; a_{1n}\\
+0 &amp; 0 &amp; \cdots &amp; a_{2n}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; \cdots &amp; 0
+\end{pmatrix}
+\]</span></p>
+</div>
+<ul>
+<li>El sistema <span class="math inline">\(Ax=b\)</span> puede
+escribirse como:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+(D+L+U)x=b.
+\]</span></p>
+</div>
+<ul>
+<li><p>El método de Jacobi a partir de las matrices anteriores, se
+exribe de la siguiente manera.</p></li>
+<li><p>Dejando los elementos diagonales <span
+class="math inline">\(D\)</span> a la izquierda y los elementos <span
+class="math inline">\(L\)</span> y <span
+class="math inline">\(U\)</span> a la derecha:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+Ax=b \Leftrightarrow (D+(L+U))x = b \Leftrightarrow Dx = -(L+U)x+b
+\]</span></p>
+</div>
+<ul>
+<li>Despejamos el vector <span class="math inline">\(x\)</span></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x=-D^{-1}(L+U)x+D^{-1}b.
+\]</span></p>
+</div>
 <hr />
 <p><small>Última revisión: 31 de octubre, 2025</small></p>
+</div>
 </div>
 </div>
 
