@@ -626,6 +626,20 @@ Descargue el PDF de la Tarea aquí:
 
 [Descargar Prácica PDF](ejercicios1.pdf)
 
+## Guía de ejercicios
+En el siguiente enlace  `Ejercicios_Unidad1` encontrará una lista de ejercicios relacionado con los distintos tópicos cubierttos en esta primera unidad.
+
+Descargue el PDF de esta guía de ejercicios aqui:
+
+[Descargar Guía PDF](Ejercicios_Unidad1.pdf)
+
+## Evaluación Práctica
+En el siguiente enlace `Evaluacion1` encontrará la primera evaluación práctica computacional.
+
+Descargue el PDF de esta evaluación aqui:
+
+[Descargar Evaluación PDF](Evaluacion1.pdf)
+
 ------------------------------------------------------------------------
 
 <small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>
