@@ -2324,8 +2324,341 @@ print(&quot;--- Solución con Criterio de Parada Absoluto (ABS) ---&quot;)</code
 ## x = [0.09157776 0.28873165 0.24271061 0.05467967]
 ## array([0.09157776, 0.28873165, 0.24271061, 0.05467967])</code></pre>
 </div>
+</div>
+<div id="método-de-gauss-seidel" class="section level3" number="2.4.3">
+<h3><span class="header-section-number">2.4.3</span> Método de
+Gauss-Seidel</h3>
+<ul>
+<li><p>El método de Gauss-Seidel consiste en aplicar el método de Jacobi
+con una modificación: las componentes del vector <span
+class="math inline">\(x^{(k)}\)</span> de la iteración actual, <span
+class="math inline">\(x^{(k)}_i\)</span>, que se van calculando, se usan
+para el cálculo de las componentes <span
+class="math inline">\(x^{(k)}_{i+1},\ldots,x^{(k)}_n\)</span> de dicho
+vector.</p></li>
+<li><p>Es decir, la sucesión de aproximaciones se calcula de la forma
+siguiente:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+x_1^{(k)} = &amp;
+\dfrac{1}{a_{11}}\left(b_1-\left(a_{12}x_2^{(k-1)}+\cdots+a_{1n}x_n^{(k-1)}\right)\right)\\
+x_2^{(k)} = &amp;
+\dfrac{1}{a_{22}}\left(b_2-\left(a_{21}x_1^{(k)}+a_{23}x_3^{(k-1)}+\cdots+a_{2n}x_n^{(k-1)}\right)\right)\\
+\vdots &amp;\\
+x_i^{(k)} = &amp;
+\dfrac{1}{a_{ii}}\left(b_i-\left(a_{i1}x_1^{(k)}+\cdots+a_{i,i-1}x_{i-1}^{(k)}+a_{i,i+1}x_{i+1}^{(k-1)}\cdots+a_{in}x_n^{(k-1)}\right)\right)\\
+\vdots &amp; \\
+x_n^{(k)} = &amp;
+\dfrac{1}{a_{nn}}\left(b_n-\left(a_{n1}x_1^{(k)}+\cdots+a_{n,n-1}x_{n-1}^{(k)}\right)\right)\\
+\end{align*}\]</span></p>
+</div>
+<ul>
+<li>Matricialmente, la sucesión de aproximaciones se calcularía de la
+forma siguiente:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[{
+\begin{pmatrix}
+x_1^{(k)} \\ x_2^{(k)}\\ \vdots\\ x_n^{(k)} \\
+\end{pmatrix} = \begin{pmatrix}
+0 &amp; 0 &amp; \cdots &amp; 0\\
+-\frac{a_{21}}{a_{22}} &amp; 0 &amp; \cdots &amp; 0\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+-\frac{a_{n1}}{a_{nn}} &amp; -\frac{a_{n2}}{a_{nn}} &amp; \cdots &amp; 0
+\end{pmatrix}\begin{pmatrix}
+x_1^{(k)} \\ x_2^{(k)}\\ \vdots\\ x_n^{(k)} \\
+\end{pmatrix} + \begin{pmatrix}
+0 &amp; -\frac{a_{12}}{a_{11}} &amp; \cdots &amp;
+-\frac{a_{1n}}{a_{11}}\\
+0 &amp; 0 &amp; \cdots &amp; -\frac{a_{2n}}{a_{22}}\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; \cdots &amp; 0
+\end{pmatrix}\begin{pmatrix}
+x_1^{(k-1)} \\ x_2^{(k-1)}\\ \vdots\\ x_n^{(k-1)} \\
+\end{pmatrix}+\begin{pmatrix}
+\frac{b_1}{a_{11}} \\ \frac{b_2}{a_{22}}\\ \vdots\\ \frac{b_n}{a_{nn}}
+\\
+\end{pmatrix}}
+\]</span></p>
+</div>
+<ul>
+<li><p>La matriz de iteración y el vector independiente del método de
+Gauss-Seidel, se pueden deducir a partir de la descomposición de la
+matriz del sistema <span class="math inline">\(A\)</span> usada
+anteriormente: <span class="math display">\[
+A=D+L+U
+\]</span> El sistema a resolver <span
+class="math inline">\(Ax=b\)</span> o, si se quiere: <span
+class="math inline">\((D+L+U)x=b\)</span>:</p></li>
+<li><p>Dejando los elementos diagonales y pasando los demás elementos al
+término de la derecha:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+Dx = -(L+U)x+b
+\]</span></p>
+</div>
+<ul>
+<li>Separando las componentes calculadas de las no calculadas del vector
+<span class="math inline">\(x\)</span>:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+Dx = -Lx -Ux + b
+\]</span></p>
+</div>
+<ul>
+<li>Escribiendo la expresión anterior en función de la sucesión de
+aproximaciones <span class="math inline">\(x^{(k)}\)</span> se
+obtiene:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+Dx^{(k)} = -Lx^{(k)} -Ux^{(k-1)} + b
+\]</span></p>
+</div>
+<ul>
+<li>Reagrupando los términos que tienen a <span
+class="math inline">\(x^{(k)}\)</span> como factor en el lado
+izquierdo:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+(D+L)x^{(k)} = -Ux^{(k-1)} + b
+\]</span></p>
+</div>
+<ul>
+<li>Despejando <span class="math inline">\(x^{(k)}\)</span>:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x^{(k)} = -(D+L)^{-1}Ux^{(k-1)} + (D+L)^{-1}b
+\]</span></p>
+</div>
+<p>Entonces, la matriz de iteración y el vector independiente del método
+de Gauss-Seidel son:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+T_{GS} = -(D+L)^{-1}U, \quad c_{GS} = (D+L)^{-1}b
+\]</span></p>
+</div>
+<div class="cuadro-alg">
+<p><strong>FUNCION Metodo_Gauss-Seidel(A, b, x0, tol,
+max_iter):</strong></p>
+<pre><code>n = dimensión de A (número de filas)
+x = x0  # Vector de solución inicial
+
+PARA k = 1 HASTA max_iter:
+    x_anterior = x
+
+    # Calcular cada componente de la nueva solución
+    PARA i = 1 HASTA n:
+        suma_nuevos = 0
+        # Suma de los componentes ya actualizados en esta iteración (j &lt; i)
+        PARA j = 1 HASTA i - 1:
+            suma_nuevos = suma_nuevos + A[i, j] * x[j]
+        FIN PARA
+
+        suma_viejos = 0
+        # Suma de los componentes de la iteración anterior (j &gt; i)
+        PARA j = i + 1 HASTA n:
+            suma_viejos = suma_viejos + A[i, j] * x_anterior[j]
+        FIN PARA
+
+        # Calcular y actualizar el componente x[i] inmediatamente
+        x[i] = (b[i] - suma_nuevos - suma_viejos) / A[i, i]
+    FIN PARA
+
+    # Criterio de parada (usando el error absoluto como ejemplo)
+    SI norma(x - x_anterior) &lt; tol ENTONCES
+        RETORNAR x  # Solución encontrada
+    FIN SI
+FIN PARA
+
+RETORNAR &quot;El método no convergió en max_iter iteraciones&quot;</code></pre>
+<p><strong>FIN FUNCION</strong></p>
+</div>
+<div id="ejemplo-10" class="section level4 caja-ejemplo"
+number="2.4.3.1">
+<h4><span class="header-section-number">2.4.3.1</span> Ejemplo 10</h4>
+<p>Consideremos el mismo sistema de 4 ecuaciones del <strong>Ejemplo
+9</strong> para aplicar el método de Gauss-Seidel: <span
+class="math display">\[
+\begin{align*}
+E_1: &amp; 22x_1 + 5x_1 + 5x_3 + 6x_4 = 5\\
+E_2: &amp; 5x_1 + 19x_2 + 3x_3 + 6x_4 = 7\\
+E_3: &amp; 5x_1 + 5x_2 + 24x_3 + 5x_4 = 8\\
+E_4: &amp; 7x_1 + 7x_2 + 4x_3 + 25x_4 = 5
+\end{align*}
+\]</span></p>
+<p>Las ecuaciones de recurrencia para Gauss-Seidel, utilizando los
+valores más recientes, son: <span class="math display">\[
+\begin{align*}
+x_1^{(k)} = &amp; \dfrac{1}{22}\left(5 - 5x_2^{(k-1)} - 5x_3^{(k-1)} -
+6x_4^{(k-1)}\right) \\
+x_2^{(k)} = &amp; \dfrac{1}{19}\left(7 - 5x_1^{(k)} - 3x_3^{(k-1)} -
+6x_4^{(k-1)}\right) \\
+x_3^{(k)} = &amp; \dfrac{1}{24}\left(8 - 5x_1^{(k)} - 5x_2^{(k)} -
+5x_4^{(k-1)}\right) \\
+x_4^{(k)} = &amp; \dfrac{1}{25}\left(5 - 7x_1^{(k)} - 7x_2^{(k)} -
+4x_3^{(k)}\right)
+\end{align*}
+\]</span></p>
+<pre><code>## --- Solución con Gauss-Seidel (Criterio Absoluto) ---</code></pre>
+<pre><code>## Número total de iteraciones: 11
+## x = [0.09157775 0.28873165 0.24271061 0.05467967]
+## array([0.09157775, 0.28873165, 0.24271061, 0.05467967])</code></pre>
+<pre><code>## 
+## ==================================================</code></pre>
+<pre><code>## --- Solución con Criterio de Parada Relativo (REL) ---</code></pre>
+<pre><code>## Número total de iteraciones: 11
+## x = [0.09157775 0.28873165 0.24271061 0.05467967]
+## array([0.09157775, 0.28873165, 0.24271061, 0.05467967])</code></pre>
+<pre><code>## 
+## ==================================================</code></pre>
+<pre><code>## --- Solución con Criterio de Parada Residual (RES) ---</code></pre>
+<pre><code>## x^(1) = [0.22727273 0.30861244 0.22169059 0.01448166]
+## x^(2) = [0.10279977 0.30179155 0.24602646 0.0473502 ]
+## x^(3) = [0.08985494 0.29097604 0.24412892 0.0543067 ]
+## x^(4) = [0.09084705 0.28881778 0.2429226  0.05482623]
+## x^(5) = [0.09147003 0.28868024 0.24271323 0.05472381]
+## x^(6) = [0.09157681 0.28871755 0.24270455 0.05468485]
+## x^(7) = [0.09158093 0.28873014 0.24270918 0.05467943]
+## x^(8) = [0.09157849 0.28873176 0.24271048 0.05467945]
+## x^(9) = [0.09157782 0.28873172 0.24271063 0.05467963]
+## x^(10) = [0.09157775 0.28873166 0.24271062 0.05467967]
+## x^(11) = [0.09157775 0.28873165 0.24271061 0.05467967]
+## Número total de iteraciones: 11
+## x = [0.09157775 0.28873165 0.24271061 0.05467967]
+## array([0.09157775, 0.28873165, 0.24271061, 0.05467967])</code></pre>
+</div>
+<ul>
+<li><p>Se observa que en este caso el método de Gauss-Seidel requiere
+menos iteraciones para converger que el método de Jacobi usando el mismo
+criterio de parada.</p></li>
+<li><p>Sin embargo, hay casos en que ocurre el efecto contrario: es el
+método de Jacobi que converge más rápidamente.</p></li>
+<li><p>Como se vera más adelante, depende de las matrices de iteración
+de los dos métodos.</p></li>
+</ul>
+</div>
+<div id="estudio-de-la-convergencia" class="section level3"
+number="2.4.4">
+<h3><span class="header-section-number">2.4.4</span> Estudio de la
+convergencia</h3>
+<p>Para hallar la recurrencia que gobierna la sucesión de aproximaciones
+<span class="math inline">\(x^{(k)}\)</span>, se tranforma el sistema
+lineal <span class="math inline">\(Ax=b\)</span> en el sistema lineal
+equivalente <span class="math inline">\(x=Tx+c\)</span> y, a partir de
+la última expresión, definimos la recurrencia de las aproximaciones
+<span class="math inline">\(x^{(k)}\)</span>.</p>
+<p>Entonces, si la sucesión de aproximaciones <span
+class="math inline">\(x^{(k)}\)</span> converge a la solución <span
+class="math inline">\(x\)</span>, ésta verificará:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x=Tx+c,\quad \Rightarrow (I-T)x=c,\quad \Rightarrow x=(I-T)^{-1}c.
+\]</span></p>
+</div>
+<p>Escribiendo la sucesión de aproximaciones <span
+class="math inline">\(x^{(k)}\)</span> en función de la aproximación
+inicial <span class="math inline">\(x^{(0)}\)</span>, se tendría lo
+siguiente:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\begin{align*}
+&amp; x^{(1)} =Tx^{(0)}+c\\
+&amp; x^{(2)} =Tx^{(1)}+c = T(Tx^{(0)}+c)+c = T^2x^{(0)}+Tc+c\\
+&amp; x^{(3)} = Tx^{(2)}+c = T(T^2x^{(0)}+Tc+c) = T^3x^{(0)}+T^2c+Tc+c\\
+&amp; \vdots\\
+&amp; x^{(k)} = T^kx^{(0)}+T^{k-1}c+\cdots+Tc+c = T^kx^{(0)}+
+\left(\sum_{i=0}^{k-1}T^i\right)c
+\end{align*}
+\]</span></p>
+</div>
+<p>Teniendo en cuenta que el límite <span
+class="math inline">\(x\)</span> de la sucesión de aproximaciones, en
+caso de existir, verifica que <span
+class="math inline">\(x=(I-T)^{-1}c\)</span>, usando la expresión
+anterior,</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x^{(k)}=T^kx^{(0)}+\left(\sum_{i=0}^{k-1}T^i\right)c
+\]</span></p>
+</div>
+<p>parece que para que la sucesión de aproximaciones sea convergente, la
+sucesión de matrices <span class="math inline">\(T^k\)</span> debe
+tender a la matriz <span class="math inline">\(0\)</span> y que la suma
+de matrices <span
+class="math inline">\(\displaystyle\left(\sum_{i=0}^{k-1}T^i\right)\)</span>
+debe tender a <span class="math inline">\((I-T)^{-1}\)</span>.</p>
+<div class="caja-lema">
+<p><strong>Lema. Convergencia de una serie de matrices.</strong></p>
+<p>Sea <span class="math inline">\(T\)</span> una matriz cuadrada <span
+class="math inline">\(n\times n\)</span> cuyo radio espectral es menor
+que 1, <span class="math inline">\(\rho(T)&lt;1\)</span>. Entonces,</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+(I-T)^{-1}=I+T+T^2+\cdots=\sum_{j=0}^{\infty}T^j.
+\]</span></p>
+</div>
+<p>Es decir, la serie o la suma infinita de matrices <span
+class="math inline">\(\displaystyle\sum_{j=0}^{\infty}T^j\)</span> es
+convergente si el radio espectral de la matriz <span
+class="math inline">\(T\)</span> de la que hallamos las potencias es
+menor que 1.</p>
+</div>
+<ul>
+<li>Es más sencillo calcular la norma de una matriz que el cálculo de
+sus autovalores</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\left.\begin{align*}
+Tx = &amp; \lambda x\\
+\|Tx\| = &amp; |\lambda|\|x\|\\
+\|Tx\| \leq &amp; \|T\|\|x\|
+\end{align*}\right\} \Rightarrow |\lambda|\|x\| \leq \|T\|\|x\|
+\Rightarrow |\lambda|\leq \|T\|
+\]</span></p>
+</div>
+<ul>
+<li>Por lo que una condición suficiente para la convergencia es: <span
+class="math inline">\(\mathbf{\|T\| &lt; 1}\)</span></li>
+</ul>
+<div id="ejemplo-11" class="section level4 caja-ejemplo"
+number="2.4.4.1">
+<h4><span class="header-section-number">2.4.4.1</span> Ejemplo 11</h4>
+<p>De el sistemas de ecuaciones trabajado en los <strong>Ejemplo
+9</strong> y <strong>Ejemplo 10</strong>, se tiene que las matrices
+iteración de Jacobi y Gauss-Seidel son: <span class="math display">\[
+\begin{pmatrix}
+22 &amp; 5 &amp; 5 &amp; 6\\
+5 &amp; 19 &amp; 3 &amp; 6\\
+5 &amp; 5 &amp; 24 &amp; 5\\
+7 &amp; 7 &amp; 4 &amp; 25
+\end{pmatrix}
+\]</span> Y las matrices de Iteración para cada método son <span
+class="math display">\[
+T_J = -D^{-1}(L+U),\qquad T_{GS} = -(D+L)^{-1}U
+\]</span> obteniendo <span class="math display">\[ T_J \approx
+\begin{pmatrix}
+0 &amp; -0.2273 &amp; -0.2273 &amp; -0.2727 \\
+-0.2632 &amp; 0 &amp; -0.1579 &amp; -0.3158 \\
+-0.2083 &amp; -0.2083 &amp; 0 &amp; -0.2083 \\
+-0.2800 &amp; -0.2800 &amp; -0.1600 &amp; 0
+\end{pmatrix} \qquad T_{GS} \approx
+\begin{pmatrix}
+0 &amp; -0.2273 &amp; -0.2273 &amp; -0.2727 \\
+0 &amp; 0.0598 &amp; -0.0979 &amp; -0.2441 \\
+0 &amp; 0.0524 &amp; 0.0245 &amp; -0.1866 \\
+0 &amp; 0.0451 &amp; 0.0396 &amp; 0.0583
+\end{pmatrix}
+\]</span></p>
+</div>
 <hr />
-<p><small>Última revisión: 02 de noviembre, 2025</small></p>
+<p><small>Última revisión: 03 de noviembre, 2025</small></p>
 </div>
 </div>
 </div>

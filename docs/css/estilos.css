@@ -136,3 +136,27 @@ body {
     color: #1b5e20; /* Color de texto verde más oscuro */
     margin: 0; /* Elimina el margen interno por defecto del <pre> */
 }
+
+/* Estilo para las cajas de lema o bloques de información */
+.caja-lema {
+    /* Un tono de amarillo muy claro */
+    background-color: #f5e876;
+    
+    /* Borde del mismo color para un look suave */
+    border: 1px solid #fff9c4; 
+    
+    /* Opcional: Borde izquierdo más oscuro para énfasis */
+    border-left: 5px solid #fdd835; /* Un tono de amarillo más oscuro */
+    
+    /* Espaciado interno */
+    padding: 15px 20px;
+    
+    /* Margen exterior para separarlo de otros elementos */
+    margin: 25px 0; 
+    
+    /* Esquinas ligeramente redondeadas */
+    border-radius: 8px; 
+    
+    /* Opcional: Sombra sutil para darle profundidad */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); 
+}

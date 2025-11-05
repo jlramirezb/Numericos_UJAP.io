@@ -1509,6 +1509,356 @@ jacobi(A, b, x0.copy(), stop="RES", verbose=True)
 
 :::
 
+### Método de Gauss-Seidel
+* El método de Gauss-Seidel consiste en aplicar el método de Jacobi con una modificación: las componentes del vector $x^{(k)}$ de la iteración actual, $x^{(k)}_i$, que se van calculando, se usan para el cálculo de las componentes $x^{(k)}_{i+1},\ldots,x^{(k)}_n$ de dicho vector.
+
+* Es decir, la sucesión de aproximaciones se calcula de la forma siguiente:
+
+::: recuadro-gris
+\begin{align*}
+x_1^{(k)} = & \dfrac{1}{a_{11}}\left(b_1-\left(a_{12}x_2^{(k-1)}+\cdots+a_{1n}x_n^{(k-1)}\right)\right)\\
+x_2^{(k)} = & \dfrac{1}{a_{22}}\left(b_2-\left(a_{21}x_1^{(k)}+a_{23}x_3^{(k-1)}+\cdots+a_{2n}x_n^{(k-1)}\right)\right)\\
+\vdots &\\
+x_i^{(k)} = & \dfrac{1}{a_{ii}}\left(b_i-\left(a_{i1}x_1^{(k)}+\cdots+a_{i,i-1}x_{i-1}^{(k)}+a_{i,i+1}x_{i+1}^{(k-1)}\cdots+a_{in}x_n^{(k-1)}\right)\right)\\
+\vdots & \\
+x_n^{(k)} = & \dfrac{1}{a_{nn}}\left(b_n-\left(a_{n1}x_1^{(k)}+\cdots+a_{n,n-1}x_{n-1}^{(k)}\right)\right)\\
+\end{align*}
+:::
+
+* Matricialmente, la sucesión de aproximaciones se calcularía de la forma siguiente:
+
+::: recuadro-gris
+
+$${
+\begin{pmatrix}
+x_1^{(k)} \\ x_2^{(k)}\\ \vdots\\ x_n^{(k)} \\ 
+\end{pmatrix} = \begin{pmatrix}
+0 & 0 & \cdots & 0\\
+-\frac{a_{21}}{a_{22}} & 0 & \cdots & 0\\
+\vdots & \vdots & \ddots & \vdots\\
+-\frac{a_{n1}}{a_{nn}} & -\frac{a_{n2}}{a_{nn}} & \cdots & 0
+\end{pmatrix}\begin{pmatrix}
+x_1^{(k)} \\ x_2^{(k)}\\ \vdots\\ x_n^{(k)} \\ 
+\end{pmatrix} + \begin{pmatrix}
+0 & -\frac{a_{12}}{a_{11}} & \cdots & -\frac{a_{1n}}{a_{11}}\\
+0 & 0 & \cdots & -\frac{a_{2n}}{a_{22}}\\
+\vdots & \vdots & \ddots & \vdots\\
+0 & 0 & \cdots & 0
+\end{pmatrix}\begin{pmatrix}
+x_1^{(k-1)} \\ x_2^{(k-1)}\\ \vdots\\ x_n^{(k-1)} \\ 
+\end{pmatrix}+\begin{pmatrix}
+\frac{b_1}{a_{11}} \\ \frac{b_2}{a_{22}}\\ \vdots\\ \frac{b_n}{a_{nn}} \\ 
+\end{pmatrix}}
+$$
+:::
+
+* La matriz de iteración y el vector independiente del método de Gauss-Seidel, se pueden deducir a partir de la descomposición de la matriz del sistema $A$ usada anteriormente:
+$$
+A=D+L+U
+$$
+El sistema a  resolver $Ax=b$ o, si se quiere: $(D+L+U)x=b$:
+
+* Dejando los elementos diagonales y pasando los demás elementos al término de la derecha:
+
+::: recuadro-gris
+$$
+Dx = -(L+U)x+b
+$$
+:::
+
+* Separando las componentes calculadas de las no calculadas del vector $x$:
+
+::: recuadro-gris
+$$
+Dx = -Lx -Ux + b
+$$
+:::
+
+* Escribiendo la expresión anterior en función de la sucesión de aproximaciones $x^{(k)}$ se  obtiene:
+
+::: recuadro-gris
+$$
+Dx^{(k)} = -Lx^{(k)} -Ux^{(k-1)} + b
+$$
+:::
+
+* Reagrupando los términos que tienen a $x^{(k)}$ como factor en el lado izquierdo:
+
+::: recuadro-gris
+$$
+(D+L)x^{(k)} = -Ux^{(k-1)} + b
+$$
+:::
+
+* Despejando $x^{(k)}$:
+
+::: recuadro-gris
+$$
+x^{(k)} = -(D+L)^{-1}Ux^{(k-1)} + (D+L)^{-1}b
+$$
+:::
+
+Entonces, la matriz de iteración y el vector independiente del método de Gauss-Seidel son:
+
+::: recuadro-gris
+$$
+T_{GS} = -(D+L)^{-1}U, \quad c_{GS} = (D+L)^{-1}b
+$$
+:::
+
+::: cuadro-alg
+**FUNCION Metodo_Gauss-Seidel(A, b, x0, tol, max_iter):**
+
+    n = dimensión de A (número de filas)
+    x = x0  # Vector de solución inicial
+
+    PARA k = 1 HASTA max_iter:
+        x_anterior = x
+    
+        # Calcular cada componente de la nueva solución
+        PARA i = 1 HASTA n:
+            suma_nuevos = 0
+            # Suma de los componentes ya actualizados en esta iteración (j < i)
+            PARA j = 1 HASTA i - 1:
+                suma_nuevos = suma_nuevos + A[i, j] * x[j]
+            FIN PARA
+
+            suma_viejos = 0
+            # Suma de los componentes de la iteración anterior (j > i)
+            PARA j = i + 1 HASTA n:
+                suma_viejos = suma_viejos + A[i, j] * x_anterior[j]
+            FIN PARA
+
+            # Calcular y actualizar el componente x[i] inmediatamente
+            x[i] = (b[i] - suma_nuevos - suma_viejos) / A[i, i]
+        FIN PARA
+
+        # Criterio de parada (usando el error absoluto como ejemplo)
+        SI norma(x - x_anterior) < tol ENTONCES
+            RETORNAR x  # Solución encontrada
+        FIN SI
+    FIN PARA
+
+    RETORNAR "El método no convergió en max_iter iteraciones"
+**FIN FUNCION**
+:::
+
+::: caja-ejemplo
+#### Ejemplo 10
+Consideremos el mismo sistema de 4 ecuaciones del **Ejemplo 9** para aplicar el método de Gauss-Seidel:
+$$
+\begin{align*}
+E_1: & 22x_1 + 5x_1 + 5x_3 + 6x_4 = 5\\
+E_2: & 5x_1 + 19x_2 + 3x_3 + 6x_4 = 7\\
+E_3: & 5x_1 + 5x_2 + 24x_3 + 5x_4 = 8\\
+E_4: & 7x_1 + 7x_2 + 4x_3 + 25x_4 = 5 
+\end{align*}
+$$
+
+Las ecuaciones de recurrencia para Gauss-Seidel, utilizando los valores más recientes, son:
+$$
+\begin{align*}
+x_1^{(k)} = & \dfrac{1}{22}\left(5 - 5x_2^{(k-1)} - 5x_3^{(k-1)} - 6x_4^{(k-1)}\right) \\
+x_2^{(k)} = & \dfrac{1}{19}\left(7 - 5x_1^{(k)} - 3x_3^{(k-1)} - 6x_4^{(k-1)}\right) \\
+x_3^{(k)} = & \dfrac{1}{24}\left(8 - 5x_1^{(k)} - 5x_2^{(k)} - 5x_4^{(k-1)}\right) \\
+x_4^{(k)} = & \dfrac{1}{25}\left(5 - 7x_1^{(k)} - 7x_2^{(k)} - 4x_3^{(k)}\right)
+\end{align*}
+$$
+
+``` {python, echo=FALSE}
+import numpy as np
+
+def stopCriterion(x, x0, A, b, criterion = "ABS"):
+  """
+  Esta función devuelve el valor según el criterio de parada
+
+  Args:
+    x: Array unidimensional que representa el punto actual de iteración
+    x0: Array unidimensional que representa el punto anterior de iteración
+    A: Matriz del sistema
+    b: Vector de términos independientes
+    criterion: String (Criterio de parada: ABS, REL, RES)
+
+  Returns:
+    Float (error absoluto, relativo o residual, en función de criterion)
+  """
+
+  if criterion.upper() == "ABS":
+    return np.linalg.norm(x - x0)
+  elif criterion.upper() == "REL":
+    return np.linalg.norm(x - x0) / np.linalg.norm(x)
+  elif criterion.upper() == "RES":
+    return np.linalg.norm(np.dot(A, x) - b)
+  else:
+    # Por defecto, devuelve el error absoluto si el criterio no es reconocido
+    return np.linalg.norm(x - x0)
+
+def gauss_seidel(A, b, x0, TOL=1e-07, nmax=100, stop="ABS", verbose=False):
+  """
+  Esta función resuelve un sistema lineal Ax = b mediante el método
+  de Gauss-Seidel.
+
+  Args:
+    A: Array bidimensional de numpy (Matriz de coeficientes)
+    b: Array unidimensional (Vector de términos independientes)
+    x0: Array unidimensional (Valor inicial)
+    TOL: Float (Tolerancia)
+    nmax: Float (Número máximo de iteraciones)
+    stop: String (Criterio de parada: ABS, REL o RES)
+    verbose: Booleano para mostrar o no los resultados relevantes
+  
+  Returns:
+    x: Array unidimensional (Solución del sistema)
+  """
+  n = A.shape[0]
+  x = x0.copy()
+  
+  if stop.upper() not in ["ABS", "REL", "RES"]:
+    print("El criterio de parada introducido no es válido")
+    return
+  
+  k = 1
+  while k <= nmax:
+    x_anterior = x.copy()
+    for i in range(n):
+      suma = 0
+      for j in range(n):
+        if i != j:
+          suma += A[i, j] * x[j]
+      x[i] = (b[i] - suma) / A[i, i]
+      
+    if verbose:
+      print("x^({}) = {}".format(k, x))
+      
+    if stopCriterion(x, x_anterior, A, b, criterion=stop) < TOL:
+      print("Número total de iteraciones:", k)
+      print("x =", x)
+      return x
+      
+    k += 1
+    
+  print("Número máximo de iteraciones alcanzado.")
+  print("El método no converge.")
+  return
+
+A = np.array([[22., 5., 5., 6.], [5., 19., 3., 6.], [5., 5., 24., 5.], [7., 7., 4., 25.]])
+b = np.array([5., 7., 8., 5.])
+x0 = np.zeros(A.shape[0])
+
+print("--- Solución con Gauss-Seidel (Criterio Absoluto) ---")
+gauss_seidel(A, b, x0.copy(), stop="ABS", verbose=False)
+print("\n" + "="*50 + "\n")
+print("--- Solución con Criterio de Parada Relativo (REL) ---")
+gauss_seidel(A, b, x0.copy(), stop="REL", verbose=False)
+print("\n" + "="*50 + "\n")
+print("--- Solución con Criterio de Parada Residual (RES) ---")
+gauss_seidel(A, b, x0.copy(), stop="RES", verbose=True)
+```
+:::
+
+* Se observa que en este caso el método de Gauss-Seidel requiere menos iteraciones para converger que el método de Jacobi usando el mismo criterio de parada.
+
+* Sin embargo, hay casos en que ocurre el efecto contrario: es el método de Jacobi que converge más rápidamente.
+
+* Como se vera más adelante, depende de las matrices de iteración de los dos métodos.
+
+### Estudio de la convergencia
+
+Para hallar la recurrencia que gobierna la sucesión de aproximaciones $x^{(k)}$, se tranforma el sistema lineal $Ax=b$ en el sistema lineal equivalente $x=Tx+c$ y, a partir de la última expresión, definimos la recurrencia de las aproximaciones $x^{(k)}$.
+
+Entonces, si la sucesión de aproximaciones $x^{(k)}$ converge a la solución $x$, ésta verificará:
+
+::: recuadro-gris
+$$
+x=Tx+c,\quad \Rightarrow (I-T)x=c,\quad \Rightarrow x=(I-T)^{-1}c.
+$$
+:::
+
+Escribiendo la sucesión de aproximaciones $x^{(k)}$ en función de la aproximación inicial $x^{(0)}$, se tendría lo siguiente:
+
+::: recuadro-gris
+$$
+\begin{align*}
+& x^{(1)} =Tx^{(0)}+c\\
+& x^{(2)} =Tx^{(1)}+c = T(Tx^{(0)}+c)+c = T^2x^{(0)}+Tc+c\\
+& x^{(3)} = Tx^{(2)}+c = T(T^2x^{(0)}+Tc+c) = T^3x^{(0)}+T^2c+Tc+c\\
+& \vdots\\
+& x^{(k)} = T^kx^{(0)}+T^{k-1}c+\cdots+Tc+c = T^kx^{(0)}+ \left(\sum_{i=0}^{k-1}T^i\right)c
+\end{align*}
+$$
+:::
+
+Teniendo en cuenta que el límite $x$ de la sucesión de aproximaciones, en caso de existir, verifica que $x=(I-T)^{-1}c$, usando la expresión anterior,
+
+::: recuadro-gris
+$$
+x^{(k)}=T^kx^{(0)}+\left(\sum_{i=0}^{k-1}T^i\right)c
+$$
+:::
+
+parece que para que la sucesión de aproximaciones sea convergente, la sucesión de matrices $T^k$ debe tender a la matriz $0$ y que la suma de matrices $\displaystyle\left(\sum_{i=0}^{k-1}T^i\right)$ debe tender a $(I-T)^{-1}$.
+
+::: caja-lema
+
+**Lema. Convergencia de una serie de matrices.**
+
+Sea $T$ una matriz cuadrada $n\times n$ cuyo radio espectral es menor que 1, $\rho(T)<1$. Entonces,
+
+::: recuadro-gris
+$$
+(I-T)^{-1}=I+T+T^2+\cdots=\sum_{j=0}^{\infty}T^j.
+$$
+:::
+Es decir, la serie o la suma infinita de matrices $\displaystyle\sum_{j=0}^{\infty}T^j$ es convergente si el radio espectral de la matriz $T$ de la que hallamos las potencias es menor que 1.
+:::
+
+* Es más sencillo calcular la norma de una matriz que el cálculo de sus autovalores
+
+::: recuadro-gris
+$$
+\left.\begin{align*}
+Tx = & \lambda x\\
+\|Tx\| = & |\lambda|\|x\|\\
+\|Tx\| \leq & \|T\|\|x\|
+\end{align*}\right\} \Rightarrow |\lambda|\|x\| \leq \|T\|\|x\| \Rightarrow |\lambda|\leq \|T\|
+$$
+:::
+
+* Por lo que una condición suficiente para la convergencia es: $\mathbf{\|T\| < 1}$
+
+::: caja-ejemplo
+#### Ejemplo 11
+De el sistemas de ecuaciones trabajado en los **Ejemplo 9** y **Ejemplo 10**, se tiene que las matrices iteración de Jacobi y Gauss-Seidel son:
+$$ \begin{pmatrix} 
+22 & 5 & 5 & 6\\
+5 & 19 & 3 & 6\\
+5 & 5 & 24 & 5\\
+7 & 7 & 4 & 25 
+\end{pmatrix} 
+$$
+Y las matrices de Iteración para cada método son
+$$
+T_J = -D^{-1}(L+U),\qquad T_{GS} = -(D+L)^{-1}U
+$$
+obteniendo
+$$ T_J \approx 
+\begin{pmatrix} 
+0 & -0.2273 & -0.2273 & -0.2727 \\
+-0.2632 & 0 & -0.1579 & -0.3158 \\
+-0.2083 & -0.2083 & 0 & -0.2083 \\
+-0.2800 & -0.2800 & -0.1600 & 0 
+\end{pmatrix} \qquad T_{GS} \approx 
+\begin{pmatrix}
+0 & -0.2273 & -0.2273 & -0.2727 \\
+0 & 0.0598 & -0.0979 & -0.2441 \\
+0 & 0.0524 & 0.0245 & -0.1866 \\
+0 & 0.0451 & 0.0396 & 0.0583
+\end{pmatrix} 
+$$
+
+
+:::
+
 ------------------------------------------------------------------------
   
 <small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>
