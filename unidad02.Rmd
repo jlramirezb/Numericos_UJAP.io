@@ -2204,6 +2204,14 @@ solucion_sor = sor(A, b, x0, omega=omega_optimo, verbose=True)
 
 ```
 :::
+
+## Guía de ejercicios
+En el siguiente enlace  `Ejercicios_Unidad2` encontrará una lista de ejercicios relacionado con los distintos tópicos cubiertos en esta segunda unidad.
+
+Descargue el PDF de esta guía de ejercicios aqui:
+
+[Descargar Guía PDF](Ejercicios_Unidad2.pdf)
+
 ------------------------------------------------------------------------
   
 <small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>
