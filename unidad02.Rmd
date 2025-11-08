@@ -1850,15 +1850,360 @@ $$ T_J \approx
 \end{pmatrix} \qquad T_{GS} \approx 
 \begin{pmatrix}
 0 & -0.2273 & -0.2273 & -0.2727 \\
-0 & 0.0598 & -0.0979 & -0.2441 \\
-0 & 0.0524 & 0.0245 & -0.1866 \\
-0 & 0.0451 & 0.0396 & 0.0583
+0 & 0.0598 & -0.0981 & -0.2440 \\
+0 & 0.0349 & 0.0678 & -0.1007 \\
+0 & 0.0413 & 0.0803 & 0.1608
 \end{pmatrix} 
 $$
-
-
+Radio Espetral y norma de las matrices
+$$
+\begin{array}{l}
+\rho(T_J) \approx 0.7068 \qquad \|T_J\|_{\infty}\approx 0.7368\\
+\rho(T_{GS}) \approx 0.1771 \qquad \|T_{GS}\|_{\infty}\approx 0.7273
+\end{array}
+$$
 :::
 
+### Métodos de Sobrerelajación (SOR)
+
+* Se ha visto que la clave para ver si la sucesión de aproximaciones $x^{(k)}$ es convergente es el radio espectral de la matriz de iteración $T$, y que la sucesión de aproximaciones se define como:
+$$
+x^{(k)}=Tx^{(k-1)}+c.
+$$
+
+* Concretamente, si el radio espectral de la matriz de iteración es menor que 1, $\tho(T)<1$, la sucesión de aproximaciones $x^{(k)}$ convergerá a la solución exacta del sistema lineal x.
+
+* La idea es diseñar un método dependiendo de un parámetro y estudiar para qué valores del parámetro el radio espectral de la matriz de iteración correspondiente tiene un valor lo más pequeño posible.
+
+* Para ello, vamos a hallar un método iterativo dependiendo de un parámetro $\omega$ hallando un sistema equivalente al sistema a resolver $Ax=b$.
+
+* Recordemos que podemos descomponer la matriz del sistema $A$ en la parte diagonal $D$, la parte triangular inferior $L$ y la parte triangular superior $U$: $A=D+L+U$.
+
+* Escribamos el sistema $Ax=b$ en un sistema equivalente introduciendo un parámetro $\omega$:
+
+::: recuadro-gris
+$$
+\begin{align*}
+Ax & = b \Rightarrow (D+L+U)x=b\\
+\omega(D+L+U)x & = \omega b\\
+(\omega D+\omega L+\omega U)x & = \omega b\\
+(D+(\omega-1)D + \omega L+\omega U)x & = \omega b\\
+(D+\omega L)x & = ((1-\omega)D-\omega U)x+\omega b.
+\end{align*}
+$$
+:::
+
+* La sucesión de aproximaciones $x^{(k)}_{\omega}$ definida por el parámetro \omega viene dada por:
+
+::: recuadro-gris
+$$
+(D+\omega L)x^{(k)}_{\omega}=((1-\omega)D-\omega U)x^{(k-1)}_{\omega}+\omega b
+$$
+:::
+
+* Entonces, la matriz de iteración y el vector independiente del método de SOR son:
+
+::: recuadro-gris
+$$
+T_{\omega} = (D+\omega L)^{-1}((1-\omega )D -  \omega U), \quad c_{\omega} = \omega(D+\omega L)^{-1}b
+$$
+:::
+
+::: caja-ejemplo
+#### Ejemplo 12
+De el sistemas de ecuaciones trabajado en los **Ejemplo 9** y **Ejemplo 10**, se tiene que la matriz de iteración de SOR es:
+$$ A= \begin{pmatrix} 
+22 & 5 & 5 & 6\\
+5 & 19 & 3 & 6\\
+5 & 5 & 24 & 5\\
+7 & 7 & 4 & 25 
+\end{pmatrix} 
+$$
+$$
+T_{\omega} = (D+\omega L)^{-1}((1-\omega)D-\omega U)
+$$
+
+Veamos como varia el radio espectral a medida que $\omega$ varia
+
+``` {python, eval=TRUE, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Matriz A del Ejemplo 12
+A = np.array([
+    [22., 5., 5., 6.],
+    [5., 19., 3., 6.],
+    [5., 5., 24., 5.],
+    [7., 7., 4., 25.]
+])
+
+# Descomposición de la matriz A en D (diagonal), L (triangular inferior) y U (triangular superior)
+D = np.diag(np.diag(A))
+L = np.tril(A, k=-1)
+U = np.triu(A, k=1)
+
+# Rango de valores de omega para probar
+omegas = np.linspace(0.1, 1.9, 100)
+radios_espectrales = []
+
+# Iterar sobre cada valor de omega para calcular el radio espectral de T_omega
+for omega in omegas:
+    # Matriz de iteración para SOR: T_omega = (D + w*L)^-1 * ((1-w)*D - w*U)
+    D_plus_omega_L = D + omega * L
+    inv_D_plus_omega_L = np.linalg.inv(D_plus_omega_L)
+    
+    one_minus_omega_D = (1 - omega) * D
+    minus_omega_U = -omega * U
+    
+    T_omega = np.dot(inv_D_plus_omega_L, (one_minus_omega_D + minus_omega_U))
+    
+    # Calcular los autovalores y el radio espectral (máximo de los valores absolutos de los autovalores)
+    autovalores = np.linalg.eigvals(T_omega)
+    radio_espectral = np.max(np.abs(autovalores))
+    radios_espectrales.append(radio_espectral)
+
+# Encontrar el valor óptimo de omega (donde el radio espectral es mínimo)
+min_radio = min(radios_espectrales)
+omega_optimo = omegas[radios_espectrales.index(min_radio)]
+
+print(f"El valor óptimo de omega es: {omega_optimo:.4f}")
+print(f"El radio espectral mínimo es: {min_radio:.4f}")
+
+# --- Gráfica de los resultados ---
+plt.figure(figsize=(12, 7))
+plt.plot(omegas, radios_espectrales, label="Radio Espectral ρ(Tω)")
+plt.axvline(omega_optimo, color='r', linestyle='--', label=f'ω óptimo ≈ {omega_optimo:.4f}')
+plt.axhline(1, color='gray', linestyle=':', label='Límite de convergencia (ρ < 1)')
+
+# Estilo de la gráfica
+plt.title("Radio Espectral del Método SOR vs. Parámetro de Relajación (ω)")
+plt.xlabel("Parámetro de Relajación (ω)")
+plt.ylabel("Radio Espectral ρ(Tω)")
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.show()
+
+```
+
+Veamos como varia la norma de $T_{\omega}$ a medida que $\omega$ varia
+
+``` {python, eval=TRUE, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Matriz A del Ejemplo 12
+A = np.array([
+    [22., 5., 5., 6.],
+    [5., 19., 3., 6.],
+    [5., 5., 24., 5.],
+    [7., 7., 4., 25.]
+])
+
+# Descomposición de la matriz A en D (diagonal), L (triangular inferior) y U (triangular superior)
+D = np.diag(np.diag(A))
+L = np.tril(A, k=-1)
+U = np.triu(A, k=1)
+
+# Rango de valores de omega para probar
+omegas = np.linspace(0.1, 1.9, 100)
+normas_infinitas = []
+
+# Iterar sobre cada valor de omega para calcular la norma infinita de T_omega
+for omega in omegas:
+    # Matriz de iteración para SOR: T_omega = (D + w*L)^-1 * ((1-w)*D - w*U)
+    D_plus_omega_L = D + omega * L
+    inv_D_plus_omega_L = np.linalg.inv(D_plus_omega_L)
+    
+    one_minus_omega_D = (1 - omega) * D
+    minus_omega_U = -omega * U
+    
+    T_omega = np.dot(inv_D_plus_omega_L, (one_minus_omega_D + minus_omega_U))
+    
+    # Calcular la norma infinita de la matriz de iteración T_omega
+    norma_inf = np.linalg.norm(T_omega, np.inf)
+    normas_infinitas.append(norma_inf)
+
+# Encontrar el valor óptimo de omega (donde la norma infinita es mínima)
+min_norma = min(normas_infinitas)
+omega_optimo_norma = omegas[normas_infinitas.index(min_norma)]
+
+print(f"El valor óptimo de omega según la norma infinita es: {omega_optimo_norma:.4f}")
+print(f"La norma infinita mínima es: {min_norma:.4f}")
+
+# --- Gráfica de los resultados ---
+plt.figure(figsize=(12, 7))
+plt.plot(omegas, normas_infinitas, label="Norma Infinita ||Tω||∞", color='purple')
+plt.axvline(omega_optimo_norma, color='g', linestyle='--', label=f'ω óptimo (norma) ≈ {omega_optimo_norma:.4f}')
+plt.axhline(1, color='gray', linestyle=':', label='Límite de convergencia (||T|| < 1)')
+
+# Estilo de la gráfica
+plt.title("Norma Infinita del Método SOR vs. Parámetro de Relajación (ω)")
+plt.xlabel("Parámetro de Relajación (ω)")
+plt.ylabel("Norma Infinita ||Tω||∞")
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.show()
+
+```
+:::
+
+* Observaciones
+  - Si se hace $\omega=1$, el método de SOR es el conocido método de Gauss-Seidel. Por tanto, este método pueden considerarse una generalización del método de Gauss-Seidel.
+  - Este método se denomina método de relajación. Si $0<\omega <1$, el método se denomina método de subrelajación y si $\omega>1$, método de sobrerelajación. Dichos métodos se abrevian con métodos SOR. (successive over-relaxation).
+  - Para que el método iterativo de SOR converja, el parámetro $\omega$ tiene que estar necesariamente entre $0 y 2$.
+
+**Métodos iterativos vs. métodos directos**
+
+* Cuando la dimensión de la matriz del sistema lineal a resolver $Ax=b$ no es demasiado grande, es mejor usar los métodos directos al ser éstos más eficientes en este caso y proporcionar soluciones exactas.
+
+* En cambio, si la dimensión de la matriz del sistema lineal es muy grande y es una matriz sparse que significa que tiene muchos ceros sin ninguna estructura predefinida, es mejor usar métodos iterativos ya que ahorran en almacenamiento y tienen un coste computacional más bajo que los métodos directos.
+  -Los sistemas de este segundo tipo aparecen en problemas de frontera en ecuaciones en derivadas parciales así como en problemas de redes neuronales en el campo de la inteligencia artificial.
+
+::: cuadro-alg
+**FUNCION Metodo_SOR(A, b, x0, omega, tol, max_iter):**
+
+    n = dimensión de A (número de filas)
+    x = x0  # Vector de solución inicial
+
+    PARA k = 1 HASTA max_iter:
+        x_anterior = COPIA(x)
+
+        # Calcular cada componente de la nueva solución
+        PARA i = 1 HASTA n:
+            # Suma de los componentes ya actualizados en esta iteración (j < i)
+            suma_nuevos = 0
+            PARA j = 1 HASTA i - 1:
+                suma_nuevos = suma_nuevos + A[i, j] * x[j]
+            FIN PARA
+
+            # Suma de los componentes de la iteración anterior (j > i)
+            suma_viejos = 0
+            PARA j = i + 1 HASTA n:
+                suma_viejos = suma_viejos + A[i, j] * x_anterior[j]
+            FIN PARA
+
+            # Calcular y actualizar el componente x[i] usando la fórmula de SOR
+            termino_gs = (b[i] - suma_nuevos - suma_viejos) / A[i, i]
+            x[i] = (1 - omega) * x_anterior[i] + omega * termino_gs
+        FIN PARA
+
+        # Criterio de parada (usando el error absoluto como ejemplo)
+        SI norma(x - x_anterior) < tol ENTONCES
+            RETORNAR x  # Solución encontrada
+        FIN SI
+    FIN PARA
+
+    RETORNAR "El método no convergió en max_iter iteraciones"
+**FIN FUNCION**
+:::
+
+::: caja-ejemplo
+#### Ejemplo 13: Solución con SOR
+
+Resolvamos el sistema de ecuaciones del **Ejemplo 9** utilizando el método de Sobrerelajación Sucesiva (SOR).
+
+$$
+\begin{align*}
+E_1: & 22x_1 + 5x_2 + 5x_3 + 6x_4 = 5\\
+E_2: & 5x_1 + 19x_2 + 3x_3 + 6x_4 = 7\\
+E_3: & 5x_1 + 5x_2 + 24x_3 + 5x_4 = 8\\
+E_4: & 7x_1 + 7x_2 + 4x_3 + 25x_4 = 5 
+\end{align*}
+$$
+
+La fórmula de iteración para SOR es:
+$$
+x_i^{(k)} = (1-\omega)x_i^{(k-1)} + \frac{\omega}{a_{ii}} \left( b_i - \sum_{j<i} a_{ij}x_j^{(k)} - \sum_{j>i} a_{ij}x_j^{(k-1)} \right)
+$$
+
+Del **Ejemplo 12**, sabemos que el parámetro de relajación óptimo para este sistema es $\omega \approx 1.01$. Usaremos este valor para acelerar la convergencia. Las ecuaciones de recurrencia son:
+
+$$
+\begin{align*}
+x_1^{(k)} &= (1-\omega)x_1^{(k-1)} + \frac{\omega}{22}\left(5 - 5x_2^{(k-1)} - 5x_3^{(k-1)} - 6x_4^{(k-1)}\right) \\
+x_2^{(k)} &= (1-\omega)x_2^{(k-1)} + \frac{\omega}{19}\left(7 - 5x_1^{(k)} - 3x_3^{(k-1)} - 6x_4^{(k-1)}\right) \\
+x_3^{(k)} &= (1-\omega)x_3^{(k-1)} + \frac{\omega}{24}\left(8 - 5x_1^{(k)} - 5x_2^{(k)} - 5x_4^{(k-1)}\right) \\
+x_4^{(k)} &= (1-\omega)x_4^{(k-1)} + \frac{\omega}{25}\left(5 - 7x_1^{(k)} - 7x_2^{(k)} - 4x_3^{(k)}\right)
+\end{align*}
+$$
+
+A continuación, ejecutando el código Python para resolverlo.
+
+``` {python, eval=TRUE, echo=FALSE}
+import numpy as np
+
+def sor(A, b, x0, omega, TOL=1e-7, nmax=100, verbose=False):
+    """
+    Resuelve un sistema lineal Ax = b mediante el método de Sobrerelajación Sucesiva (SOR).
+
+    Args:
+        A (np.array): Matriz de coeficientes.
+        b (np.array): Vector de términos independientes.
+        x0 (np.array): Valor inicial.
+        omega (float): Parámetro de relajación (0 < omega < 2).
+        TOL (float): Tolerancia para el criterio de parada.
+        nmax (int): Número máximo de iteraciones.
+        verbose (bool): Si es True, muestra las iteraciones.
+
+    Returns:
+        np.array: La solución del sistema.
+    """
+    n = A.shape[0]
+    x = x0.copy()
+    
+    if not (0 < omega < 2):
+        print("Error: omega debe estar en el intervalo (0, 2).")
+        return None
+
+    print(f"--- Solución con SOR (omega = {omega:.4f}) ---")
+    
+    k = 1
+    while k <= nmax:
+        x_anterior = x.copy()
+        
+        for i in range(n):
+            # Suma de los términos con las componentes ya actualizadas en esta iteración (j < i)
+            suma_nuevos = np.dot(A[i, :i], x[:i])
+            
+            # Suma de los términos con las componentes de la iteración anterior (j > i)
+            suma_viejos = np.dot(A[i, i+1:], x_anterior[i+1:])
+            
+            # Fórmula de SOR
+            x[i] = (1 - omega) * x_anterior[i] + (omega / A[i, i]) * (b[i] - suma_nuevos - suma_viejos)
+
+        if verbose:
+            print(f"x^({k}) = {x}")
+            
+        # Criterio de parada (error absoluto entre iteraciones)
+        if np.linalg.norm(x - x_anterior, np.inf) < TOL:
+            print(f"Número total de iteraciones: {k}")
+            print(f"Solución x = {x}")
+            return x
+            
+        k += 1
+        
+    print("Número máximo de iteraciones alcanzado. El método no convergió.")
+    return None
+
+# --- Datos del Ejemplo 9 ---
+A = np.array([
+    [22., 5., 5., 6.],
+    [5., 19., 3., 6.],
+    [5., 5., 24., 5.],
+    [7., 7., 4., 25.]
+])
+
+b = np.array([5., 7., 8., 5.])
+x0 = np.zeros(A.shape[0])
+
+# Parámetro de relajación óptimo calculado previamente
+omega_optimo = 1.01
+
+# Resolver el sistema usando SOR
+solucion_sor = sor(A, b, x0, omega=omega_optimo, verbose=True)
+
+```
+:::
 ------------------------------------------------------------------------
   
 <small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>
