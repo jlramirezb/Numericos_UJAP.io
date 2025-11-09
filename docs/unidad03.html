@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="José Luis Ramírez" />
+
+
+<title>Solución Numérica de Ecuaciones No Lineales</title>
+
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="css/estilos.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Métodos Numéricos</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jlramirezb">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Solución Numérica de Ecuaciones No
+Lineales</h1>
+<h4 class="author">José Luis Ramírez</h4>
+<h4 class="date">Noviembre 2025</h4>
+
+</div>
+
+
+<div id="motivación" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Motivación</h1>
+<ul>
+<li><p>La determinación de las raíces de una ecuación o de un sistema de
+ecuaciones, es uno de los problemas más antiguos de aproximación
+numérica que se presenta con frecuencia en la solución de una gran
+variedad de problemas en la matemática aplicada.</p></li>
+<li><p>En muchos problemas de ingeniería, inteligencia artificial u
+otras disciplinas afines tenemos que resolver ecuaciones del tipo <span
+class="math inline">\(f(x)=0\)</span>, donde <span
+class="math inline">\(f\)</span> es una función que dada una cantidad
+<span class="math inline">\(x\)</span>, nos devuelve <span
+class="math inline">\(f(x)\)</span>.</p></li>
+</ul>
+<div id="ejemplo-1" class="section level4 caja-ejemplo"
+number="1.0.0.1">
+<h4><span class="header-section-number">1.0.0.1</span> Ejemplo 1</h4>
+<p>Se considera por ejemplo la siguiente ecuación obtenida a partir de
+la segunda ley de Newton para calcular la velocidad de un paracaidista,
+<span class="math display">\[
+v=\dfrac{g \cdot m}{c}\left(1-e^{\frac{c}{m}t}\right)
+\]</span> donde la velocidad <span class="math inline">\(v\)</span>
+depende de la variable independiente tiempo, <span
+class="math inline">\(t\)</span>, <span class="math inline">\(g\)</span>
+es la constante de gravitación, <span class="math inline">\(c\)</span>
+el coeficiente de resistencia y <span class="math inline">\(m\)</span>
+es la masa del paracaidista.</p>
+<p>Si se quisiera obtener el coeficiente de resistencia del paracaidista
+con una masa dada, ¿cómo se obtendría este valor para alcanzar una
+velocidad determinada en un periodo establecido? La respuesta se
+obtendría calculando <span class="math inline">\(c\)</span> que hace
+cero a la siguiente función: <span class="math display">\[
+f(c) = \dfrac{g \cdot m}{c}\left(1-e^{\frac{c}{m}t}\right)-v
+\]</span></p>
+<p>esto es, habría que calcular el valor de <span
+class="math inline">\(c\)</span> tal que <span
+class="math inline">\(f(c)=0\)</span>.</p>
+<p>En este caso no es posible encontrar analíticamente el cero de la
+función o su cálculo es complicado.</p>
+</div>
+<ul>
+<li><p>En dichos problemas, conocer explícitamente la función <span
+class="math inline">\(f\)</span> en muchos casos no es posible, sólo
+tenemos un algoritmo que dado un valor <span
+class="math inline">\(x\)</span>, nos devuelve <span
+class="math inline">\(f(x)\)</span>.</p></li>
+<li><p>Entonces, dependiendo de nuestro conocimiento de la función <span
+class="math inline">\(f\)</span>, podremos aplicar un método numérico u
+otro.</p></li>
+<li><p>Todos los métodos numéricos que hallan aproximaciones de ceros
+construyen una <strong>sucesión</strong> <span
+class="math inline">\(\{x_n\}_n\)</span> que queremos que converja hacia
+el cero <span class="math inline">\(\hat{x}\)</span> de la función <span
+class="math inline">\(f\)</span>.</p></li>
+<li><p>Cuanto mayor sea la <strong>velocidad de convergencia</strong> de
+la sucesión <span class="math inline">\(\{x_n\}_n\)</span>, mejor será
+el método usado.</p></li>
+</ul>
+<div id="método-gráfico" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Método Gráfico</h2>
+<p>El método gráfico es un método muy simple, consiste en calcular
+valores de la variable dependiente para distintos valores de la variable
+independiente, para luego observar el punto de intersección de la
+función con el eje de las abscisas. Este punto proporciona una primera
+aproximación a la raíz de la ecuación.</p>
+<p><img src="unidad03_files/figure-html/unnamed-chunk-1-1.png" width="960" /></p>
+</div>
+</div>
+<div id="velocidad-de-convergencia" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Velocidad de
+convergencia</h1>
+<p>Se distinguen distintas velocidades de convergencia que se pasarán a
+definir.</p>
+<div class="caja-lema">
+<p><strong>Definición:</strong></p>
+<p>Dada una sucesión de números reales, <span
+class="math inline">\(\left\{x _k\right\}_{k = 1}^{\infty}\)</span>,
+convergente hacia un punto <span class="math inline">\(\overline
+x\)</span>, se dice que su orden o velocidad de convergencia es <span
+class="math inline">\(p\)</span>, con <span class="math inline">\(p \ge
+1\)</span> si existe una constante <span class="math inline">\(C_p \ge
+0\)</span> tal que:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\left| {{x_{k + 1}} - \overline x }
+\right| \le {C_p}{\left| {{x_k} - \overline x \,} \right|^p}
+\]</span></p>
+</div>
+<p>para todo <span class="math inline">\(k \ge k_0\)</span> siendo <span
+class="math inline">\(k_0\)</span> entero.</p>
+</div>
+<p>En particular,</p>
+<ul>
+<li><p>Si <span class="math inline">\(p=1\)</span> y <span
+class="math inline">\(C_p&lt; 1\)</span>, la convergencia es
+<strong>lineal</strong>. Si <span class="math inline">\(C_p \ge
+1\)</span>, la convergencia es <strong>sublineal</strong>.</p></li>
+<li><p>Si <span class="math inline">\(p=2\)</span>, la convergencia es
+<strong>cuadrática</strong>.</p></li>
+<li><p>Si <span class="math inline">\(p=3\)</span>, la convergencia es
+<strong>cúbica</strong>.</p></li>
+</ul>
+<div id="ejemplo-2" class="section level4 caja-ejemplo"
+number="2.0.0.1">
+<h4><span class="header-section-number">2.0.0.1</span> Ejemplo 2</h4>
+<p>Se considera la sucesión <span class="math inline">\({x_k} =
+\frac{1}{6} - \frac{1}{3}{\left(-\frac{1}{2}\right)^k}\)</span> que
+converge a <span class="math inline">\(\frac{1}{6}\)</span>. Se ve que
+la convergencia es lineal.</p>
+<p>Se puede comprobar que: <span class="math display">\[
+\left|x_{k + 1} - \frac{1}{6} \right| \le \frac{1}{2}\left|x_k -
+\frac{1}{6} \right|
+\]</span> ya que <span class="math display">\[
+\left|x_{k + 1} - \frac{1}{6}\right| = \frac{1}{3 \cdot 2^{k + 1}}
+\qquad \left|x_k - \frac{1}{6} \right| = \frac{1}{3 \cdot 2^k}
+\]</span></p>
+</div>
+<div id="ejemplo-3" class="section level4 caja-ejemplo"
+number="2.0.0.2">
+<h4><span class="header-section-number">2.0.0.2</span> Ejemplo 3</h4>
+<p>Suponga que <span class="math inline">\(C_p=0.5\)</span> y que <span
+class="math inline">\(\left| x_k - \overline x \right| &lt;
+0.01\)</span>. Considerando <span class="math inline">\(p=1\)</span> y
+<span class="math inline">\(p=2\)</span>, analiza cómo se aproxima al
+valor límite, que se denotará por <span class="math inline">\(\overline
+x\)</span>, considerando el término <span
+class="math inline">\(k+1\)</span> y <span
+class="math inline">\(k+2\)</span> de la sucesión <span
+class="math inline">\(\{x_k\}\)</span>.</p>
+<p>Se tiene que</p>
+<ul>
+<li><p>Si <span class="math inline">\(p=1\)</span>, <span
+class="math display">\[
+\begin{align*}
+\left| x_{k + 1} - \overline x \right| &amp;&lt; C_p\left| x_{k} -
+\overline x \right| &lt; 5 \cdot 10^{-1} \cdot 10^{-2} = 5 \cdot
+10^{-3}\\
+\left| x_{k + 2} - \overline x \right| &amp;&lt; C_p \left| x_{k + 1} -
+\overline x \right| &lt;5 \cdot 10^{-1} \cdot (5 \cdot 10^{-3}) =25
+\cdot 10^{-4}
+\end{align*}
+\]</span></p></li>
+<li><p>Si <span class="math inline">\(p=2\)</span>, <span
+class="math display">\[
+\begin{align*}
+\left| x_{k + 1} - \overline x \right| &amp; &lt; C_p\left| x_{k} -
+\overline x \right|^2 &lt; 5 \cdot 10^{-1} \cdot (10^{-2})^2 =5 \cdot
+10^{-5}\\
+\left| x_{k + 2} - \overline x \right| &amp; &lt; C_p \left| x_{k + 1} -
+\overline x \right|^2 &lt; 5 \cdot 10^{-1} \cdot (5\cdot 10^{-5})^2=125
+\cdot 10^{-11}
+\end{align*}
+\]</span></p></li>
+</ul>
+</div>
+</div>
+<div id="método-de-bisección" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Método de
+Bisección</h1>
+<div class="caja-lema">
+<p><strong>Teorma del Valor Intermedio de Bolzano</strong></p>
+<p>Supongamos que <span class="math inline">\(f \in \mathcal{C}[a,
+b]\)</span> y que <span class="math inline">\(L\)</span> es cualquier
+número entre <span class="math inline">\(f(a)\)</span> y <span
+class="math inline">\(f(b)\)</span>. Entonces existe un número <span
+class="math inline">\(c\)</span> en <span class="math inline">\((a,
+b)\)</span> tal que <span class="math inline">\(f(c) = L\)</span>.</p>
+</div>
+<ul>
+<li><p>Supongamos que <span class="math inline">\(f\)</span> es una
+función continua en un intervalo <span class="math inline">\([a,
+b]\)</span>, y <span class="math inline">\(f(a) \cdot f(b) &lt;
+0\)</span>. Entonces, por el <strong>Teorema de Bolzano</strong>, existe
+al menos un <span class="math inline">\(p \in (a, b)\)</span>, tal que
+<span class="math inline">\(f(p) = 0\)</span>.</p></li>
+<li><p>El método, también llamado <strong>método de intervalos
+encajados</strong>, va construyendo una sucesión de intervalos
+encajados: <span class="math display">\[
+[a_0,b_0] \supset[a_1,b_1]\supset\cdots\supset[a_n,b_n]\supset\cdots
+\]</span> tal que el cero <span class="math inline">\(x\)</span> siempre
+está en todos los intervalos <span
+class="math inline">\([a_n,b_n]\)</span> y la longitud de cada intervalo
+<span class="math inline">\([a_n,b_n]\)</span> vale <span
+class="math inline">\(\frac{b_0-a_0}{2^n}\)</span>. De esta manera el
+cero x se calcula de forma más precisa.</p></li>
+<li><p>Una primera aproximación de este punto <span
+class="math inline">\(p\)</span> puede ser el punto medio:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+p_1 = \dfrac{a_0+b_0}{2}
+\]</span></p>
+</div>
+<ul>
+<li><p>Dado que la función es continua, si <span
+class="math inline">\(f(a) \cdot f(p_1) &lt; 0\)</span> en el intervalo
+<span class="math inline">\([a, p_1]\)</span> habrá al menos una
+solución de la ecuación.</p></li>
+<li><p>Y si <span class="math inline">\(f(a) \cdot f(p_1) &gt;
+0\)</span> en el intervalo <span class="math inline">\([p_1, b]\)</span>
+existirá al menos una raíz.</p></li>
+<li><p>Por tanto se habrá definido un nuevo intervalo <span
+class="math inline">\([a_1, b_1]\)</span> en el que existirá una
+solución. Al que puede aplicársele nuevamente el proceso
+anterior.</p></li>
+</ul>
+<p>A continuación, se ilustra gráficamente el funcionamiento del método
+de bisección para la función <span class="math inline">\(f(x) = x^2 -
+4\sin(x)\)</span> en el intervalo inicial <span
+class="math inline">\([1, 3]\)</span>.</p>
+<p><img src="unidad03_files/figure-html/unnamed-chunk-2-3.png" width="1152" /></p>
+<div class="cuadro-alg">
+<p><strong>FUNCION BISECCION (f,a,b,TOL,N_MAX)</strong></p>
+<pre><code># f: la función para la cual se busca la raíz
+# a, b: los extremos del intervalo inicial [a, b]
+# TOL: la tolerancia para el criterio de parada
+# N_MAX: el número máximo de iteraciones
+
+# Paso 1: Verificar la condición inicial (f(a) y f(b) deben tener signos opuestos)
+SI f(a) * f(b) &gt;= 0 ENTONCES
+    IMPRIMIR &quot;El método de bisección puede no funcionar. f(a) y f(b) deben tener signos opuestos.&quot;
+    RETORNAR NULO
+FIN SI
+
+# Paso 2: Inicializar el contador de iteraciones
+  iteracion = 0
+
+# Paso 3: Bucle principal de iteraciones
+MIENTRAS iteracion &lt; N_MAX:
+  # Calcular el punto medio del intervalo
+  p = (a + b) / 2
+
+  # Paso 4: Evaluar el criterio de parada (si f(p) es suficientemente cercano a cero)
+  SI ABS(f(p)) &lt; TOL ENTONCES
+    IMPRIMIR &quot;Raíz encontrada en p =&quot;, p, &quot;en&quot;, iteracion, &quot;iteraciones.&quot;
+    RETORNAR p
+  FIN SI
+
+  # Paso 5: Actualizar el intervalo
+  SI f(a) * f(p) &lt; 0 ENTONCES
+    # La raíz está en el subintervalo [a, p]
+    b = p
+  SINO
+    # La raíz está en el subintervalo [p, b]
+    a = p
+  FIN SI
+
+  # Paso 6: Incrementar el contador de iteraciones
+  iteracion = iteracion + 1
+
+  # Opcional: Criterio de parada basado en la longitud del intervalo
+  SI (b - a) / 2 &lt; TOL ENTONCES
+    p = (a + b) / 2
+    IMPRIMIR &quot;Intervalo suficientemente pequeño. Raíz aproximada en p =&quot;, p, &quot;en&quot;, iteracion, &quot;iteraciones.&quot;
+    RETORNAR p
+  FIN SI
+FIN MIENTRAS
+
+# Paso 7: Si se alcanza el número máximo de iteraciones sin encontrar la raíz
+IMPRIMIR &quot;Número máximo de iteraciones alcanzado. El método puede no haber convergido a la tolerancia deseada.&quot;
+RETORNAR (a + b) / 2 # Devolver la última aproximación</code></pre>
+<p><strong>FIN FUNCION</strong></p>
+</div>
+<div id="ejemplo-4-bisección-con-seguimiento-en-tabla"
+class="section level4 caja-ejemplo" number="3.0.0.1">
+<h4><span class="header-section-number">3.0.0.1</span> Ejemplo 4:
+Bisección con seguimiento en tabla</h4>
+<p>A continuación, se aplica el método de bisección para encontrar una
+raíz de la función <span class="math inline">\(f(x) = x^4 - 2x^3 - 4x^2
++ 4x + 4\)</span> en el intervalo <span class="math inline">\([-2,
+-1]\)</span>. La tabla muestra el progreso del método en cada
+iteración.</p>
+<p>Verificando la hipótesis inicial del Método de Bisección <span
+class="math display">\[
+f(-2) = (-2)^4-2(-2)^3-4(-2)^2+4(-2)+4 = 16+16-16-8+4 =12
+\]</span> <span class="math display">\[
+f(-1) = (-1)^4-2(-1)^3-4(-1)^2+4(-1)+4 = 1+2-4-4+4 =-1
+\]</span></p>
+<p>Se observa que <span class="math inline">\(f(-2)\cdot
+f(-1)&lt;0\)</span>, por lo tanto el Teorema de Bolzano asegura la
+existencia de un valor <span class="math inline">\(p\in(-2,-1)\)</span>
+tal que <span class="math inline">\(f(p)=0\)</span></p>
+<pre><code>## Solución encontrada después de 17 iteraciones.</code></pre>
+<pre><code>## Tabla de iteraciones del Método de Bisección:</code></pre>
+<pre><code>##  k           a           b         p_k      f(p_k)    (b-a)/2
+##  1 -2.00000000 -1.00000000 -1.50000000  8.1250e-01 5.0000e-01
+##  2 -1.50000000 -1.00000000 -1.25000000 -9.0234e-01 2.5000e-01
+##  3 -1.50000000 -1.25000000 -1.37500000 -2.8882e-01 1.2500e-01
+##  4 -1.50000000 -1.37500000 -1.43750000  1.9533e-01 6.2500e-02
+##  5 -1.43750000 -1.37500000 -1.40625000 -6.2667e-02 3.1250e-02
+##  6 -1.43750000 -1.40625000 -1.42187500  6.2263e-02 1.5625e-02
+##  7 -1.42187500 -1.40625000 -1.41406250 -1.2081e-03 7.8125e-03
+##  8 -1.42187500 -1.41406250 -1.41796875  3.0274e-02 3.9062e-03
+##  9 -1.41796875 -1.41406250 -1.41601562  1.4470e-02 1.9531e-03
+## 10 -1.41601562 -1.41406250 -1.41503906  6.6152e-03 9.7656e-04
+## 11 -1.41503906 -1.41406250 -1.41455078  2.6996e-03 4.8828e-04
+## 12 -1.41455078 -1.41406250 -1.41430664  7.4477e-04 2.4414e-04
+## 13 -1.41430664 -1.41406250 -1.41418457 -2.3192e-04 1.2207e-04
+## 14 -1.41430664 -1.41418457 -1.41424561  2.5636e-04 6.1035e-05
+## 15 -1.41424561 -1.41418457 -1.41421509  1.2204e-05 3.0518e-05
+## 16 -1.41421509 -1.41418457 -1.41419983 -1.0986e-04 1.5259e-05
+## 17 -1.41421509 -1.41419983 -1.41420746 -4.8830e-05 7.6294e-06</code></pre>
+<p><img src="unidad03_files/figure-html/unnamed-chunk-3-5.png" width="960" /></p>
+</div>
+<hr />
+<p><small>Última revisión: 09 de noviembre, 2025</small></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

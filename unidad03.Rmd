@@ -1,0 +1,387 @@
+---
+title: "Solución Numérica de Ecuaciones No Lineales"
+author: "José Luis Ramírez"
+date: "Noviembre 2025"
+output:
+  html_document:
+    self_contained: true
+    mathjax: default
+    pandoc_args: "--mathjax"
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    theme: readable
+    css: css/estilos.css
+    number_sections: true
+---
+
+# Motivación
+
+* La determinación de las raíces de una ecuación o de un sistema de ecuaciones, es uno de los problemas más antiguos de aproximación numérica que se presenta con frecuencia en la solución de una gran variedad de problemas en la matemática aplicada.
+
+* En muchos problemas de ingeniería, inteligencia artificial u otras disciplinas afines tenemos que resolver ecuaciones del tipo $f(x)=0$, donde $f$ es una función que dada una cantidad $x$, nos devuelve $f(x)$.
+
+::: caja-ejemplo
+#### Ejemplo 1
+
+Se considera por ejemplo la siguiente ecuación obtenida a partir de la segunda ley de Newton para calcular la velocidad de un paracaidista,
+$$
+v=\dfrac{g \cdot m}{c}\left(1-e^{\frac{c}{m}t}\right)
+$$
+donde la velocidad $v$ depende de la variable independiente tiempo, $t$, $g$ es la constante de gravitación, $c$ el coeficiente de resistencia y $m$ es la masa del paracaidista.
+
+Si se quisiera obtener el coeficiente de resistencia del paracaidista con una masa dada, ¿cómo se obtendría este valor para alcanzar una velocidad determinada en un periodo establecido? La respuesta se obtendría calculando $c$ que hace cero a la siguiente función:
+$$
+f(c) = \dfrac{g \cdot m}{c}\left(1-e^{\frac{c}{m}t}\right)-v
+$$
+
+esto es, habría que calcular el valor de $c$ tal que $f(c)=0$.
+
+En este caso no es posible encontrar analíticamente el cero de la función o su cálculo es complicado.
+:::
+
+* En dichos problemas, conocer explícitamente la función $f$ en muchos casos no es posible, sólo tenemos un algoritmo que dado un valor $x$, nos devuelve $f(x)$.
+
+* Entonces, dependiendo de nuestro conocimiento de la función $f$, podremos aplicar un método numérico u otro.
+
+* Todos los métodos numéricos que hallan aproximaciones de ceros construyen una **sucesión** $\{x_n\}_n$ que queremos que converja hacia el cero $\hat{x}$ de la función $f$.
+
+* Cuanto mayor sea la **velocidad de convergencia** de la sucesión $\{x_n\}_n$, mejor será el método usado.
+
+## Método Gráfico
+
+El método gráfico es un método muy simple, consiste en calcular valores de la variable dependiente para distintos valores de la variable independiente, para luego observar el punto de intersección de la función con el eje de las abscisas. Este punto proporciona una primera aproximación a la raíz de la ecuación.
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Se define la función a graficar
+def f(x):
+  return x**2 - 4 * np.sin(x)
+
+# 2. Se crea un conjunto de puntos en el intervalo [-2, 3]
+x = np.linspace(-2, 3, 500)
+
+# 3. Se evalúa la función en cada punto
+y = f(x)
+
+# 4. Se procede a la graficación
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, label='f(x) = $x^2 - 4sin(x)$', color='blue')
+
+# Se añade una línea en y=0 para identificar visualmente las raíces
+plt.axhline(0, color='red', linestyle='--', linewidth=0.8)
+
+# Se agregan detalles al gráfico para una mejor interpretación
+plt.title('Gráfica de la función $f(x) = x^2 - 4sin(x)$')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+plt.legend()
+
+# 5. Se muestra el gráfico
+plt.show()
+```
+
+# Velocidad de convergencia
+
+Se distinguen distintas velocidades de convergencia que se pasarán a definir.
+
+::: caja-lema
+**Definición:**
+
+Dada una sucesión de números reales, $\left\{x _k\right\}_{k = 1}^{\infty}$, convergente hacia un punto $\overline x$, se dice que su orden o velocidad de convergencia es $p$, con $p \ge 1$ si existe una constante $C_p \ge 0$ tal que: 
+
+::: recuadro-gris
+$$\left| {{x_{k + 1}} - \overline x }
+\right| \le {C_p}{\left| {{x_k} - \overline x \,} \right|^p}
+$$
+:::
+
+para todo $k \ge k_0$ siendo $k_0$ entero.
+:::
+
+En particular,
+
+* Si $p=1$ y $C_p< 1$, la convergencia es **lineal**. Si $C_p \ge 1$, la convergencia es **sublineal**.
+
+* Si $p=2$, la convergencia es **cuadrática**.
+
+* Si $p=3$, la convergencia es **cúbica**.
+
+::: caja-ejemplo
+#### Ejemplo 2
+Se considera la sucesión ${x_k} = \frac{1}{6} - \frac{1}{3}{\left(-\frac{1}{2}\right)^k}$ que converge a $\frac{1}{6}$. Se ve que la convergencia es lineal.
+
+Se puede comprobar que:
+$$
+\left|x_{k + 1} - \frac{1}{6} \right| \le \frac{1}{2}\left|x_k - \frac{1}{6} \right|
+$$
+ya que 
+$$
+\left|x_{k + 1} - \frac{1}{6}\right| = \frac{1}{3 \cdot 2^{k + 1}} \qquad \left|x_k - \frac{1}{6} \right| = \frac{1}{3 \cdot 2^k}
+$$
+:::
+
+::: caja-ejemplo
+#### Ejemplo 3
+Suponga que $C_p=0.5$ y que $\left| x_k - \overline x \right| < 0.01$. Considerando $p=1$ y $p=2$, analiza cómo se aproxima al valor límite, que se denotará por $\overline x$, considerando el término $k+1$ y $k+2$ de la sucesión $\{x_k\}$.
+
+Se tiene que
+
+* Si $p=1$,
+$$
+\begin{align*}
+\left| x_{k + 1} - \overline x \right| &< C_p\left| x_{k} - \overline x \right| < 5 \cdot 10^{-1} \cdot 10^{-2} = 5 \cdot 10^{-3}\\
+\left| x_{k + 2} - \overline x \right| &< C_p \left| x_{k + 1} - \overline x \right| <5 \cdot 10^{-1} \cdot (5 \cdot 10^{-3}) =25 \cdot 10^{-4}
+\end{align*}
+$$
+
+* Si $p=2$,
+$$
+\begin{align*}
+\left| x_{k + 1} - \overline x \right| & < C_p\left| x_{k} - \overline x \right|^2 < 5 \cdot 10^{-1} \cdot (10^{-2})^2 =5 \cdot 10^{-5}\\
+\left| x_{k + 2} - \overline x \right| & < C_p \left| x_{k + 1} - \overline x \right|^2 < 5 \cdot 10^{-1} \cdot (5\cdot 10^{-5})^2=125 \cdot 10^{-11}
+\end{align*}
+$$
+:::
+
+# Método de Bisección
+
+::: caja-lema
+**Teorma del Valor Intermedio de Bolzano**
+
+Supongamos que $f \in \mathcal{C}[a, b]$ y que $L$ es cualquier número entre $f(a)$ y $f(b)$. Entonces existe un número $c$ en $(a, b)$ tal que
+$f(c) = L$.
+:::
+
+* Supongamos que $f$ es una función continua en un intervalo $[a, b]$, y $f(a) \cdot f(b) < 0$. Entonces, por el **Teorema de Bolzano**, existe al menos un $p \in (a, b)$, tal que $f(p) = 0$.
+
+* El método, también llamado **método de intervalos encajados**, va construyendo una sucesión de intervalos encajados:
+$$
+[a_0,b_0] \supset[a_1,b_1]\supset\cdots\supset[a_n,b_n]\supset\cdots
+$$
+tal que el cero $x$ siempre está en todos los intervalos $[a_n,b_n]$ y la longitud de cada intervalo $[a_n,b_n]$ vale $\frac{b_0-a_0}{2^n}$. De esta manera el cero x se calcula de forma más precisa.
+
+* Una primera aproximación de este punto $p$ puede ser el punto medio:
+
+::: recuadro-gris
+$$
+p_1 = \dfrac{a_0+b_0}{2}
+$$
+:::
+
+* Dado que la función es continua, si $f(a) \cdot f(p_1) < 0$ en el intervalo $[a, p_1]$ habrá al menos una solución de la ecuación.
+
+* Y si $f(a) \cdot f(p_1) > 0$ en el intervalo $[p_1, b]$ existirá al menos una raíz.
+
+* Por tanto se habrá definido un nuevo intervalo $[a_1, b_1]$ en el que existirá una solución. Al que puede aplicársele nuevamente el proceso anterior.
+
+A continuación, se ilustra gráficamente el funcionamiento del método de bisección para la función $f(x) = x^2 - 4\sin(x)$ en el intervalo inicial $[1, 3]$.
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Definir la función y el intervalo inicial
+def f(x):
+    return x**2 - 4 * np.sin(x)
+
+a, b = 1.0, 3.0
+iteraciones = 4
+historial = []
+
+# 2. Ejecutar el método de bisección y guardar el historial
+for i in range(iteraciones):
+    m = (a + b) / 2
+    fa, fb, fm = f(a), f(b), f(m)
+    
+    # Guardar los puntos de la iteración actual
+    historial.append({'a': a, 'b': b, 'm': m, 'fa': fa, 'fb': fb, 'fm': fm})
+    
+    # Actualizar el intervalo
+    if np.sign(fa) != np.sign(fm):
+        b = m
+    else:
+        a = m
+
+# 3. Preparar la gráfica
+plt.figure(figsize=(12, 8))
+x_vals = np.linspace(0, 3.5, 500)
+y_vals = f(x_vals)
+
+# Graficar la función y el eje x
+plt.plot(x_vals, y_vals, label='$f(x) = x^2 - 4sin(x)$', color='black', zorder=1)
+plt.axhline(0, color='gray', linestyle='--', linewidth=0.8)
+
+# Denotar a_0 y b_0 en la gráfica
+initial_a, initial_b = historial[0]['a'], historial[0]['b']
+plt.text(initial_a, 0.5, '$a_0$', ha='center', va='bottom', fontsize=12, color='black')
+plt.text(initial_b, 0.5, '$b_0$', ha='center', va='bottom', fontsize=12, color='black')
+
+# 4. Graficar cada iteración del método
+for i, data in enumerate(historial):
+    color = plt.cm.get_cmap('tab10')(i)
+    a_i, b_i, m_i = data['a'], data['b'], data['m']
+    
+    # Dibuja el intervalo [a, b] en el eje x
+    plt.plot([a_i, b_i], [0, 0], '|', markersize=10, color=color, label=f'Intervalo {i+1}: [{a_i:.2f}, {b_i:.2f}]')
+    plt.plot(m_i, 0, 'x', color=color, markersize=8, label=f'Punto medio {i+1}: {m_i:.2f}')
+    
+    # Añade la etiqueta p_i debajo de cada punto medio
+    plt.text(m_i, -0.5, f'$p_{i+1}$', ha='center', va='top', color=color, fontsize=12)
+
+# 5. Añadir detalles al gráfico
+plt.title('Visualización del Método de Bisección')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(True, linestyle=':', alpha=0.6)
+plt.tight_layout()
+plt.show()
+```
+
+::: cuadro-alg
+**FUNCION BISECCION (f,a,b,TOL,N_MAX)**
+
+    # f: la función para la cual se busca la raíz
+    # a, b: los extremos del intervalo inicial [a, b]
+    # TOL: la tolerancia para el criterio de parada
+    # N_MAX: el número máximo de iteraciones
+
+    # Paso 1: Verificar la condición inicial (f(a) y f(b) deben tener signos opuestos)
+    SI f(a) * f(b) >= 0 ENTONCES
+        IMPRIMIR "El método de bisección puede no funcionar. f(a) y f(b) deben tener signos opuestos."
+        RETORNAR NULO
+    FIN SI
+
+    # Paso 2: Inicializar el contador de iteraciones
+      iteracion = 0
+
+    # Paso 3: Bucle principal de iteraciones
+    MIENTRAS iteracion < N_MAX:
+      # Calcular el punto medio del intervalo
+      p = (a + b) / 2
+
+      # Paso 4: Evaluar el criterio de parada (si f(p) es suficientemente cercano a cero)
+      SI ABS(f(p)) < TOL ENTONCES
+        IMPRIMIR "Raíz encontrada en p =", p, "en", iteracion, "iteraciones."
+        RETORNAR p
+      FIN SI
+
+      # Paso 5: Actualizar el intervalo
+      SI f(a) * f(p) < 0 ENTONCES
+        # La raíz está en el subintervalo [a, p]
+        b = p
+      SINO
+        # La raíz está en el subintervalo [p, b]
+        a = p
+      FIN SI
+
+      # Paso 6: Incrementar el contador de iteraciones
+      iteracion = iteracion + 1
+
+      # Opcional: Criterio de parada basado en la longitud del intervalo
+      SI (b - a) / 2 < TOL ENTONCES
+        p = (a + b) / 2
+        IMPRIMIR "Intervalo suficientemente pequeño. Raíz aproximada en p =", p, "en", iteracion, "iteraciones."
+        RETORNAR p
+      FIN SI
+    FIN MIENTRAS
+
+    # Paso 7: Si se alcanza el número máximo de iteraciones sin encontrar la raíz
+    IMPRIMIR "Número máximo de iteraciones alcanzado. El método puede no haber convergido a la tolerancia deseada."
+    RETORNAR (a + b) / 2 # Devolver la última aproximación
+**FIN FUNCION**
+
+:::
+
+::: caja-ejemplo
+#### Ejemplo 4: Bisección con seguimiento en tabla
+
+A continuación, se aplica el método de bisección para encontrar una raíz de la función $f(x) = x^4 - 2x^3 - 4x^2 + 4x + 4$ en el intervalo $[-2, -1]$. La tabla muestra el progreso del método en cada iteración.
+
+Verificando la hipótesis inicial del Método de Bisección
+$$
+f(-2) = (-2)^4-2(-2)^3-4(-2)^2+4(-2)+4 = 16+16-16-8+4 =12
+$$
+$$
+f(-1) = (-1)^4-2(-1)^3-4(-1)^2+4(-1)+4 = 1+2-4-4+4 =-1
+$$
+
+Se observa que $f(-2)\cdot f(-1)<0$, por lo tanto el Teorema de Bolzano asegura la existencia de un valor $p\in(-2,-1)$ tal que $f(p)=0$
+
+``` {python, echo=FALSE}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Definir la función
+def f(x):
+    return x**4 - 2*x**3 - 4*x**2 + 4*x + 4
+
+# 2. Configuración inicial
+a = -2.0
+b = -1.0
+TOL = 1e-5
+nmax = 20
+
+# Lista para almacenar los resultados de cada iteración
+historial_tabla = []
+
+# 3. Implementación del método de Bisección
+k = 0
+while k < nmax:
+    p = a + (b - a) / 2
+    fp = f(p)
+    error = (b - a) / 2
+    
+    # Almacenar los datos de la iteración actual
+    historial_tabla.append([k + 1, a, b, p, fp, error])
+    
+    # Criterio de parada
+    if error < TOL:
+        print(f"Solución encontrada después de {k+1} iteraciones.")
+        break
+        
+    # Actualizar el intervalo
+    if f(a) * fp < 0:
+        b = p
+    else:
+        a = p
+        
+    k += 1
+
+# 4. Crear y mostrar la tabla con pandas
+columnas = ['k', 'a', 'b', 'p_k', 'f(p_k)', '(b-a)/2']
+df = pd.DataFrame(historial_tabla, columns=columnas)
+formatters = {
+    'a': '{:.8f}'.format,
+    'b': '{:.8f}'.format,
+    'p_k': '{:.8f}'.format,
+    'f(p_k)': '{:.4e}'.format,
+    '(b-a)/2': '{:.4e}'.format
+}
+
+print("Tabla de iteraciones del Método de Bisección:")
+print(df.to_string(index=False, formatters=formatters))
+
+# 5. Graficar la convergencia del error
+plt.figure(figsize=(10, 6))
+plt.plot(df['k'], df['(b-a)/2'], marker='o', linestyle='-', color='c', label='Error de intervalo |(b-a)/2|')
+plt.plot(df['k'], np.abs(df['f(p_k)']), marker='x', linestyle='--', color='m', label='Error de función |f(p_k)|')
+plt.title('Convergencia del Error en el Método de Bisección')
+plt.xlabel('Iteración (k)')
+plt.ylabel('Valor del Error (escala logarítmica)')
+plt.yscale('log')  # Usar escala logarítmica para ver mejor la convergencia
+plt.legend()
+plt.grid(True, which="both", ls="--")
+plt.xticks(df['k']);
+plt.show()
+```
+:::
+
+------------------------------------------------------------------------
+  
+<small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>
