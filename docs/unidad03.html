@@ -636,28 +636,163 @@ existencia de un valor <span class="math inline">\(p\in(-2,-1)\)</span>
 tal que <span class="math inline">\(f(p)=0\)</span></p>
 <pre><code>## Solución encontrada después de 17 iteraciones.</code></pre>
 <pre><code>## Tabla de iteraciones del Método de Bisección:</code></pre>
-<pre><code>##  k           a           b         p_k      f(p_k)    (b-a)/2
-##  1 -2.00000000 -1.00000000 -1.50000000  8.1250e-01 5.0000e-01
-##  2 -1.50000000 -1.00000000 -1.25000000 -9.0234e-01 2.5000e-01
-##  3 -1.50000000 -1.25000000 -1.37500000 -2.8882e-01 1.2500e-01
-##  4 -1.50000000 -1.37500000 -1.43750000  1.9533e-01 6.2500e-02
-##  5 -1.43750000 -1.37500000 -1.40625000 -6.2667e-02 3.1250e-02
-##  6 -1.43750000 -1.40625000 -1.42187500  6.2263e-02 1.5625e-02
-##  7 -1.42187500 -1.40625000 -1.41406250 -1.2081e-03 7.8125e-03
-##  8 -1.42187500 -1.41406250 -1.41796875  3.0274e-02 3.9062e-03
-##  9 -1.41796875 -1.41406250 -1.41601562  1.4470e-02 1.9531e-03
-## 10 -1.41601562 -1.41406250 -1.41503906  6.6152e-03 9.7656e-04
-## 11 -1.41503906 -1.41406250 -1.41455078  2.6996e-03 4.8828e-04
-## 12 -1.41455078 -1.41406250 -1.41430664  7.4477e-04 2.4414e-04
-## 13 -1.41430664 -1.41406250 -1.41418457 -2.3192e-04 1.2207e-04
-## 14 -1.41430664 -1.41418457 -1.41424561  2.5636e-04 6.1035e-05
-## 15 -1.41424561 -1.41418457 -1.41421509  1.2204e-05 3.0518e-05
-## 16 -1.41421509 -1.41418457 -1.41419983 -1.0986e-04 1.5259e-05
-## 17 -1.41421509 -1.41419983 -1.41420746 -4.8830e-05 7.6294e-06</code></pre>
+<pre><code>##  k           a           b         p_k   |f(p_k)|    (b-a)/2 |p - pant|
+##  1 -2.00000000 -1.00000000 -1.50000000 8.1250e-01 5.0000e-01 0.0000e+00
+##  2 -1.50000000 -1.00000000 -1.25000000 9.0234e-01 2.5000e-01 2.5000e-01
+##  3 -1.50000000 -1.25000000 -1.37500000 2.8882e-01 1.2500e-01 1.2500e-01
+##  4 -1.50000000 -1.37500000 -1.43750000 1.9533e-01 6.2500e-02 6.2500e-02
+##  5 -1.43750000 -1.37500000 -1.40625000 6.2667e-02 3.1250e-02 3.1250e-02
+##  6 -1.43750000 -1.40625000 -1.42187500 6.2263e-02 1.5625e-02 1.5625e-02
+##  7 -1.42187500 -1.40625000 -1.41406250 1.2081e-03 7.8125e-03 7.8125e-03
+##  8 -1.42187500 -1.41406250 -1.41796875 3.0274e-02 3.9062e-03 3.9062e-03
+##  9 -1.41796875 -1.41406250 -1.41601562 1.4470e-02 1.9531e-03 1.9531e-03
+## 10 -1.41601562 -1.41406250 -1.41503906 6.6152e-03 9.7656e-04 9.7656e-04
+## 11 -1.41503906 -1.41406250 -1.41455078 2.6996e-03 4.8828e-04 4.8828e-04
+## 12 -1.41455078 -1.41406250 -1.41430664 7.4477e-04 2.4414e-04 2.4414e-04
+## 13 -1.41430664 -1.41406250 -1.41418457 2.3192e-04 1.2207e-04 1.2207e-04
+## 14 -1.41430664 -1.41418457 -1.41424561 2.5636e-04 6.1035e-05 6.1035e-05
+## 15 -1.41424561 -1.41418457 -1.41421509 1.2204e-05 3.0518e-05 3.0518e-05
+## 16 -1.41421509 -1.41418457 -1.41419983 1.0986e-04 1.5259e-05 1.5259e-05
+## 17 -1.41421509 -1.41419983 -1.41420746 4.8830e-05 7.6294e-06 7.6294e-06</code></pre>
 <p><img src="unidad03_files/figure-html/unnamed-chunk-3-5.png" width="960" /></p>
 </div>
+<ul>
+<li>Observaciones:
+<ul>
+<li>Vemos que el método, es lento. Por ejemplo, para pasar de un error
+menor que 0.1 a un error menor que 0.01, usando el método de parada
+<span class="math inline">\(|f(x_n)|&lt;\epsilon\)</span>, se necesitan
+cuatro iteraciones apriximadamente, o sea, se necesitan cuatro
+iteraciones para “ganar” una cifra significativa en la aproximación del
+cero.</li>
+<li>Los dos criterios de parada (dos últimas columnas) son equivalentes
+en el sentido que el nuevo aproximado <span
+class="math inline">\(p_k\)</span> se encuentra en el punto del
+intervalo <span class="math inline">\([a_{k-1},b_{k-1}]\)</span>.</li>
+<li>Los dos criterios de parada (columna 4 y 6) son equivalentes desde
+el punto de vista de que se necesitan aproximadamente el mismo número de
+iteraciones para que se “gane” una cifra significativa en el cero.
+Además, los valores que se obtienen con los dos criterios son del mismo
+orden, es decir, que si en la iteración <span
+class="math inline">\(n\)</span>, <span
+class="math inline">\(|f(x_n)|\approx c_1⋅10^{-k}\)</span>, entonces
+<span class="math inline">\(|x_n-x_{n-1}|\approx c_2⋅10^{-k}\)</span>;
+por ejemplo para <span class="math inline">\(n=13\)</span>, <span
+class="math inline">\(|f(x_{13})|\approx 2.31\cdot 10^{-4}\)</span> y
+<span class="math inline">\(|x_{13}-x_{12}|\approx 1.22\cdot
+10^{-4}\)</span>.</li>
+</ul></li>
+</ul>
+</div>
+<div id="método-de-punto-fijo" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Método de Punto
+Fijo</h1>
+<ul>
+<li><p>El método del punto fijo consiste en transformar la ecuación
+<span class="math inline">\(f(x)=0\)</span> en la ecuación <span
+class="math inline">\(x=g(x)\)</span> mediante operaciones algebraicas
+“básicas”.</p></li>
+<li><p>Entonces el cero de la ecuación <span
+class="math inline">\(f(x)=0\)</span> se transforma en lo que llamamos
+un punto fijo de la función <span
+class="math inline">\(g(x)\)</span>:</p></li>
+</ul>
+<div class="caja-lema">
+<p><strong>Definición de Punto Fijo</strong></p>
+<p>Sea <span class="math inline">\(g\)</span> una función real de
+variable real. Diremos que <span class="math inline">\(\hat{x}\)</span>
+es un punto fijo de la función <span class="math inline">\(g\)</span> si
+<span class="math inline">\(g(\hat{x})=\hat{x}\)</span>.</p>
+</div>
+<p><strong>Observación</strong>: Gráficamente, un punto fijo resulta de
+la intersección de la recta diagonal <span
+class="math inline">\(y=x\)</span> y de la función <span
+class="math inline">\(y=g(x)\)</span>.</p>
+<p>La idea es considerar la sucesión definida de forma recurrente como
+<span class="math inline">\(x_n=g(x_{n-1})\)</span> y ver bajo qué
+condiciones la sucesión <span class="math inline">\(\{x_n\}_n\)</span>
+converge hacia el punto fijo <span
+class="math inline">\(\hat{x}\)</span> de <span
+class="math inline">\(g\)</span> que recordemos será el cero de la
+función <span class="math inline">\(f\)</span> buscado.</p>
+<div class="cuadro-alg">
+<p><strong>FUNCIÓN PUNTO_FIJO(g, p0, TOL, N_MAX)</strong></p>
+<pre><code># ENTRADA:
+#   g: la función de iteración x = g(x)
+#   p0: la aproximación inicial
+#   TOL: la tolerancia para el criterio de parada
+#   N_MAX: el número máximo de iteraciones
+
+# SALIDA:
+#   p: la solución aproximada o un mensaje de error
+
+i = 1
+MIENTRAS i &lt;= N_MAX:
+    # Calcular el siguiente término de la sucesión
+    p = g(p0)
+
+    # Verificar el criterio de parada (error absoluto)
+    SI |p - p0| &lt; TOL ENTONCES
+        IMPRIMIR &quot;Solución encontrada en p =&quot;, p, &quot;en&quot;, i, &quot;iteraciones.&quot;
+        RETORNAR p
+    FIN SI
+
+    # Actualizar para la siguiente iteración
+    i = i + 1
+    p0 = p
+FIN MIENTRAS
+
+IMPRIMIR &quot;El método fracasó después de&quot;, N_MAX, &quot;iteraciones.&quot;</code></pre>
+</div>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-4-7.png" alt="Visualización de convergencia y divergencia en el Método de Punto Fijo." width="100%" />
+<p class="caption">
+Visualización de convergencia y divergencia en el Método de Punto Fijo.
+</p>
+</div>
+<div id="ejemplo-5-punto-fijo-para-fx0-de-4-maneras-diferentes"
+class="section level4 caja-ejemplo" number="4.0.0.1">
+<h4><span class="header-section-number">4.0.0.1</span> Ejemplo 5: Punto
+fijo para <span class="math inline">\(f(x)=0\)</span> de 4 maneras
+diferentes</h4>
+<p>Hallar numéricamente una de las raíces de <span
+class="math inline">\(f(x) = x^2 - x - 2 = 0\)</span>. Sus raíces
+exactas son <span class="math inline">\(x_1 = -1\)</span> y <span
+class="math inline">\(x_2 = 2\)</span>. Hallando únicamente en el
+cálculo de la raíz <span class="math inline">\(\hat{x} = 2\)</span>
+tomando como punto de partida <span class="math inline">\(x_0 =
+2.1\)</span> y definiendo <span class="math inline">\(g\)</span>
+como.</p>
+<ul>
+<li><p><span class="math inline">\(g_1(x) = x^2-2\)</span></p></li>
+<li><p><span class="math inline">\(g_2(x) = \sqrt{x+2}\)</span></p></li>
+<li><p><span class="math inline">\(g_3(x) =
+1+\dfrac{2}{x}\)</span></p></li>
+<li><p><span class="math inline">\(g_4(x) =
+\dfrac{x^2+2}{2x-1}\)</span></p></li>
+</ul>
+<pre><code>## --- Tabla Comparativa de Iteraciones de Punto Fijo ---</code></pre>
+<pre><code>##                 g1(x)      g2(x)      g3(x)      g4(x)
+## Iters                                                 
+## 0      2.10000000e+00 2.10000000 2.10000000 2.10000000
+## 1      2.41000000e+00 2.02484567 1.95238095 2.00312500
+## 2      3.80810000e+00 2.00620180 2.02439024 2.00000325
+## 3      1.25016256e+01 2.00154985 1.98795181 2.00000000
+## 4      1.54290643e+02 2.00038743 2.00606061        ---
+## 5      2.38036025e+04 2.00009685 1.99697885        ---
+## 6      5.66611489e+08 2.00002421 2.00151286        ---
+## 7      3.21048580e+17 2.00000605 1.99924414        ---
+## 8      1.03072191e+35 2.00000151 2.00037807        ---
+## 9      1.06238765e+70        --- 1.99981100        ---
+## 10    1.12866751e+140        --- 2.00009451        ---
+## 11                ---        --- 1.99995275        ---
+## 12                ---        --- 2.00002363        ---
+## 13                ---        --- 1.99998819        ---
+## 14                ---        --- 2.00000591        ---
+## 15                ---        --- 1.99999705        ---</code></pre>
+</div>
 <hr />
-<p><small>Última revisión: 09 de noviembre, 2025</small></p>
+<p><small>Última revisión: 16 de noviembre, 2025</small></p>
 </div>
 
 

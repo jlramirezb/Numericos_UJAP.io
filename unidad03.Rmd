@@ -334,11 +334,16 @@ historial_tabla = []
 k = 0
 while k < nmax:
     p = a + (b - a) / 2
-    fp = f(p)
+    fp = f(p)    
     error = (b - a) / 2
+    error2 = 0
+    if k > 0:
+      error2 = np.abs(p-pold)
+    pold = p
+    
     
     # Almacenar los datos de la iteración actual
-    historial_tabla.append([k + 1, a, b, p, fp, error])
+    historial_tabla.append([k + 1, a, b, p, np.abs(fp), error, error2])
     
     # Criterio de parada
     if error < TOL:
@@ -354,14 +359,15 @@ while k < nmax:
     k += 1
 
 # 4. Crear y mostrar la tabla con pandas
-columnas = ['k', 'a', 'b', 'p_k', 'f(p_k)', '(b-a)/2']
+columnas = ['k', 'a', 'b', 'p_k', '|f(p_k)|', '(b-a)/2', '|p - pant|']
 df = pd.DataFrame(historial_tabla, columns=columnas)
 formatters = {
     'a': '{:.8f}'.format,
     'b': '{:.8f}'.format,
     'p_k': '{:.8f}'.format,
-    'f(p_k)': '{:.4e}'.format,
-    '(b-a)/2': '{:.4e}'.format
+    '|f(p_k)|': '{:.4e}'.format,
+    '(b-a)/2': '{:.4e}'.format,
+    '|p - pant|': '{:.4e}'.format
 }
 
 print("Tabla de iteraciones del Método de Bisección:")
@@ -370,7 +376,7 @@ print(df.to_string(index=False, formatters=formatters))
 # 5. Graficar la convergencia del error
 plt.figure(figsize=(10, 6))
 plt.plot(df['k'], df['(b-a)/2'], marker='o', linestyle='-', color='c', label='Error de intervalo |(b-a)/2|')
-plt.plot(df['k'], np.abs(df['f(p_k)']), marker='x', linestyle='--', color='m', label='Error de función |f(p_k)|')
+plt.plot(df['k'], df['|f(p_k)|'], marker='x', linestyle='--', color='m', label='Error de función |f(p_k)|')
 plt.title('Convergencia del Error en el Método de Bisección')
 plt.xlabel('Iteración (k)')
 plt.ylabel('Valor del Error (escala logarítmica)')
@@ -380,6 +386,204 @@ plt.grid(True, which="both", ls="--")
 plt.xticks(df['k']);
 plt.show()
 ```
+:::
+
+* Observaciones:
+  - Vemos que el método, es lento. Por ejemplo, para pasar de un error menor que 0.1 a un error menor que 0.01, usando el método de parada $|f(x_n)|<\epsilon$, se necesitan cuatro iteraciones apriximadamente, o sea, se necesitan cuatro iteraciones para “ganar” una cifra significativa en la aproximación del cero.
+  - Los dos criterios de parada (dos últimas columnas) son equivalentes en el sentido que el nuevo aproximado $p_k$ se encuentra en el punto del intervalo $[a_{k-1},b_{k-1}]$.
+  - Los dos criterios de parada (columna 4 y 6) son equivalentes desde el punto de vista de que se necesitan aproximadamente el mismo número de iteraciones para que se “gane” una cifra significativa en el cero. Además, los valores que se obtienen con los dos criterios son del mismo orden, es decir, que si en la iteración $n$, $|f(x_n)|\approx c_1⋅10^{-k}$, entonces $|x_n-x_{n-1}|\approx c_2⋅10^{-k}$; por ejemplo para $n=13$, $|f(x_{13})|\approx 2.31\cdot 10^{-4}$ y $|x_{13}-x_{12}|\approx 1.22\cdot 10^{-4}$.
+
+# Método de Punto Fijo
+
+* El método del punto fijo consiste en transformar la ecuación $f(x)=0$ en la ecuación $x=g(x)$ mediante operaciones algebraicas “básicas”.
+
+* Entonces el cero de la ecuación $f(x)=0$ se transforma en lo que llamamos un punto fijo de la función $g(x)$:
+
+::: caja-lema
+**Definición de Punto Fijo**
+
+Sea $g$ una función real de variable real. Diremos que $\hat{x}$ es un punto fijo de la función $g$ si $g(\hat{x})=\hat{x}$.
+:::
+
+**Observación**: Gráficamente, un punto fijo resulta de la intersección de la recta diagonal $y=x$ y de la función $y=g(x)$.
+
+La idea es considerar la sucesión definida de forma recurrente como $x_n=g(x_{n-1})$ y ver bajo qué condiciones la sucesión $\{x_n\}_n$ converge hacia el punto fijo $\hat{x}$ de $g$ que recordemos será el cero de la función $f$ buscado.
+
+::: cuadro-alg
+**FUNCIÓN PUNTO_FIJO(g, p0, TOL, N_MAX)**
+
+    # ENTRADA:
+    #   g: la función de iteración x = g(x)
+    #   p0: la aproximación inicial
+    #   TOL: la tolerancia para el criterio de parada
+    #   N_MAX: el número máximo de iteraciones
+
+    # SALIDA:
+    #   p: la solución aproximada o un mensaje de error
+
+    i = 1
+    MIENTRAS i <= N_MAX:
+        # Calcular el siguiente término de la sucesión
+        p = g(p0)
+
+        # Verificar el criterio de parada (error absoluto)
+        SI |p - p0| < TOL ENTONCES
+            IMPRIMIR "Solución encontrada en p =", p, "en", i, "iteraciones."
+            RETORNAR p
+        FIN SI
+
+        # Actualizar para la siguiente iteración
+        i = i + 1
+        p0 = p
+    FIN MIENTRAS
+
+    IMPRIMIR "El método fracasó después de", N_MAX, "iteraciones."
+
+:::
+
+```{python, echo=FALSE, fig.cap="Visualización de convergencia y divergencia en el Método de Punto Fijo.", fig.asp=0.6, out.width="100%"}
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import Callable, List, Tuple
+
+def plot_cobweb(
+    g: Callable[[float], float],
+    p0: float,
+    x_range: Tuple[float, float],
+    max_iter: int = 10,
+    ax: plt.Axes = None,
+    **kwargs
+):
+    """
+    Genera un diagrama de telaraña para visualizar el método de punto fijo.
+    """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Graficar g(x) y la línea y=x
+    x_vals = np.linspace(*x_range, 400)
+    ax.plot(x_vals, g(x_vals), label=f'$g(x)$', color=kwargs.get('g_color', 'purple'))
+    ax.plot(x_vals, x_vals, label='$y = x$', color='red', linestyle='--')
+
+    # Generar puntos para el diagrama de telaraña
+    px, py = [p0], [0]
+    p_current = p0
+    for i in range(max_iter):
+        p_next = g(p_current)
+        px.extend([p_current, p_next])
+        py.extend([p_next, p_next])
+        p_current = p_next
+
+    # Graficar las iteraciones
+    ax.plot(px, py, color='orange', linestyle='-', marker='o', markersize=4, label='Iteraciones')
+    ax.text(p0, -0.15, '$p_0$', ha='center', va='top', fontsize=12, color='darkorange')
+
+    # Configuración del gráfico
+    ax.axhline(0, color='black', linewidth=0.8)
+    ax.axvline(0, color='black', linewidth=0.8)
+    ax.set_title(kwargs.get('title', 'Diagrama de Telaraña'))
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.legend()
+    ax.grid(True, linestyle=':', alpha=0.7)
+    if 'ylim' in kwargs:
+        ax.set_ylim(kwargs['ylim'])
+    ax.set_aspect('equal', adjustable='box')
+
+def g_converge(x: float) -> float:
+    """Función g(x) = cos(x), que converge."""
+    return np.cos(x)
+
+def g_diverge(x: float) -> float:
+    """Función g(x) = 1 - x^3, que diverge para p0=0.8."""
+    return 1 - x**3
+
+# --- Ejecución ---
+# Crear una figura con dos subplots uno al lado del otro
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
+
+# Gráfico de convergencia
+plot_cobweb(g=g_converge, p0=0.1, x_range=(0, 1.5), max_iter=10, ax=ax1, 
+            title='Proceso Convergente', g_color='blue', ylim=(-0.2, 1.2))
+
+# Gráfico de divergencia
+plot_cobweb(g=g_diverge, p0=0.8, x_range=(-1, 1.5), max_iter=6, ax=ax2,
+            title='Proceso Divergente', g_color='purple', ylim=(-1, 1.5))
+
+plt.show()
+```
+
+::: caja-ejemplo
+#### Ejemplo 5: Punto fijo para $f(x)=0$ de 4 maneras diferentes
+
+Hallar numéricamente una de las raíces de $f(x) = x^2 - x - 2 = 0$. Sus raíces exactas son $x_1 = -1$ y $x_2 = 2$. Hallando únicamente en el cálculo de la raíz $\hat{x} = 2$ tomando como punto de partida $x_0 = 2.1$ y definiendo $g$ como.
+
+* $g_1(x) = x^2-2$
+
+* $g_2(x) = \sqrt{x+2}$
+
+* $g_3(x) = 1+\dfrac{2}{x}$
+
+* $g_4(x) = \dfrac{x^2+2}{2x-1}$
+
+```{python, echo=FALSE}
+import numpy as np
+import pandas as pd
+from itertools import zip_longest
+
+# Definición de las funciones de iteración
+def g1(x):
+    return x**2 - 2
+
+def g2(x):
+    return np.sqrt(x + 2)
+
+def g3(x):
+    return 1 + 2/x
+
+def g4(x):
+    return (x**2 + 2) / (2*x - 1)
+
+def fixed_point_iterations(g, p0, max_iter):
+    """
+    Realiza iteraciones de punto fijo y devuelve los resultados en una lista.
+    """
+    history = [p0]
+    p_current = p0
+    for i in range(max_iter):
+        p_next = g(p_current)
+        history.append(p_next)
+        p_current = p_next
+    return history
+
+# Punto inicial
+p0 = 2.1
+
+# Calcular las iteraciones para cada función
+iter_g1 = fixed_point_iterations(g1, p0, 10)
+iter_g2 = fixed_point_iterations(g2, p0, 8)
+iter_g3 = fixed_point_iterations(g3, p0, 15)
+iter_g4 = fixed_point_iterations(g4, p0, 3)
+
+# Combinar los resultados en una sola tabla
+data = list(zip_longest(iter_g1, iter_g2, iter_g3, iter_g4))
+df = pd.DataFrame(data, columns=['g1(x)', 'g2(x)', 'g3(x)', 'g4(x)'])
+df.index.name = 'Iters'
+
+# Mostrar la tabla combinada
+print("--- Tabla Comparativa de Iteraciones de Punto Fijo ---")
+print(df.to_string(
+    formatters={
+    'g1(x)': '{:.8e}'.format,
+    'g2(x)': '{:.8f}'.format,
+    'g3(x)': '{:.8f}'.format,
+    'g4(x)': '{:.8f}'.format
+},
+    na_rep='---'
+))
+
+```
+
 :::
 
 ------------------------------------------------------------------------
