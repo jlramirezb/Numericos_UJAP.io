@@ -583,8 +583,522 @@ print(df.to_string(
 ))
 
 ```
+:::
+
+## Existencia del Punto Fijo
+
+El teorema siguiente nos dice cuáles son las condiciones de **existencia** del punto fijo de una función $g$:
+
+::: caja-lema
+**Teorema**
+
+En los resultados teóricos que se enuncian a continuación, se dan condiciones suficientes para que haya un punto fijo de una función $g$ en un intervalo y para que la convergencia sea a un único punto fijo.
+
+* Sea $g$ continua en $[a,b]$ que aplica $[a,b]$ en $[a,b]$, entonces $g$ tiene un punto fijo en $[a,b]$.
+
+* Sea $g$ continua en $[a,b]$ con $g'$ cumpliendo 
+
+::: recuadro-gris
+$$
+\left| {g'\left( x \right)}\right| \le L < 1 \quad \text{ para todo }x \in \left(a,b\right)
+$$
+:::
+
+* Si $x_0$ es un punto cualquiera en $(a,b)$ entonces la solución
+
+::: recuadro-gris
+$$
+{x_{k + 1}} = g\left( {{x_k}} \right)\qquad k \ge 0 
+$$
+:::
+
+converge al único punto fijo en [a,b].
 
 :::
+
+* **Observación**:
+    - Si al utilizar el método del punto fijo $x_{k+1}$ y $x_k$ coinciden dentro de la exactitud especificada $\epsilon$, no significa que $\overline x \approx {x_{k+1}}$ con la misma exactitud. En general, esta afirmación no es correcta. Si $g'(x)$ está próxima a la unidad, entonces la cantidad $\left| {{x_k} - \overline x} \right|$ puede ser grande, aún cuando $\left|{{x_{k+1}} - x_k} \right|$ sea extremadamente pequeña.
+
+::: caja-ejemplo
+#### Ejemplo 6
+
+La función $g_2 : [1, 3] \to [1, 3]$ definida por $g_2(x) = \sqrt{x + 2}$ cumple con el Teorema dado en $X = [1, 3]$.
+
+* Primero verificando que $g(x) \in [1, 3]$ si $x \in [1, 3]$:
+
+$$
+x \in [1, 3] \Leftrightarrow 1 \leq x \leq 3 \Leftrightarrow 3 \leq x+2 \leq 5 \Leftrightarrow \sqrt{3} \leq \sqrt{x + 2} \leq
+\sqrt{5}
+$$
+Por lo tanto, $g_2(x) = \sqrt{x + 2} \in [1, 3]$.
+
+
+```{python, echo=FALSE, fig.cap="Análisis gráfico de los puntos fijos para las funciones del Ejemplo 5."}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Definir las funciones g(x) del Ejemplo 5
+def g1(x): return x**2 - 2
+def g2(x): return np.sqrt(x + 2)
+def g3(x): return 1 + 2/x
+def g4(x): return (x**2 + 2) / (2*x - 1)
+
+# Se definen también sus derivadas para calcular la tangente
+def dg1(x): return 2*x
+def dg2(x): return 1 / (2 * np.sqrt(x + 2))
+def dg3(x): return -2 / x**2
+def dg4(x): return (2*x**2 - 2*x - 4) / (2*x - 1)**2
+
+functions = [
+    {'g': g1, 'dg': dg1, 'title': '$g_1(x) = x^2-2$'},
+    {'g': g2, 'dg': dg2, 'title': '$g_2(x) = \\sqrt{x+2}$'},
+    {'g': g3, 'dg': dg3, 'title': '$g_3(x) = 1+2/x$'},
+    {'g': g4, 'dg': dg4, 'title': '$g_4(x) = \\frac{x^2+2}{2x-1}$'}
+]
+
+# Punto de tangencia
+p0 = 2.1
+
+# 2. Configuración del rango y la figura
+x = np.linspace(1, 3, 400)
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+axes = axes.ravel()
+
+# 3. Generar cada subgráfica
+for i, func_data in enumerate(functions):
+    ax = axes[i]
+    
+    # Graficar g(x) y la recta identidad y=x
+    ax.plot(x, func_data['g'](x), label='$g(x)$', color='blue')
+    ax.plot(x, x, label='$y=x$', color='red', linestyle='--')
+    
+    # Calcular y graficar la recta tangente en p0
+    g_p0 = func_data['g'](p0)
+    dg_p0 = func_data['dg'](p0)
+    tangent_line = np.abs(dg_p0) * (x - p0) + g_p0
+    ax.plot(x, tangent_line, label=f'Tangente en x={p0}', color='green', linestyle=':')
+    ax.plot(p0, g_p0, 'o', color='darkorange') # Marcar el punto de tangencia
+
+    # Configuración de la subgráfica
+    a=ax.set_title(func_data['title'])
+    a=ax.set_xlabel('x')
+    a=ax.set_ylabel('y')
+    a=ax.grid(True, which='both', linestyle='--', linewidth=0.5)
+    a=ax.legend();
+    a=ax.set_ylim(1, 3); # Ajustar el eje y para una mejor visualización cerca de la raíz x=2
+
+plt.suptitle('Intersección de $g(x)$ con la Recta Identidad $y=x$', fontsize=16)
+plt.tight_layout(rect=[0, 0, 1, 0.96])
+plt.show()
+```
+
+:::
+
+
+A continuación, se presenta un gráfico dedicado a la convergencia del error para la funciones $g_2(x)$, $g_3(x)$ y $g_4(x)$.
+```{python, echo=FALSE, fig.cap="Convergencia del error para $g_3$, $g_4$ y $g_5$ en escala logarítmica."}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Definición de las funciones de iteración
+def g2(x): return np.sqrt(x + 2)
+def g3(x): return 1 + 2.0/x
+def g4(x): return (x**2 + 2) / (2*x - 1)
+
+def fixed_point_iterations_safe(g, p0, max_iter):
+    """
+    Realiza iteraciones de punto fijo manejando errores de dominio/aritmética.
+    Devuelve lista de valores (longitud <= max_iter+1). Si ocurre un error
+    se rellenan los valores restantes con np.nan.
+    """
+    history = [p0]
+    p_current = p0
+    for _ in range(max_iter):
+        try:
+            p_next = g(p_current)
+            # Si p_next no es real o es nan, interrumpir
+            if isinstance(p_next, complex) or np.isnan(p_next):
+                history.append(np.nan)
+                break
+            history.append(float(p_next))
+            p_current = p_next
+        except Exception:
+            # En caso de error (dominio, división por cero, etc.) rellenar con nan y salir
+            history.append(np.nan)
+            break
+    # Asegurar longitud max_iter+1 rellenando con nan si es necesario
+    while len(history) < max_iter + 1:
+        history.append(np.nan)
+    return np.array(history, dtype=float)
+
+# Parámetros
+p0 = 2.1
+p_exact = 2.0
+max_iter = 12
+
+# Iteraciones seguras
+iter_g2 = fixed_point_iterations_safe(g2, p0, max_iter)
+iter_g3 = fixed_point_iterations_safe(g3, p0, max_iter)
+iter_g4 = fixed_point_iterations_safe(g4, p0, max_iter)
+
+# Errores absolutos respecto a la raíz exacta p_exact
+err_g2 = np.abs(iter_g2 - p_exact)
+err_g3 = np.abs(iter_g3 - p_exact)
+err_g4 = np.abs(iter_g4 - p_exact)
+
+# Preparar índice de iteraciones
+k = np.arange(len(err_g2))
+
+# Graficar
+plt.figure(figsize=(10, 6))
+plt.plot(k, err_g2, marker='s', linestyle='-', color='green', label=r'Error $g_2(x)=\sqrt{x+2}$')
+plt.plot(k, err_g3, marker='o', linestyle='--', color='blue', label=r'Error $g_3(x)=1+\frac{2}{x}$')
+plt.plot(k, err_g4, marker='^', linestyle='-.', color='magenta', label=r'Error $g_4(x)=\frac{x^2+2}{2x-1}$')
+
+plt.title('Convergencia del Error para $g_2$, $g_3$ y $g_4$')
+plt.xlabel('Iteración (k)')
+plt.ylabel('Error absoluto $|p_k - 2|$ (escala logarítmica)')
+plt.yscale('log')
+a=plt.ylim(bottom=1e-16)
+b=plt.xticks(k)
+b=plt.grid(True, which="both", ls="--", alpha=0.6)
+b=plt.legend()
+b=plt.tight_layout()
+plt.show()
+```
+
+# Método de Newton-Raphson
+
+* El método de Newton-Raphson es uno de los métodos más conocidos y más potentes en el sentido de su **velocidad de convergencia**.
+
+* Sin embargo, al contrario que el método de la bisección, su convergencia no está asegurada.
+
+* La idea de este método se basa en la aproximación lineal que proporciona la recta tangente. Una vez obtenido $x_k$, se calcula $x_{k+1}$ utilizando la aproximación lineal de $f(x)$ mediante la recta tangente que pasa por el punto $(x_k,f(x_k))$:
+
+::: recuadro-gris
+$$
+f(x) \approx f(x_k) + f'(x_k)(x-x_k)
+$$
+:::
+
+* Se toma $x_{k+1}$ como la intersección de esta recta con el eje de abscisas, es decir, la solución de
+
+::: recuadro-gris
+$$
+f(x_k) + f'(x _k )(x - x_k ) = 0
+$$
+:::
+
+* Si en esta expresión se despeja $x$ obtenemos una aproximación de $\hat{x}$ más exacta de lo que era la estimación $x_k$.
+
+* Así, detotando como $x_{k+1}$ a este punto de corte, el Método de Newton-Raphson genera la sucesión de aproximacioones a partir del valor inicial $x_0$ dado por el esquema:
+
+::: recuadro-gris
+$$
+$x_{k+1} = x_k - \dfrac{f(x_k)}{f'(x_k)} \quad k \geq 0$
+$$
+:::
+
+* Veamos gráficamente en qué consiste el método de Newton-Raphson:
+
+```{python, echo=FALSE, fig.cap="Visualización del Método de Newton-Raphson."}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Definir la función y su derivada
+def f(x):
+    return x**2 - 4 * np.sin(x)
+
+def df(x):
+    return 2*x - 4 * np.cos(x)
+
+# 2. Configuración inicial
+x0 = 3.0  # Aproximación inicial
+iteraciones = 3 # Número de iteraciones a visualizar
+
+# 3. Preparar la gráfica
+plt.figure(figsize=(12, 8))
+x_vals = np.linspace(0, 3.5, 500)
+y_vals = f(x_vals)
+
+# Graficar la función y el eje x
+plt.plot(x_vals, y_vals, label='$f(x)$', color='black', zorder=1)
+plt.axhline(0, color='gray', linestyle='--', linewidth=0.8)
+
+xk = x0
+# 4. Bucle para visualizar las iteraciones
+for i in range(iteraciones):
+    fxk = f(xk)
+    dfxk = df(xk)
+    
+    # Calcular la siguiente aproximación
+    xk_next = xk - fxk / dfxk
+    
+    # Graficar la recta tangente
+    tangente_x = np.array([xk - 0.5, xk + 0.5])
+    tangente_y = dfxk * (tangente_x - xk) + fxk
+    plt.plot(tangente_x, tangente_y, '--', color=f'C{i}', label=f'Tangente en $x_{i}$')
+    
+    # Marcar los puntos y las transiciones
+    plt.plot([xk, xk], [0, fxk], ':', color=f'C{i}') # Línea vertical al punto
+    plt.plot(xk, fxk, 'o', color=f'C{i}') # Punto (xk, f(xk))
+    plt.plot([xk, xk_next], [fxk, 0], '--', color=f'C{i}') # Línea de la tangente al eje x
+    plt.text(xk, -0.4, f'$x_{i}$', ha='center', va='top', color=f'C{i}', fontsize=12)
+    
+    xk = xk_next
+
+# 5. Añadir detalles al gráfico
+plt.title('Visualización del Método de Newton-Raphson')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.legend()
+plt.grid(True, linestyle=':', alpha=0.6)
+a=plt.ylim(-2.5, 10)
+a=plt.xlim(1.75, 3.2)
+plt.show()
+```
+
+::: caja-ejemplo
+#### Ejemplo 7
+
+Obtener la raíz del polinomio $p\left( x \right) = {x^3} + 3{x^2} + 2$ que se encuentra en el intervalo $[-4,-2]$. Se puede considerar como punto de inicio el punto medio del intervalo $x_0=-3$, una tolerancia de $10^{-8}$ y un numero máximo de 50 iteraciones. 
+
+
+```{python, echo=FALSE, fig.cap="Convergencia del error para el método de Newton-Raphson."}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Definir la función y su derivada
+def p(x):
+    return x**3 + 3*x**2 + 2
+
+def dp(x):
+    return 3*x**2 + 6*x
+
+# 2. Configuración inicial
+x0 = -3.0
+tol = 1e-8
+nmax = 50
+
+# 3. Implementación del método de Newton-Raphson
+historial = []
+xk = x0
+
+for k in range(nmax):
+    pxk = p(xk)
+    dpxk = dp(xk)
+
+    # Almacenar datos antes de la actualización
+    # Para la primera iteración, el error de paso no está definido
+    error_step = np.nan if k == 0 else np.abs(xk - historial[-1][1])
+    historial.append([k, xk, np.abs(pxk), error_step])
+
+    # Criterio de parada
+    if np.abs(pxk) < tol or (k > 0 and error_step < tol):
+        print(f"Solución encontrada en la iteración {k}.")
+        break
+
+    # Evitar división por cero
+    if np.abs(dpxk) < 1e-15:
+        print("Derivada cercana a cero. El método se detiene.")
+        break
+
+    # Calcular la siguiente aproximación
+    xk = xk - pxk / dpxk
+else:
+    # Este bloque se ejecuta si el bucle termina sin 'break'
+    print("Se alcanzó el número máximo de iteraciones.")
+
+# 4. Crear y mostrar la tabla de resultados
+columnas = ['k', 'x_k', '|p(x_k)|', '|x_k - x_{k-1}|']
+df = pd.DataFrame(historial, columns=columnas)
+formatters = {
+    'x_k': '{:.8f}'.format,
+    '|p(x_k)|': '{:.4e}'.format,
+    '|x_k - x_{k-1}|': '{:.4e}'.format,
+}
+print("--- Tabla de Iteraciones del Método de Newton-Raphson ---")
+print(df.to_string(index=False, formatters=formatters, na_rep='---'))
+
+# 5. Graficar la convergencia del error
+plt.figure(figsize=(10, 6))
+plt.plot(df['k'][1:], df['|p(x_k)|'][1:], marker='o', linestyle='-', label='$|p(x_k)|$ (Error de función)')
+plt.plot(df['k'][1:], df['|x_k - x_{k-1}|'][1:], marker='x', linestyle='--', label='$|x_k - x_{k-1}|$ (Error de paso)')
+plt.title('Convergencia del Error en el Método de Newton-Raphson')
+plt.xlabel('Iteración (k)')
+plt.ylabel('Valor del Error (escala logarítmica)')
+plt.yscale('log')
+a=plt.xticks(df['k'])
+plt.grid(True, which="both", ls="--")
+plt.legend()
+plt.show()
+```
+
+:::
+
+* El método de Newton es uno de los métodos más usados para calcular numéricamente raíces de ecuaciones no lineales, pues si se escoge adecuadamente la aproximación inicial $x_0$, la sucesión obtenida por iteración converge razonablemente rápido a la solución.
+
+* Sin embargo, este es un método denominado local, pues si $x_0$ no es lo suficientemente cercano a $\hat{x}$ y la función $f(x)$
+no tiene **buenas propiedades**, se pueden presentar algunos problemas. El siguiente ejemplo muestra algunas de las situaciones indeseables en el método de Newton.
+
+::: caja-ejemplo
+#### Ejemplo 8
+
+Ahora, se resolverá el mismo problema del **Ejemplo 7**, pero tomando como punto de partida $x_0=1$. Este ejemplo ilustra un caso donde el método de Newton-Raphson no converge a la raíz esperada debido a una mala elección del punto inicial.
+
+```{python, echo=FALSE, fig.cap="Comportamiento divergente del método de Newton-Raphson con un punto inicial inadecuado."}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Definir la función y su derivada
+def p(x):
+    return x**3 + 3*x**2 + 2
+
+def dp(x):
+    return 3*x**2 + 6*x
+
+# 2. Configuración inicial con x0 = 1
+x0 = 1.0
+tol = 1e-8
+nmax = 20 # Se limita a 10 para observar la divergencia
+
+# 3. Implementación del método de Newton-Raphson
+historial = []
+xk = x0
+
+for k in range(nmax):
+    pxk = p(xk)
+    dpxk = dp(xk)
+
+    # Almacenar datos antes de la actualización
+    error_step = np.nan if k == 0 else np.abs(xk - historial[-1][1])
+    historial.append([k, xk, np.abs(pxk), error_step])
+
+    # Criterio de parada (es poco probable que se cumpla)
+    if np.abs(pxk) < tol or (k > 0 and error_step < tol):
+        print(f"Solución encontrada en la iteración {k}.")
+        break
+
+    # Evitar división por cero
+    if np.abs(dpxk) < 1e-15:
+        print("Derivada cercana a cero. El método se detiene.")
+        break
+
+    # Calcular la siguiente aproximación
+    xk = xk - pxk / dpxk
+else:
+    print(f"Se alcanzó el número máximo de {nmax} iteraciones sin convergencia.")
+
+# 4. Crear y mostrar la tabla de resultados
+columnas = ['k', 'x_k', '|p(x_k)|', '|x_k - x_{k-1}|']
+df = pd.DataFrame(historial, columns=columnas)
+formatters = {
+    'x_k': '{:.8f}'.format,
+    '|p(x_k)|': '{:.4e}'.format,
+    '|x_k - x_{k-1}|': '{:.4e}'.format,
+}
+print("--- Tabla de Iteraciones con x0 = 1 (Divergencia) ---")
+print(df.to_string(index=False, formatters=formatters, na_rep='---'))
+
+# 5. Graficar el comportamiento del error
+plt.figure(figsize=(10, 6))
+plt.plot(df['k'][1:], df['|p(x_k)|'][1:], marker='o', linestyle='-', label='$|p(x_k)|$ (Error de función)')
+plt.plot(df['k'][1:], df['|x_k - x_{k-1}|'][1:], marker='x', linestyle='--', label='$|x_k - x_{k-1}|$ (Error de paso)')
+plt.title('Comportamiento del Error en el Método de Newton-Raphson (x0=1)')
+plt.xlabel('Iteración (k)')
+plt.ylabel('Valor del Error (escala logarítmica)')
+plt.yscale('log')
+a=plt.xticks(df['k'])
+plt.grid(True, which="both", ls="--")
+plt.legend()
+plt.show()
+```
+:::
+
+# Método de la Secante
+
+* El método de Newton es un método muy potente pero tiene un inconveniente: necesitamos conocer la función derivada $f'(x)$.
+
+* En muchos problemas de análisis numérico, dicho conocimiento es un lujo. Sabemos cómo evaluar la función $f$ pero no hay forma de tener una expresión de la función derivada $f'$. En estos casos, el metodo de Newton-Raphson no es aplicable.
+
+* Para solventar esta dificultad, podemos usar el cociente incremental como aproximación a $f'(x_{n-1})$:
+
+::: recuadro-gris
+$$
+f'(x_{n-1}) \approx \dfrac{f(x_{n-1})-f(x_{n-2})}{x_{n-1}-x_{n-2}}
+$$
+:::
+
+* Si sustituimos la expresión anterior de $f'(x_{n-1})$ en el método de Newton-Raphson, obtenemos el denominado metodo de la secante:
+
+::: recuadro-gris
+$$
+x_n = x_{n-1}- \dfrac{f(x_{n-1})}{\frac{f(x_{n-1})-f(x_{n-2})}{x_{n-1}-x_{n-2}}} = x_{n-1}-\dfrac{f(x_{n-1})\cdot(x_{n-1}-x_{n-2})}{f(x_{n-1})-f(x_{n-2})}
+$$
+:::
+
+* Esta fórmula de iteración puede deducirse de hallar el punto de corte con el eje $x$ de la recta secante que pasa por los puntos $(x_{n-2},f(x_{n-2}))$ y $(x_{n-1},f(x_{n-1}))$, lo cual se puede ver en el siguiente gráfico:
+
+```{python, echo=FALSE, fig.cap="Visualización del Método de la Secante."}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Definir la función
+def f(x):
+    return x**2 - 4 * np.sin(x)
+
+# 2. Configuración inicial
+x0, x1 = 1.0, 3.0  # Aproximaciones iniciales
+iteraciones = 3   # Número de iteraciones a visualizar
+
+# 3. Preparar la gráfica
+plt.figure(figsize=(12, 8))
+x_vals = np.linspace(0, 3.5, 500)
+y_vals = f(x_vals)
+
+# Graficar la función y el eje x
+plt.plot(x_vals, y_vals, label='$f(x)$', color='black', zorder=1)
+plt.axhline(0, color='gray', linestyle='--', linewidth=0.8)
+
+# 4. Bucle para visualizar las iteraciones
+xk_prev, xk = x0, x1
+for i in range(iteraciones):
+    fxk_prev, fxk = f(xk_prev), f(xk)
+    
+    # Calcular la siguiente aproximación
+    xk_next = xk - fxk * (xk - xk_prev) / (fxk - fxk_prev)
+    
+    # Definir el color para la iteración actual
+    color = f'C{i}'
+    
+    # Graficar la recta secante
+    # La recta secante pasa por (xk_prev, fxk_prev) y (xk, fxk) y se extiende hasta (xk_next, 0)
+    plt.plot([xk_prev, xk, xk_next], [fxk_prev, fxk, 0], '--', color=color, label=f'Secante {i+1}')
+    
+    # Marcar los puntos
+    plt.plot([xk_prev, xk], [fxk_prev, fxk], 'o', color=color)
+    
+    # Etiquetar los puntos de forma clara y correcta
+    if i == 0:
+        plt.text(xk_prev, -0.4, f'$x_0$', ha='center', va='top', fontsize=12, color=color)
+    
+    plt.text(xk, -0.4, f'$x_{i+1}$', ha='center', va='top', fontsize=12, color=color)
+    
+    # Actualizar puntos para la siguiente iteración
+    xk_prev, xk = xk, xk_next
+
+# 5. Añadir detalles al gráfico
+plt.title('Visualización del Método de la Secante')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.legend()
+plt.grid(True, linestyle=':', alpha=0.6)
+a=plt.ylim(-5, 15)
+plt.xlim(0.5, 3.2);
+plt.show()
+```
 
 ------------------------------------------------------------------------
   

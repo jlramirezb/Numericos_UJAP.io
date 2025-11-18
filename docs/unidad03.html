@@ -791,8 +791,286 @@ como.</p>
 ## 14                ---        --- 2.00000591        ---
 ## 15                ---        --- 1.99999705        ---</code></pre>
 </div>
+<div id="existencia-del-punto-fijo" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Existencia del Punto
+Fijo</h2>
+<p>El teorema siguiente nos dice cuáles son las condiciones de
+<strong>existencia</strong> del punto fijo de una función <span
+class="math inline">\(g\)</span>:</p>
+<div class="caja-lema">
+<p><strong>Teorema</strong></p>
+<p>En los resultados teóricos que se enuncian a continuación, se dan
+condiciones suficientes para que haya un punto fijo de una función <span
+class="math inline">\(g\)</span> en un intervalo y para que la
+convergencia sea a un único punto fijo.</p>
+<ul>
+<li><p>Sea <span class="math inline">\(g\)</span> continua en <span
+class="math inline">\([a,b]\)</span> que aplica <span
+class="math inline">\([a,b]\)</span> en <span
+class="math inline">\([a,b]\)</span>, entonces <span
+class="math inline">\(g\)</span> tiene un punto fijo en <span
+class="math inline">\([a,b]\)</span>.</p></li>
+<li><p>Sea <span class="math inline">\(g\)</span> continua en <span
+class="math inline">\([a,b]\)</span> con <span
+class="math inline">\(g&#39;\)</span> cumpliendo</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\left| {g&#39;\left( x \right)}\right| \le L &lt; 1 \quad \text{ para
+todo }x \in \left(a,b\right)
+\]</span></p>
+</div>
+<ul>
+<li>Si <span class="math inline">\(x_0\)</span> es un punto cualquiera
+en <span class="math inline">\((a,b)\)</span> entonces la solución</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+{x_{k + 1}} = g\left( {{x_k}} \right)\qquad k \ge 0
+\]</span></p>
+</div>
+<p>converge al único punto fijo en [a,b].</p>
+</div>
+<ul>
+<li><strong>Observación</strong>:
+<ul>
+<li>Si al utilizar el método del punto fijo <span
+class="math inline">\(x_{k+1}\)</span> y <span
+class="math inline">\(x_k\)</span> coinciden dentro de la exactitud
+especificada <span class="math inline">\(\epsilon\)</span>, no significa
+que <span class="math inline">\(\overline x \approx {x_{k+1}}\)</span>
+con la misma exactitud. En general, esta afirmación no es correcta. Si
+<span class="math inline">\(g&#39;(x)\)</span> está próxima a la unidad,
+entonces la cantidad <span class="math inline">\(\left| {{x_k} -
+\overline x} \right|\)</span> puede ser grande, aún cuando <span
+class="math inline">\(\left|{{x_{k+1}} - x_k} \right|\)</span> sea
+extremadamente pequeña.</li>
+</ul></li>
+</ul>
+<div id="ejemplo-6" class="section level4 caja-ejemplo"
+number="4.1.0.1">
+<h4><span class="header-section-number">4.1.0.1</span> Ejemplo 6</h4>
+<p>La función <span class="math inline">\(g_2 : [1, 3] \to [1,
+3]\)</span> definida por <span class="math inline">\(g_2(x) = \sqrt{x +
+2}\)</span> cumple con el Teorema dado en <span class="math inline">\(X
+= [1, 3]\)</span>.</p>
+<ul>
+<li>Primero verificando que <span class="math inline">\(g(x) \in [1,
+3]\)</span> si <span class="math inline">\(x \in [1, 3]\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+x \in [1, 3] \Leftrightarrow 1 \leq x \leq 3 \Leftrightarrow 3 \leq x+2
+\leq 5 \Leftrightarrow \sqrt{3} \leq \sqrt{x + 2} \leq
+\sqrt{5}
+\]</span> Por lo tanto, <span class="math inline">\(g_2(x) = \sqrt{x +
+2} \in [1, 3]\)</span>.</p>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-6-9.png" alt="Análisis gráfico de los puntos fijos para las funciones del Ejemplo 5." width="1152" />
+<p class="caption">
+Análisis gráfico de los puntos fijos para las funciones del Ejemplo 5.
+</p>
+</div>
+</div>
+A continuación, se presenta un gráfico dedicado a la convergencia del
+error para la funciones <span class="math inline">\(g_2(x)\)</span>,
+<span class="math inline">\(g_3(x)\)</span> y <span
+class="math inline">\(g_4(x)\)</span>.
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-7-11.png" alt="Convergencia del error para $g_3$, $g_4$ y $g_5$ en escala logarítmica." width="960" />
+<p class="caption">
+Convergencia del error para <span class="math inline">\(g_3\)</span>,
+<span class="math inline">\(g_4\)</span> y <span
+class="math inline">\(g_5\)</span> en escala logarítmica.
+</p>
+</div>
+</div>
+</div>
+<div id="método-de-newton-raphson" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Método de
+Newton-Raphson</h1>
+<ul>
+<li><p>El método de Newton-Raphson es uno de los métodos más conocidos y
+más potentes en el sentido de su <strong>velocidad de
+convergencia</strong>.</p></li>
+<li><p>Sin embargo, al contrario que el método de la bisección, su
+convergencia no está asegurada.</p></li>
+<li><p>La idea de este método se basa en la aproximación lineal que
+proporciona la recta tangente. Una vez obtenido <span
+class="math inline">\(x_k\)</span>, se calcula <span
+class="math inline">\(x_{k+1}\)</span> utilizando la aproximación lineal
+de <span class="math inline">\(f(x)\)</span> mediante la recta tangente
+que pasa por el punto <span
+class="math inline">\((x_k,f(x_k))\)</span>:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+f(x) \approx f(x_k) + f&#39;(x_k)(x-x_k)
+\]</span></p>
+</div>
+<ul>
+<li>Se toma <span class="math inline">\(x_{k+1}\)</span> como la
+intersección de esta recta con el eje de abscisas, es decir, la solución
+de</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+f(x_k) + f&#39;(x _k )(x - x_k ) = 0
+\]</span></p>
+</div>
+<ul>
+<li><p>Si en esta expresión se despeja <span
+class="math inline">\(x\)</span> obtenemos una aproximación de <span
+class="math inline">\(\hat{x}\)</span> más exacta de lo que era la
+estimación <span class="math inline">\(x_k\)</span>.</p></li>
+<li><p>Así, detotando como <span class="math inline">\(x_{k+1}\)</span>
+a este punto de corte, el Método de Newton-Raphson genera la sucesión de
+aproximacioones a partir del valor inicial <span
+class="math inline">\(x_0\)</span> dado por el esquema:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+$x_{k+1} = x_k - \dfrac{f(x_k)}{f&#39;(x_k)} \quad k \geq 0$
+\]</span></p>
+</div>
+<ul>
+<li>Veamos gráficamente en qué consiste el método de
+Newton-Raphson:</li>
+</ul>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-8-13.png" alt="Visualización del Método de Newton-Raphson." width="1152" />
+<p class="caption">
+Visualización del Método de Newton-Raphson.
+</p>
+</div>
+<div id="ejemplo-7" class="section level4 caja-ejemplo"
+number="5.0.0.1">
+<h4><span class="header-section-number">5.0.0.1</span> Ejemplo 7</h4>
+<p>Obtener la raíz del polinomio <span class="math inline">\(p\left( x
+\right) = {x^3} + 3{x^2} + 2\)</span> que se encuentra en el intervalo
+<span class="math inline">\([-4,-2]\)</span>. Se puede considerar como
+punto de inicio el punto medio del intervalo <span
+class="math inline">\(x_0=-3\)</span>, una tolerancia de <span
+class="math inline">\(10^{-8}\)</span> y un numero máximo de 50
+iteraciones.</p>
+<pre><code>## Solución encontrada en la iteración 4.</code></pre>
+<pre><code>## --- Tabla de Iteraciones del Método de Newton-Raphson ---</code></pre>
+<pre><code>##  k         x_k   |p(x_k)| |x_k - x_{k-1}|
+##  0 -3.00000000 2.0000e+00             ---
+##  1 -3.22222222 3.0727e-01      2.2222e-01
+##  2 -3.19621502 4.4916e-03      2.6007e-02
+##  3 -3.19582343 1.0103e-06      3.9159e-04
+##  4 -3.19582335 5.6843e-14      8.8118e-08</code></pre>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-9-15.png" alt="Convergencia del error para el método de Newton-Raphson." width="960" />
+<p class="caption">
+Convergencia del error para el método de Newton-Raphson.
+</p>
+</div>
+</div>
+<ul>
+<li><p>El método de Newton es uno de los métodos más usados para
+calcular numéricamente raíces de ecuaciones no lineales, pues si se
+escoge adecuadamente la aproximación inicial <span
+class="math inline">\(x_0\)</span>, la sucesión obtenida por iteración
+converge razonablemente rápido a la solución.</p></li>
+<li><p>Sin embargo, este es un método denominado local, pues si <span
+class="math inline">\(x_0\)</span> no es lo suficientemente cercano a
+<span class="math inline">\(\hat{x}\)</span> y la función <span
+class="math inline">\(f(x)\)</span> no tiene <strong>buenas
+propiedades</strong>, se pueden presentar algunos problemas. El
+siguiente ejemplo muestra algunas de las situaciones indeseables en el
+método de Newton.</p></li>
+</ul>
+<div id="ejemplo-8" class="section level4 caja-ejemplo"
+number="5.0.0.2">
+<h4><span class="header-section-number">5.0.0.2</span> Ejemplo 8</h4>
+<p>Ahora, se resolverá el mismo problema del <strong>Ejemplo 7</strong>,
+pero tomando como punto de partida <span
+class="math inline">\(x_0=1\)</span>. Este ejemplo ilustra un caso donde
+el método de Newton-Raphson no converge a la raíz esperada debido a una
+mala elección del punto inicial.</p>
+<pre><code>## Se alcanzó el número máximo de 20 iteraciones sin convergencia.</code></pre>
+<pre><code>## --- Tabla de Iteraciones con x0 = 1 (Divergencia) ---</code></pre>
+<pre><code>##  k         x_k   |p(x_k)| |x_k - x_{k-1}|
+##  0  1.00000000 6.0000e+00             ---
+##  1  0.33333333 2.3704e+00      6.6667e-01
+##  2 -0.68253968 3.0796e+00      1.0159e+00
+##  3  0.45904845 2.7289e+00      1.1416e+00
+##  4 -0.34677943 2.3191e+00      8.0583e-01
+##  5  1.00158613 6.0143e+00      1.3484e+00
+##  6  0.33474248 2.3737e+00      6.6684e-01
+##  7 -0.67764927 3.0664e+00      1.0124e+00
+##  8  0.46302605 2.7424e+00      1.1407e+00
+##  9 -0.33854656 2.3050e+00      8.0157e-01
+## 10  1.02745275 6.2516e+00      1.3660e+00
+## 11  0.35751894 2.4292e+00      6.6993e-01
+## 12 -0.60316418 2.8720e+00      9.6068e-01
+## 13  0.53310209 3.0041e+00      1.1363e+00
+## 14 -0.20843016 2.1213e+00      7.4153e-01
+## 15  1.68513962 1.5304e+01      1.8936e+00
+## 16  0.86364567 4.8818e+00      8.2149e-01
+## 17  0.20567491 2.1356e+00      6.5797e-01
+## 18 -1.36352135 5.0425e+00      1.5692e+00
+## 19  0.57326211 3.1743e+00      1.9368e+00</code></pre>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-10-17.png" alt="Comportamiento divergente del método de Newton-Raphson con un punto inicial inadecuado." width="960" />
+<p class="caption">
+Comportamiento divergente del método de Newton-Raphson con un punto
+inicial inadecuado.
+</p>
+</div>
+</div>
+</div>
+<div id="método-de-la-secante" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Método de la
+Secante</h1>
+<ul>
+<li><p>El método de Newton es un método muy potente pero tiene un
+inconveniente: necesitamos conocer la función derivada <span
+class="math inline">\(f&#39;(x)\)</span>.</p></li>
+<li><p>En muchos problemas de análisis numérico, dicho conocimiento es
+un lujo. Sabemos cómo evaluar la función <span
+class="math inline">\(f\)</span> pero no hay forma de tener una
+expresión de la función derivada <span
+class="math inline">\(f&#39;\)</span>. En estos casos, el metodo de
+Newton-Raphson no es aplicable.</p></li>
+<li><p>Para solventar esta dificultad, podemos usar el cociente
+incremental como aproximación a <span
+class="math inline">\(f&#39;(x_{n-1})\)</span>:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+f&#39;(x_{n-1}) \approx \dfrac{f(x_{n-1})-f(x_{n-2})}{x_{n-1}-x_{n-2}}
+\]</span></p>
+</div>
+<ul>
+<li>Si sustituimos la expresión anterior de <span
+class="math inline">\(f&#39;(x_{n-1})\)</span> en el método de
+Newton-Raphson, obtenemos el denominado metodo de la secante:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x_n = x_{n-1}-
+\dfrac{f(x_{n-1})}{\frac{f(x_{n-1})-f(x_{n-2})}{x_{n-1}-x_{n-2}}} =
+x_{n-1}-\dfrac{f(x_{n-1})\cdot(x_{n-1}-x_{n-2})}{f(x_{n-1})-f(x_{n-2})}
+\]</span></p>
+</div>
+<ul>
+<li>Esta fórmula de iteración puede deducirse de hallar el punto de
+corte con el eje <span class="math inline">\(x\)</span> de la recta
+secante que pasa por los puntos <span
+class="math inline">\((x_{n-2},f(x_{n-2}))\)</span> y <span
+class="math inline">\((x_{n-1},f(x_{n-1}))\)</span>, lo cual se puede
+ver en el siguiente gráfico:</li>
+</ul>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-11-19.png" alt="Visualización del Método de la Secante." width="1152" />
+<p class="caption">
+Visualización del Método de la Secante.
+</p>
+</div>
 <hr />
-<p><small>Última revisión: 16 de noviembre, 2025</small></p>
+<p><small>Última revisión: 17 de noviembre, 2025</small></p>
 </div>
 
 
