@@ -795,7 +795,7 @@ $$
 
 ::: recuadro-gris
 $$
-$x_{k+1} = x_k - \dfrac{f(x_k)}{f'(x_k)} \quad k \geq 0$
+x_{k+1} = x_k - \dfrac{f(x_k)}{f'(x_k)} \quad k \geq 0
 $$
 :::
 
@@ -857,6 +857,50 @@ a=plt.ylim(-2.5, 10)
 a=plt.xlim(1.75, 3.2)
 plt.show()
 ```
+
+::: cuadro-alg
+**FUNCIÓN NEWTON_RAPHSON (f, df, p0, TOL, N_MAX)**
+
+    # ENTRADA:
+    #   f:      la función para la cual se busca la raíz.
+    #   df:     la derivada de la función f.
+    #   p0:     la aproximación inicial.
+    #   TOL:    la tolerancia para el criterio de parada.
+    #   N_MAX:  el número máximo de iteraciones.
+
+    # SALIDA:
+    #   p:      la solución aproximada o un mensaje de error.
+
+    # Paso 1: Inicializar el contador de iteraciones.
+    iteracion = 1
+
+    # Paso 2: Iniciar el bucle que se ejecutará hasta N_MAX iteraciones.
+    MIENTRAS iteracion <= N_MAX:
+        # Paso 3: Calcular el siguiente punto usando la fórmula de Newton-Raphson.
+        #         Se debe verificar que la derivada no sea cero para evitar una división indefinida.
+        SI ABS(df(p0)) < 1E-15 ENTONCES
+            IMPRIMIR "Error: La derivada es cero o muy cercana a cero. El método no puede continuar."
+            RETORNAR NULO
+        FIN SI
+
+        p = p0 - f(p0) / df(p0)
+
+        # Paso 4: Comprobar si la aproximación es suficientemente buena (criterio de parada).
+        #         El error se mide como la diferencia absoluta entre la iteración actual y la anterior.
+        SI |p - p0| < TOL ENTONCES
+            IMPRIMIR "Solución encontrada en p =", p, "después de", iteracion, "iteraciones."
+            RETORNAR p
+        FIN SI
+
+        # Paso 5: Actualizar para la siguiente iteración.
+        iteracion = iteracion + 1
+        p0 = p
+        
+    FIN MIENTRAS
+
+    # Paso 6: Si se alcanza el número máximo de iteraciones sin converger, mostrar un mensaje.
+    IMPRIMIR "El método fracasó después de", N_MAX, "iteraciones. No se alcanzó la convergencia."
+:::
 
 ::: caja-ejemplo
 #### Ejemplo 7
@@ -1099,6 +1143,294 @@ a=plt.ylim(-5, 15)
 plt.xlim(0.5, 3.2);
 plt.show()
 ```
+
+::: cuadro-alg
+**FUNCIÓN SECANTE (f, p0, p1, TOL, N_MAX)**
+
+    # ENTRADA:
+    #   f:      la función para la cual se busca la raíz.
+    #   p0, p1: las dos aproximaciones iniciales.
+    #   TOL:    la tolerancia para el criterio de parada.
+    #   N_MAX:  el número máximo de iteraciones.
+
+    # SALIDA:
+    #   p:      la solución aproximada o un mensaje de error.
+
+    # Paso 1: Inicializar el contador de iteraciones.
+    iteracion = 1
+
+    # Paso 2: Iniciar el bucle que se ejecutará hasta N_MAX iteraciones.
+    MIENTRAS iteracion <= N_MAX:
+        # Paso 3: Calcular el siguiente punto usando la fórmula de la secante.
+        #         Se debe verificar que el denominador no sea cero.
+        SI ABS(f(p1) - f(p0)) < 1E-15 ENTONCES
+            IMPRIMIR "Error: División por cero o un valor muy pequeño. El método no puede continuar."
+            RETORNAR NULO
+        FIN SI
+
+        p = p1 - f(p1) * (p1 - p0) / (f(p1) - f(p0))
+
+        # Paso 4: Comprobar si la aproximación es suficientemente buena.
+        #         El error se mide como la diferencia absoluta entre la iteración actual y la anterior.
+        SI |p - p1| < TOL ENTONCES
+            IMPRIMIR "Solución encontrada en p =", p, "después de", iteracion, "iteraciones."
+            RETORNAR p
+        FIN SI
+
+        # Paso 5: Actualizar las aproximaciones para la siguiente iteración.
+        iteracion = iteracion + 1
+        p0 = p1
+        p1 = p
+        
+    FIN MIENTRAS
+
+    # Paso 6: Si se alcanza el número máximo de iteraciones sin converger, mostrar un mensaje.
+    IMPRIMIR "El método fracasó después de", N_MAX, "iteraciones. No se alcanzó la convergencia."
+:::
+
+::: caja-ejemplo
+#### Ejemplo 9
+
+Se retoma el problema del **Ejemplo 7** para encontrar la raíz del polinomio $p(x) = x^3 + 3x^2 + 2$, pero esta vez aplicando el método de la secante. Se utilizarán como puntos iniciales los extremos del intervalo $[-4, -2]$, es decir, $x_0 = -4$ y $x_1 = -2$, con una tolerancia de $10^{-8}$ y un máximo de 50 iteraciones.
+
+```{python, echo=FALSE, fig.cap="Convergencia del error para el método de la Secante."}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Definir la función
+def p(x):
+    return x**3 + 3*x**2 + 2
+
+# 2. Configuración inicial
+p0 = -4.0
+p1 = -2.0
+tol = 1e-8
+nmax = 50
+
+# 3. Implementación del método de la Secante
+historial = []
+
+# Almacenar las dos primeras aproximaciones
+historial.append([0, p0, np.abs(p(p0)), np.nan])
+historial.append([1, p1, np.abs(p(p1)), np.abs(p1 - p0)])
+
+for k in range(2, nmax):
+    fp0 = p(p0)
+    fp1 = p(p1)
+
+    # Evitar división por cero
+    if np.abs(fp1 - fp0) < 1e-15:
+        print("La diferencia f(p1) - f(p0) es cercana a cero. El método se detiene.")
+        break
+
+    # Calcular la siguiente aproximación
+    p_next = p1 - fp1 * (p1 - p0) / (fp1 - fp0)
+    
+    error_step = np.abs(p_next - p1)
+    historial.append([k, p_next, np.abs(p(p_next)), error_step])
+
+    # Criterio de parada
+    if error_step < tol:
+        print(f"Solución encontrada en la iteración {k}.")
+        break
+
+    # Actualizar puntos para la siguiente iteración
+    p0, p1 = p1, p_next
+else:
+    print("Se alcanzó el número máximo de iteraciones.")
+
+# 4. Crear y mostrar la tabla de resultados
+columnas = ['k', 'x_k', '|p(x_k)|', '|x_k - x_{k-1}|']
+df = pd.DataFrame(historial, columns=columnas)
+formatters = {'x_k': '{:.8f}'.format, '|p(x_k)|': '{:.4e}'.format, '|x_k - x_{k-1}|': '{:.4e}'.format}
+print("--- Tabla de Iteraciones del Método de la Secante ---")
+print(df.to_string(index=False, formatters=formatters, na_rep='---'))
+
+# 5. Graficar la convergencia del error
+plt.figure(figsize=(10, 6))
+plt.plot(df['k'][1:], df['|p(x_k)|'][1:], marker='o', linestyle='-', label='$|p(x_k)|$ (Error de función)')
+plt.plot(df['k'][1:], df['|x_k - x_{k-1}|'][1:], marker='x', linestyle='--', label='$|x_k - x_{k-1}|$ (Error de paso)')
+plt.title('Convergencia del Error en el Método de la Secante')
+plt.xlabel('Iteración (k)'); plt.ylabel('Valor del Error (escala logarítmica)'); plt.yscale('log')
+plt.xticks(df['k']); plt.grid(True, which="both", ls="--"); plt.legend(); plt.show()
+```
+:::
+
+* Este método tiene convergencia local si la función $f$ es derivable cerca de la raíz, si la raíz es simple y si las aproximaciones iniciales están suficientemente próximas a ella.
+
+* Su orden de convergencia es el número áureo, $\phi = \frac{{1 + \sqrt 5 }}{2} \approx 1.618$, lo que implica una convergencia superlineal, aunque inferior a la del método de Newton.
+
+* Si las aproximaciones iniciales están demasiado alejadas de la raíz o si esta es múltiple, el método no asegura la convergencia.
+
+# Método de Regula Falsi
+
+* Los métodos de Newton-Raphson y de la secante son métodos relativamente rápidos en cuanto a su convergencia pero tienen el inconveniente que no tenemos asegurada dicha convergencia.
+
+* Recordemos el Teorema donde nos dice si el cero es simple ($f'(\hat x)\neq 0$), existe un entorno del cero $\hat x$ tal que para cualquier valor inicial $x_0$ perteneciente a dicho entorno, el método de Newton-Raphson es convergente. El problema es que hallar dicho entorno es un problema mucho más difícil que hallar el cero en sí.
+
+* Por dicho motivo, de cara a asegurar la convergencia de la sucesión $\{x_n\}_n$ tenemos el método de Regula falsi que usa las ventajas de los métodos de la bisección y de la secante.
+
+* En pocas palabras, el método de regula falsi supone que hay un cambio de signo entre $x_{n-2}$ y $x_{n-1}$, es decir, $f(x_{n-2})\cdot f(x_{n-1})<0$ y halla $x_n$ usando el método de la secante. Como $x_n$ estará entre $x_{n-2}$ y $x_{n-1}$ habrá un cambio de signo de $f$ entre $x_{n-2}$ y $x_n$ o entre $x_{n-1}$ y $x_n$.
+
+* Se calcula $x_n$ según el método de la secante:
+
+::: recuadro-gris
+$$
+x_n = x_{n-1}-\dfrac{f(x_{n-1})\cdot(x_{n-1}-x_{n-2})}{f(x_{n-1})-f(x_{n-2})}
+$$
+::::
+
+* **Caso 1**. Si $f(x_n)\cdot f(x_{n-1})<0$, tenemos un cambio de signo de $f$ en el intervalo $(x_{n-1},x_n)$. En este caso, no hacemos nada y la sucesión quedará $\ldots,x_{n-2},x_{n-1},x_n$
+
+* **Caso 2**. Si $f(x_n)\cdot f(x_{n-2})<0$ tenemos un cambio de signo de $f$ en el intervalo $(x_{n-2},x_n)$. En este caso, cambiamos el orden de $x_{n-2}$ y $x_{n-1}$ y la sucesión quedará $\ldots,x_{n-1},x_{n-2},x_n.
+
+* Volvemos al paso inicial para hallar $x_{n+1}$.
+
+
+```{python, echo=FALSE, fig.cap="Visualización del Método de Regula Falsi."}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Definir la función
+def f(x):
+    return x**2 - 4 * np.sin(x)
+
+# 2. Configuración inicial
+a, b = 1.0, 3.0  # Intervalo inicial [a, b]
+iteraciones = 3   # Número de iteraciones a visualizar
+
+# 3. Preparar la gráfica
+plt.figure(figsize=(12, 8))
+x_vals = np.linspace(0, 3.5, 500)
+y_vals = f(x_vals)
+
+# Graficar la función y el eje x
+plt.plot(x_vals, y_vals, label='$f(x) = x^2 - 4sin(x)$', color='black', zorder=1)
+plt.axhline(0, color='gray', linestyle='--', linewidth=0.8)
+
+# 4. Bucle para visualizar las iteraciones del método de Regula Falsi
+a_k, b_k = a, b
+for i in range(iteraciones):
+    fa, fb = f(a_k), f(b_k)
+    
+    # Calcular la siguiente aproximación usando la fórmula de Regula Falsi
+    p_next = b_k - fb * (b_k - a_k) / (fb - fa)
+    fp_next = f(p_next)
+    
+    # Definir el color para la iteración actual
+    color = f'C{i}'
+    
+    # Graficar la recta secante
+    plt.plot([a_k, b_k], [fa, fb], '--', color=color, label=f'Secante {i+1}')
+    
+    # Marcar los puntos
+    plt.plot([a_k, b_k], [fa, fb], 'o', color=color)
+    plt.plot(p_next, 0, 'x', color=color, markersize=10, markeredgewidth=2)
+    
+    # Etiquetar los puntos de forma clara
+    if i == 0:
+        plt.text(a_k, fa + 0.5, f'$a_0$', ha='center', va='bottom', fontsize=12)
+    plt.text(b_k, fb - 1, f'$b_{i}$', ha='center', va='top', fontsize=12)
+    plt.text(p_next, -0.5, f'$p_{i+1}$', ha='center', va='top', fontsize=12, color=color)
+    
+    # Actualizar el intervalo para la siguiente iteración
+    if fa * fp_next < 0:
+        b_k = p_next
+    else:
+        a_k = p_next
+
+# 5. Añadir detalles al gráfico
+plt.title('Visualización del Método de Regula Falsi')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.legend(loc='upper left')
+plt.grid(True, linestyle=':', alpha=0.6)
+plt.ylim(-5, 10)
+plt.xlim(0.5, 3.2)
+plt.show()
+```
+
+::: caja-ejemplo
+#### Ejemplo 10
+
+Se retoma el problema del **Ejemplo 7** para encontrar la raíz del polinomio $p(x) = x^3 + 3x^2 + 2$, pero esta vez aplicando el método de Regula Falsi. Se utilizarán como puntos iniciales los extremos del intervalo $[-4, -2]$, es decir, $a = -4$ y $b = -2$, con una tolerancia de $10^{-8}$ y un máximo de 50 iteraciones.
+
+```{python, echo=FALSE, fig.cap="Convergencia del error para el método de Regula Falsi."}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Definir la función
+def p(x):
+    return x**3 + 3*x**2 + 2
+
+# 2. Configuración inicial
+a = -4.0
+b = -2.0
+tol = 1e-8
+nmax = 50
+
+# 3. Implementación del método de Regula Falsi
+historial = []
+p_prev = np.nan # No hay p_prev en la primera iteración
+
+if p(a) * p(b) >= 0:
+    print("El método de Regula Falsi requiere que f(a) y f(b) tengan signos opuestos.")
+else:
+    for k in range(nmax):
+        fa = p(a)
+        fb = p(b)
+        
+        # Fórmula de Regula Falsi (igual que la secante)
+        p_next = b - fb * (b - a) / (fb - fa)
+        
+        error_step = np.abs(p_next - p_prev) if k > 0 else np.nan
+        historial.append([k, a, b, p_next, np.abs(p(p_next)), error_step])
+
+        # Criterio de parada
+        if np.abs(p(p_next)) < tol or (k > 0 and error_step < tol):
+            print(f"Solución encontrada en la iteración {k}.")
+            break
+
+        # Actualizar el intervalo
+        if p(a) * p(p_next) < 0:
+            b = p_next
+        else:
+            a = p_next
+        
+        p_prev = p_next
+    else:
+        print("Se alcanzó el número máximo de iteraciones.")
+
+# 4. Crear y mostrar la tabla de resultados
+columnas = ['k', 'a_k', 'b_k', 'p_k', '|p(p_k)|', '|p_k - p_{k-1}|']
+df = pd.DataFrame(historial, columns=columnas)
+formatters = {
+    'a_k': '{:.8f}'.format,
+    'b_k': '{:.8f}'.format,
+    'p_k': '{:.8f}'.format,
+    '|p(p_k)|': '{:.4e}'.format,
+    '|p_k - p_{k-1}|': '{:.4e}'.format
+}
+print("--- Tabla de Iteraciones del Método de Regula Falsi ---")
+print(df.to_string(index=False, formatters=formatters, na_rep='---'))
+
+# 5. Graficar la convergencia del error
+plt.figure(figsize=(10, 6))
+plt.plot(df['k'][1:], df['|p(p_k)|'][1:], marker='o', linestyle='-', label='$|p(p_k)|$ (Error de función)')
+plt.plot(df['k'][1:], df['|p_k - p_{k-1}|'][1:], marker='x', linestyle='--', label='$|p_k - p_{k-1}|$ (Error de paso)')
+plt.title('Convergencia del Error en el Método de Regula Falsi')
+plt.xlabel('Iteración (k)')
+plt.ylabel('Valor del Error (escala logarítmica)')
+plt.yscale('log')
+plt.xticks(df['k']);
+plt.grid(True, which="both", ls="--")
+plt.legend()
+plt.show()
+```
+:::
+
 
 ------------------------------------------------------------------------
   

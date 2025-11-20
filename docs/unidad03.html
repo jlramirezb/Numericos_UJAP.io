@@ -929,7 +929,7 @@ class="math inline">\(x_0\)</span> dado por el esquema:</p></li>
 </ul>
 <div class="recuadro-gris">
 <p><span class="math display">\[
-$x_{k+1} = x_k - \dfrac{f(x_k)}{f&#39;(x_k)} \quad k \geq 0$
+x_{k+1} = x_k - \dfrac{f(x_k)}{f&#39;(x_k)} \quad k \geq 0
 \]</span></p>
 </div>
 <ul>
@@ -941,6 +941,48 @@ Newton-Raphson:</li>
 <p class="caption">
 Visualización del Método de Newton-Raphson.
 </p>
+</div>
+<div class="cuadro-alg">
+<p><strong>FUNCIÓN NEWTON_RAPHSON (f, df, p0, TOL, N_MAX)</strong></p>
+<pre><code># ENTRADA:
+#   f:      la función para la cual se busca la raíz.
+#   df:     la derivada de la función f.
+#   p0:     la aproximación inicial.
+#   TOL:    la tolerancia para el criterio de parada.
+#   N_MAX:  el número máximo de iteraciones.
+
+# SALIDA:
+#   p:      la solución aproximada o un mensaje de error.
+
+# Paso 1: Inicializar el contador de iteraciones.
+iteracion = 1
+
+# Paso 2: Iniciar el bucle que se ejecutará hasta N_MAX iteraciones.
+MIENTRAS iteracion &lt;= N_MAX:
+    # Paso 3: Calcular el siguiente punto usando la fórmula de Newton-Raphson.
+    #         Se debe verificar que la derivada no sea cero para evitar una división indefinida.
+    SI ABS(df(p0)) &lt; 1E-15 ENTONCES
+        IMPRIMIR &quot;Error: La derivada es cero o muy cercana a cero. El método no puede continuar.&quot;
+        RETORNAR NULO
+    FIN SI
+
+    p = p0 - f(p0) / df(p0)
+
+    # Paso 4: Comprobar si la aproximación es suficientemente buena (criterio de parada).
+    #         El error se mide como la diferencia absoluta entre la iteración actual y la anterior.
+    SI |p - p0| &lt; TOL ENTONCES
+        IMPRIMIR &quot;Solución encontrada en p =&quot;, p, &quot;después de&quot;, iteracion, &quot;iteraciones.&quot;
+        RETORNAR p
+    FIN SI
+
+    # Paso 5: Actualizar para la siguiente iteración.
+    iteracion = iteracion + 1
+    p0 = p
+    
+FIN MIENTRAS
+
+# Paso 6: Si se alcanza el número máximo de iteraciones sin converger, mostrar un mensaje.
+IMPRIMIR &quot;El método fracasó después de&quot;, N_MAX, &quot;iteraciones. No se alcanzó la convergencia.&quot;</code></pre>
 </div>
 <div id="ejemplo-7" class="section level4 caja-ejemplo"
 number="5.0.0.1">
@@ -1069,8 +1111,365 @@ ver en el siguiente gráfico:</li>
 Visualización del Método de la Secante.
 </p>
 </div>
+<div class="cuadro-alg">
+<p><strong>FUNCIÓN SECANTE (f, p0, p1, TOL, N_MAX)</strong></p>
+<pre><code># ENTRADA:
+#   f:      la función para la cual se busca la raíz.
+#   p0, p1: las dos aproximaciones iniciales.
+#   TOL:    la tolerancia para el criterio de parada.
+#   N_MAX:  el número máximo de iteraciones.
+
+# SALIDA:
+#   p:      la solución aproximada o un mensaje de error.
+
+# Paso 1: Inicializar el contador de iteraciones.
+iteracion = 1
+
+# Paso 2: Iniciar el bucle que se ejecutará hasta N_MAX iteraciones.
+MIENTRAS iteracion &lt;= N_MAX:
+    # Paso 3: Calcular el siguiente punto usando la fórmula de la secante.
+    #         Se debe verificar que el denominador no sea cero.
+    SI ABS(f(p1) - f(p0)) &lt; 1E-15 ENTONCES
+        IMPRIMIR &quot;Error: División por cero o un valor muy pequeño. El método no puede continuar.&quot;
+        RETORNAR NULO
+    FIN SI
+
+    p = p1 - f(p1) * (p1 - p0) / (f(p1) - f(p0))
+
+    # Paso 4: Comprobar si la aproximación es suficientemente buena.
+    #         El error se mide como la diferencia absoluta entre la iteración actual y la anterior.
+    SI |p - p1| &lt; TOL ENTONCES
+        IMPRIMIR &quot;Solución encontrada en p =&quot;, p, &quot;después de&quot;, iteracion, &quot;iteraciones.&quot;
+        RETORNAR p
+    FIN SI
+
+    # Paso 5: Actualizar las aproximaciones para la siguiente iteración.
+    iteracion = iteracion + 1
+    p0 = p1
+    p1 = p
+    
+FIN MIENTRAS
+
+# Paso 6: Si se alcanza el número máximo de iteraciones sin converger, mostrar un mensaje.
+IMPRIMIR &quot;El método fracasó después de&quot;, N_MAX, &quot;iteraciones. No se alcanzó la convergencia.&quot;</code></pre>
+</div>
+<div id="ejemplo-9" class="section level4 caja-ejemplo"
+number="6.0.0.1">
+<h4><span class="header-section-number">6.0.0.1</span> Ejemplo 9</h4>
+<p>Se retoma el problema del <strong>Ejemplo 7</strong> para encontrar
+la raíz del polinomio <span class="math inline">\(p(x) = x^3 + 3x^2 +
+2\)</span>, pero esta vez aplicando el método de la secante. Se
+utilizarán como puntos iniciales los extremos del intervalo <span
+class="math inline">\([-4, -2]\)</span>, es decir, <span
+class="math inline">\(x_0 = -4\)</span> y <span
+class="math inline">\(x_1 = -2\)</span>, con una tolerancia de <span
+class="math inline">\(10^{-8}\)</span> y un máximo de 50
+iteraciones.</p>
+<pre><code>## Solución encontrada en la iteración 11.</code></pre>
+<pre><code>## --- Tabla de Iteraciones del Método de la Secante ---</code></pre>
+<pre><code>##  k         x_k   |p(x_k)| |x_k - x_{k-1}|
+##  0 -4.00000000 1.4000e+01             ---
+##  1 -2.00000000 6.0000e+00      2.0000e+00
+##  2 -2.60000000 4.7040e+00      6.0000e-01
+##  3 -4.77777778 3.8582e+01      2.1778e+00
+##  4 -2.83666675 3.3143e+00      1.9411e+00
+##  5 -2.99022363 2.0874e+00      1.5356e-01
+##  6 -3.25148645 6.5876e-01      2.6126e-01
+##  7 -3.18881429 8.0035e-02      6.2672e-02
+##  8 -3.19560371 2.5177e-03      6.7894e-03
+##  9 -3.19582423 1.0172e-05      2.2052e-04
+## 10 -3.19582335 1.2838e-09      8.8733e-07
+## 11 -3.19582335 7.1054e-15      1.1197e-10</code></pre>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-12-21.png" alt="Convergencia del error para el método de la Secante." width="960" />
+<p class="caption">
+Convergencia del error para el método de la Secante.
+</p>
+</div>
+</div>
+<ul>
+<li><p>Este método tiene convergencia local si la función <span
+class="math inline">\(f\)</span> es derivable cerca de la raíz, si la
+raíz es simple y si las aproximaciones iniciales están suficientemente
+próximas a ella.</p></li>
+<li><p>Su orden de convergencia es el número áureo, <span
+class="math inline">\(\phi = \frac{{1 + \sqrt 5 }}{2} \approx
+1.618\)</span>, lo que implica una convergencia superlineal, aunque
+inferior a la del método de Newton.</p></li>
+<li><p>Si las aproximaciones iniciales están demasiado alejadas de la
+raíz o si esta es múltiple, el método no asegura la
+convergencia.</p></li>
+</ul>
+</div>
+<div id="método-de-regula-falsi" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Método de Regula
+Falsi</h1>
+<ul>
+<li><p>Los métodos de Newton-Raphson y de la secante son métodos
+relativamente rápidos en cuanto a su convergencia pero tienen el
+inconveniente que no tenemos asegurada dicha convergencia.</p></li>
+<li><p>Recordemos el Teorema donde nos dice si el cero es simple (<span
+class="math inline">\(f&#39;(\hat x)\neq 0\)</span>), existe un entorno
+del cero <span class="math inline">\(\hat x\)</span> tal que para
+cualquier valor inicial <span class="math inline">\(x_0\)</span>
+perteneciente a dicho entorno, el método de Newton-Raphson es
+convergente. El problema es que hallar dicho entorno es un problema
+mucho más difícil que hallar el cero en sí.</p></li>
+<li><p>Por dicho motivo, de cara a asegurar la convergencia de la
+sucesión <span class="math inline">\(\{x_n\}_n\)</span> tenemos el
+método de Regula falsi que usa las ventajas de los métodos de la
+bisección y de la secante.</p></li>
+<li><p>En pocas palabras, el método de regula falsi supone que hay un
+cambio de signo entre <span class="math inline">\(x_{n-2}\)</span> y
+<span class="math inline">\(x_{n-1}\)</span>, es decir, <span
+class="math inline">\(f(x_{n-2})\cdot f(x_{n-1})&lt;0\)</span> y halla
+<span class="math inline">\(x_n\)</span> usando el método de la secante.
+Como <span class="math inline">\(x_n\)</span> estará entre <span
+class="math inline">\(x_{n-2}\)</span> y <span
+class="math inline">\(x_{n-1}\)</span> habrá un cambio de signo de <span
+class="math inline">\(f\)</span> entre <span
+class="math inline">\(x_{n-2}\)</span> y <span
+class="math inline">\(x_n\)</span> o entre <span
+class="math inline">\(x_{n-1}\)</span> y <span
+class="math inline">\(x_n\)</span>.</p></li>
+<li><p>Se calcula <span class="math inline">\(x_n\)</span> según el
+método de la secante:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+x_n =
+x_{n-1}-\dfrac{f(x_{n-1})\cdot(x_{n-1}-x_{n-2})}{f(x_{n-1})-f(x_{n-2})}
+\]</span></p>
+</div>
+<ul>
+<li><p><strong>Caso 1</strong>. Si <span
+class="math inline">\(f(x_n)\cdot f(x_{n-1})&lt;0\)</span>, tenemos un
+cambio de signo de <span class="math inline">\(f\)</span> en el
+intervalo <span class="math inline">\((x_{n-1},x_n)\)</span>. En este
+caso, no hacemos nada y la sucesión quedará <span
+class="math inline">\(\ldots,x_{n-2},x_{n-1},x_n\)</span></p></li>
+<li><p><strong>Caso 2</strong>. Si <span
+class="math inline">\(f(x_n)\cdot f(x_{n-2})&lt;0\)</span> tenemos un
+cambio de signo de <span class="math inline">\(f\)</span> en el
+intervalo <span class="math inline">\((x_{n-2},x_n)\)</span>. En este
+caso, cambiamos el orden de <span class="math inline">\(x_{n-2}\)</span>
+y <span class="math inline">\(x_{n-1}\)</span> y la sucesión quedará
+$,x_{n-1},x_{n-2},x_n.</p></li>
+<li><p>Volvemos al paso inicial para hallar <span
+class="math inline">\(x_{n+1}\)</span>.</p></li>
+</ul>
+<pre><code>## (-5.0, 10.0)</code></pre>
+<pre><code>## (0.5, 3.2)</code></pre>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-13-23.png" alt="Visualización del Método de Regula Falsi." width="1152" />
+<p class="caption">
+Visualización del Método de Regula Falsi.
+</p>
+</div>
+<div id="ejemplo-10" class="section level4 caja-ejemplo"
+number="7.0.0.1">
+<h4><span class="header-section-number">7.0.0.1</span> Ejemplo 10</h4>
+<p>Se retoma el problema del <strong>Ejemplo 7</strong> para encontrar
+la raíz del polinomio <span class="math inline">\(p(x) = x^3 + 3x^2 +
+2\)</span>, pero esta vez aplicando el método de Regula Falsi. Se
+utilizarán como puntos iniciales los extremos del intervalo <span
+class="math inline">\([-4, -2]\)</span>, es decir, <span
+class="math inline">\(a = -4\)</span> y <span class="math inline">\(b =
+-2\)</span>, con una tolerancia de <span
+class="math inline">\(10^{-8}\)</span> y un máximo de 50
+iteraciones.</p>
+<pre><code>## Solución encontrada en la iteración 18.</code></pre>
+<pre><code>## --- Tabla de Iteraciones del Método de Regula Falsi ---</code></pre>
+<pre><code>##  k         a_k         b_k         p_k   |p(p_k)| |p_k - p_{k-1}|
+##  0 -4.00000000 -2.00000000 -2.60000000 4.7040e+00             ---
+##  1 -4.00000000 -2.60000000 -2.95209581 2.4175e+00      3.5210e-01
+##  2 -4.00000000 -2.95209581 -3.10640002 9.7327e-01      1.5430e-01
+##  3 -4.00000000 -3.10640002 -3.16448444 3.5286e-01      5.8084e-02
+##  4 -4.00000000 -3.16448444 -3.18502524 1.2303e-01      2.0541e-02
+##  5 -4.00000000 -3.18502524 -3.19212488 4.2313e-02      7.0996e-03
+##  6 -4.00000000 -3.19212488 -3.19455918 1.4483e-02      2.4343e-03
+##  7 -4.00000000 -3.19455918 -3.19539155 4.9493e-03      8.3237e-04
+##  8 -4.00000000 -3.19539155 -3.19567589 1.6904e-03      2.8434e-04
+##  9 -4.00000000 -3.19567589 -3.19577300 5.7722e-04      9.7103e-05
+## 10 -4.00000000 -3.19577300 -3.19580615 1.9709e-04      3.3157e-05
+## 11 -4.00000000 -3.19580615 -3.19581748 6.7296e-05      1.1321e-05
+## 12 -4.00000000 -3.19581748 -3.19582134 2.2978e-05      3.8656e-06
+## 13 -4.00000000 -3.19582134 -3.19582266 7.8456e-06      1.3199e-06
+## 14 -4.00000000 -3.19582266 -3.19582311 2.6788e-06      4.5066e-07
+## 15 -4.00000000 -3.19582311 -3.19582327 9.1466e-07      1.5387e-07
+## 16 -4.00000000 -3.19582327 -3.19582332 3.1230e-07      5.2539e-08
+## 17 -4.00000000 -3.19582332 -3.19582334 1.0663e-07      1.7939e-08
+## 18 -4.00000000 -3.19582334 -3.19582334 3.6409e-08      6.1251e-09</code></pre>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-14-25.png" alt="Convergencia del error para el método de Regula Falsi." width="960" />
+<p class="caption">
+Convergencia del error para el método de Regula Falsi.
+</p>
+</div>
+</div>
+<pre class="python"><code># Algoritmo de punto fijo, Tabla
+# Los valores de [a,b] son seleccionados
+# desde la gráfica de la función
+# error = tolera
+
+import numpy as np
+
+def puntofijo_tabla(gx,a,tolera, iteramax=20,
+                    vertabla=True, precision=6):
+    &#39;&#39;&#39;g(x) se obtiene al despejar una x de f(x)
+    máximo de iteraciones predeterminado: iteramax
+    si no converge hasta iteramax iteraciones
+    la respuesta es NaN (Not a Number)
+    &#39;&#39;&#39;
+    itera = 0
+    b = gx(a)
+    tramo = abs(b-a)
+    tabla = [[a,b,tramo]]
+    if vertabla==True:
+        print(&#39;método del Punto Fijo&#39;)
+        print(&#39;i&#39;, [&#39;xi&#39;,&#39;gi&#39;,&#39;tramo&#39;])
+        np.set_printoptions(precision)
+        print(itera,np.array([a,b,tramo]))
+    while(tramo&gt;=tolera and itera&lt;=iteramax):
+        a = b
+        b = gx(a)
+        tramo = abs(b-a)
+        itera = itera + 1
+        if vertabla==True:
+            print(itera,np.array([a,b,tramo]))
+        tabla.append([a,b,tramo])
+    respuesta = b
+    # Valida respuesta
+    if itera&gt;=iteramax:
+        respuesta = np.nan
+        print(&#39;itera: &#39;,itera,
+              &#39;No converge,se alcanzó el máximo de iteraciones&#39;)
+    tabla = np.array(tabla,dtype=float)
+    return(respuesta,tabla)
+
+# PROGRAMA ----------------------
+
+# INGRESO
+fx = lambda x: np.exp(-x) - x
+gx = lambda x: np.exp(-x)
+
+a = 0
+b = 1
+tolera = 0.001
+
+# PROCEDIMIENTO
+[raiz,tabla] = puntofijo_tabla(gx,a,tolera, vertabla=True)</code></pre>
+<pre><code>## método del Punto Fijo
+## i [&#39;xi&#39;, &#39;gi&#39;, &#39;tramo&#39;]
+## 0 [0. 1. 1.]
+## 1 [1.       0.367879 0.632121]
+## 2 [0.367879 0.692201 0.324321]
+## 3 [0.692201 0.500474 0.191727]
+## 4 [0.500474 0.606244 0.10577 ]
+## 5 [0.606244 0.545396 0.060848]
+## 6 [0.545396 0.579612 0.034217]
+## 7 [0.579612 0.560115 0.019497]
+## 8 [0.560115 0.571143 0.011028]
+## 9 [0.571143 0.564879 0.006264]
+## 10 [0.564879 0.568429 0.003549]
+## 11 [0.568429 0.566415 0.002014]
+## 12 [0.566415 0.567557 0.001142]
+## 13 [0.567557 0.566909 0.000648]</code></pre>
+<pre class="python"><code># SALIDA
+print(&#39;raiz en :&#39;, raiz)</code></pre>
+<pre><code>## raiz en : 0.5669089119214953</code></pre>
+<pre class="python"><code># GRAFICA
+import matplotlib.pyplot as plt
+muestras = 21
+xi = np.linspace(a,b,muestras)
+fi = fx(xi)
+gi = gx(xi)
+yi = xi
+
+plt.plot(xi,fi, label=&#39;f(x)&#39;,
+         linestyle=&#39;dashed&#39;)
+plt.plot(xi,gi, label=&#39;g(x)&#39;)
+plt.plot(xi,yi, label=&#39;y=x&#39;)
+
+plt.axvline(raiz, color=&#39;magenta&#39;,
+            linestyle=&#39;dotted&#39;)
+plt.axhline(0)
+plt.xlabel(&#39;x&#39;)
+plt.ylabel(&#39;f(x)&#39;)
+plt.title(&#39;Punto Fijo&#39;)
+plt.grid()
+plt.legend()
+#plt.show()
+
+# GRAFICA CON ANIMACION ------------
+#import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+xc = tabla[:,0]
+yc = tabla[:,1]
+
+# Inicializa parametros de trama/foto
+narchivo = &#39;PuntoFijo&#39; # nombre archivo
+retardo = 700 # milisegundos entre tramas
+tramas = len(xc)
+
+# GRAFICA animada en fig_ani
+fig_ani, graf_ani = plt.subplots()
+dx = np.abs(b-a)
+dy = np.abs(gx(b)-gx(a))
+graf_ani.set_xlim([a-0.05*dx,b+0.05*dx])</code></pre>
+<pre><code>## (-0.05, 1.05)</code></pre>
+<pre class="python"><code>graf_ani.set_ylim([np.min(fi)-0.05*dy,np.max(fi)+0.05*dy])</code></pre>
+<pre><code>## (-0.6637265867699855, 1.0316060279414279)</code></pre>
+<pre class="python"><code># Lineas y puntos base
+puntoa,  = graf_ani.plot(xc[0], yc[0], &#39;ro&#39;)
+puntob,  = graf_ani.plot(xc[0], xc[0], &#39;go&#39;) # y=x
+lineafx, = graf_ani.plot(xi,fi, color=&#39;blue&#39;,
+                     linestyle=&#39;dashed&#39;, label=&#39;f(x)&#39;)
+lineagx, = graf_ani.plot(xi,gi, color=&#39;orange&#39;, label=&#39;g(x)&#39;)
+lineayx, = graf_ani.plot(xi,yi, color=&#39;green&#39;, label=&#39;y=x&#39;)
+linearaiz = graf_ani.axvline(raiz, color=&#39;magenta&#39;,linestyle=&#39;dotted&#39;)
+
+# Configura gráfica
+linea0 = graf_ani.axhline(0, color=&#39;k&#39;)
+graf_ani.set_title(&#39;Punto Fijo&#39;)
+graf_ani.set_xlabel(&#39;x&#39;)
+graf_ani.set_ylabel(&#39;f(x)&#39;)
+graf_ani.legend()
+graf_ani.grid()
+
+# Cada nueva trama
+def unatrama(i,xc,yc):
+    # actualiza cada punto, [] porque es solo un valor
+    puntoa.set_xdata([xc[i]])
+    puntoa.set_ydata([yc[i]])
+    puntob.set_xdata([xc[i]]) # y=x
+    puntob.set_ydata([xc[i]])
+    
+    # actualiza cada flecha
+    dx = xc[i+1]-xc[i]
+    dy = yc[i]-xc[i]
+    flecha01 = graf_ani.arrow(xc[i],xc[i], 0,dy, length_includes_head = True, head_width = 0.05*abs(dy), head_length = 0.1*abs(dy))
+    flecha02 = graf_ani.arrow(xc[i],yc[i], dx,0,length_includes_head = True,head_width = 0.05*abs(dx),head_length = 0.1*abs(dx))
+    return (puntoa, puntob, flecha01, flecha02)
+
+# Limpia trama anterior
+def limpiatrama():
+    puntoa.set_ydata(np.ma.array([xc[0]], mask=True))
+    puntob.set_ydata(np.ma.array([xc[0]], mask=True))
+    return (puntoa, puntob)
+
+# contador de tramas
+i = np.arange(0, tramas-1,1)
+ani = animation.FuncAnimation(fig_ani, unatrama, frames=i, fargs=(xc, yc),
+                              init_func=limpiatrama, interval=retardo, blit=True)
+# Graba Archivo GIFAnimado y video
+ani.save(narchivo+&#39;_animado.gif&#39;, writer=&#39;pillow&#39;)
+#ani.save(narchivo+&#39;.mp4&#39;)
+plt.show()</code></pre>
+<p><img src="unidad03_files/figure-html/unnamed-chunk-15-27.png" width="672" /><img src="unidad03_files/figure-html/unnamed-chunk-15-28.png" width="672" /></p>
 <hr />
-<p><small>Última revisión: 17 de noviembre, 2025</small></p>
+<p><small>Última revisión: 19 de noviembre, 2025</small></p>
 </div>
 
 
