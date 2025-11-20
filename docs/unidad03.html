@@ -1258,13 +1258,60 @@ $,x_{n-1},x_{n-2},x_n.</p></li>
 <li><p>Volvemos al paso inicial para hallar <span
 class="math inline">\(x_{n+1}\)</span>.</p></li>
 </ul>
-<pre><code>## (-5.0, 10.0)</code></pre>
-<pre><code>## (0.5, 3.2)</code></pre>
 <div class="figure">
 <img src="unidad03_files/figure-html/unnamed-chunk-13-23.png" alt="Visualización del Método de Regula Falsi." width="1152" />
 <p class="caption">
 Visualización del Método de Regula Falsi.
 </p>
+</div>
+<div class="cuadro-alg">
+<p><strong>FUNCIÓN REGULA_FALSI(f, a, b, TOL, N_MAX)</strong></p>
+<pre><code># ENTRADA:
+#   f:      la función para la cual se busca la raíz.
+#   a, b:   los extremos del intervalo [a, b] donde f(a) * f(b) &lt; 0.
+#   TOL:    la tolerancia para el criterio de parada.
+#   N_MAX:  el número máximo de iteraciones.
+
+# SALIDA:
+#   p:      la solución aproximada o un mensaje de error.
+
+# Paso 1: Verificar la condición inicial.
+SI f(a) * f(b) &gt;= 0 ENTONCES
+    IMPRIMIR &quot;Error: f(a) y f(b) deben tener signos opuestos.&quot;
+    RETORNAR NULO
+FIN SI
+
+# Paso 2: Inicializar el contador de iteraciones y la aproximación previa.
+iteracion = 0
+p_prev = a # O cualquier valor que no sea la primera p
+
+# Paso 3: Iniciar el bucle.
+MIENTRAS iteracion &lt; N_MAX:
+    # Paso 4: Calcular la nueva aproximación con la fórmula de la secante.
+    p = b - f(b) * (b - a) / (f(b) - f(a))
+
+    # Paso 5: Comprobar el criterio de parada.
+    SI |p - p_prev| &lt; TOL O ABS(f(p)) &lt; TOL ENTONCES
+        IMPRIMIR &quot;Solución encontrada en p =&quot;, p, &quot;después de&quot;, iteracion, &quot;iteraciones.&quot;
+        RETORNAR p
+    FIN SI
+
+    # Paso 6: Actualizar el intervalo.
+    SI f(a) * f(p) &lt; 0 ENTONCES
+        b = p
+    SINO
+        a = p
+    FIN SI
+
+    # Paso 7: Actualizar para la siguiente iteración.
+    p_prev = p
+    iteracion = iteracion + 1
+    
+FIN MIENTRAS
+
+# Paso 8: Si se alcanza el número máximo de iteraciones.
+IMPRIMIR &quot;El método fracasó después de&quot;, N_MAX, &quot;iteraciones.&quot;
+RETORNAR p</code></pre>
 </div>
 <div id="ejemplo-10" class="section level4 caja-ejemplo"
 number="7.0.0.1">
@@ -1307,169 +1354,8 @@ Convergencia del error para el método de Regula Falsi.
 </p>
 </div>
 </div>
-<pre class="python"><code># Algoritmo de punto fijo, Tabla
-# Los valores de [a,b] son seleccionados
-# desde la gráfica de la función
-# error = tolera
-
-import numpy as np
-
-def puntofijo_tabla(gx,a,tolera, iteramax=20,
-                    vertabla=True, precision=6):
-    &#39;&#39;&#39;g(x) se obtiene al despejar una x de f(x)
-    máximo de iteraciones predeterminado: iteramax
-    si no converge hasta iteramax iteraciones
-    la respuesta es NaN (Not a Number)
-    &#39;&#39;&#39;
-    itera = 0
-    b = gx(a)
-    tramo = abs(b-a)
-    tabla = [[a,b,tramo]]
-    if vertabla==True:
-        print(&#39;método del Punto Fijo&#39;)
-        print(&#39;i&#39;, [&#39;xi&#39;,&#39;gi&#39;,&#39;tramo&#39;])
-        np.set_printoptions(precision)
-        print(itera,np.array([a,b,tramo]))
-    while(tramo&gt;=tolera and itera&lt;=iteramax):
-        a = b
-        b = gx(a)
-        tramo = abs(b-a)
-        itera = itera + 1
-        if vertabla==True:
-            print(itera,np.array([a,b,tramo]))
-        tabla.append([a,b,tramo])
-    respuesta = b
-    # Valida respuesta
-    if itera&gt;=iteramax:
-        respuesta = np.nan
-        print(&#39;itera: &#39;,itera,
-              &#39;No converge,se alcanzó el máximo de iteraciones&#39;)
-    tabla = np.array(tabla,dtype=float)
-    return(respuesta,tabla)
-
-# PROGRAMA ----------------------
-
-# INGRESO
-fx = lambda x: np.exp(-x) - x
-gx = lambda x: np.exp(-x)
-
-a = 0
-b = 1
-tolera = 0.001
-
-# PROCEDIMIENTO
-[raiz,tabla] = puntofijo_tabla(gx,a,tolera, vertabla=True)</code></pre>
-<pre><code>## método del Punto Fijo
-## i [&#39;xi&#39;, &#39;gi&#39;, &#39;tramo&#39;]
-## 0 [0. 1. 1.]
-## 1 [1.       0.367879 0.632121]
-## 2 [0.367879 0.692201 0.324321]
-## 3 [0.692201 0.500474 0.191727]
-## 4 [0.500474 0.606244 0.10577 ]
-## 5 [0.606244 0.545396 0.060848]
-## 6 [0.545396 0.579612 0.034217]
-## 7 [0.579612 0.560115 0.019497]
-## 8 [0.560115 0.571143 0.011028]
-## 9 [0.571143 0.564879 0.006264]
-## 10 [0.564879 0.568429 0.003549]
-## 11 [0.568429 0.566415 0.002014]
-## 12 [0.566415 0.567557 0.001142]
-## 13 [0.567557 0.566909 0.000648]</code></pre>
-<pre class="python"><code># SALIDA
-print(&#39;raiz en :&#39;, raiz)</code></pre>
-<pre><code>## raiz en : 0.5669089119214953</code></pre>
-<pre class="python"><code># GRAFICA
-import matplotlib.pyplot as plt
-muestras = 21
-xi = np.linspace(a,b,muestras)
-fi = fx(xi)
-gi = gx(xi)
-yi = xi
-
-plt.plot(xi,fi, label=&#39;f(x)&#39;,
-         linestyle=&#39;dashed&#39;)
-plt.plot(xi,gi, label=&#39;g(x)&#39;)
-plt.plot(xi,yi, label=&#39;y=x&#39;)
-
-plt.axvline(raiz, color=&#39;magenta&#39;,
-            linestyle=&#39;dotted&#39;)
-plt.axhline(0)
-plt.xlabel(&#39;x&#39;)
-plt.ylabel(&#39;f(x)&#39;)
-plt.title(&#39;Punto Fijo&#39;)
-plt.grid()
-plt.legend()
-#plt.show()
-
-# GRAFICA CON ANIMACION ------------
-#import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-
-xc = tabla[:,0]
-yc = tabla[:,1]
-
-# Inicializa parametros de trama/foto
-narchivo = &#39;PuntoFijo&#39; # nombre archivo
-retardo = 700 # milisegundos entre tramas
-tramas = len(xc)
-
-# GRAFICA animada en fig_ani
-fig_ani, graf_ani = plt.subplots()
-dx = np.abs(b-a)
-dy = np.abs(gx(b)-gx(a))
-graf_ani.set_xlim([a-0.05*dx,b+0.05*dx])</code></pre>
-<pre><code>## (-0.05, 1.05)</code></pre>
-<pre class="python"><code>graf_ani.set_ylim([np.min(fi)-0.05*dy,np.max(fi)+0.05*dy])</code></pre>
-<pre><code>## (-0.6637265867699855, 1.0316060279414279)</code></pre>
-<pre class="python"><code># Lineas y puntos base
-puntoa,  = graf_ani.plot(xc[0], yc[0], &#39;ro&#39;)
-puntob,  = graf_ani.plot(xc[0], xc[0], &#39;go&#39;) # y=x
-lineafx, = graf_ani.plot(xi,fi, color=&#39;blue&#39;,
-                     linestyle=&#39;dashed&#39;, label=&#39;f(x)&#39;)
-lineagx, = graf_ani.plot(xi,gi, color=&#39;orange&#39;, label=&#39;g(x)&#39;)
-lineayx, = graf_ani.plot(xi,yi, color=&#39;green&#39;, label=&#39;y=x&#39;)
-linearaiz = graf_ani.axvline(raiz, color=&#39;magenta&#39;,linestyle=&#39;dotted&#39;)
-
-# Configura gráfica
-linea0 = graf_ani.axhline(0, color=&#39;k&#39;)
-graf_ani.set_title(&#39;Punto Fijo&#39;)
-graf_ani.set_xlabel(&#39;x&#39;)
-graf_ani.set_ylabel(&#39;f(x)&#39;)
-graf_ani.legend()
-graf_ani.grid()
-
-# Cada nueva trama
-def unatrama(i,xc,yc):
-    # actualiza cada punto, [] porque es solo un valor
-    puntoa.set_xdata([xc[i]])
-    puntoa.set_ydata([yc[i]])
-    puntob.set_xdata([xc[i]]) # y=x
-    puntob.set_ydata([xc[i]])
-    
-    # actualiza cada flecha
-    dx = xc[i+1]-xc[i]
-    dy = yc[i]-xc[i]
-    flecha01 = graf_ani.arrow(xc[i],xc[i], 0,dy, length_includes_head = True, head_width = 0.05*abs(dy), head_length = 0.1*abs(dy))
-    flecha02 = graf_ani.arrow(xc[i],yc[i], dx,0,length_includes_head = True,head_width = 0.05*abs(dx),head_length = 0.1*abs(dx))
-    return (puntoa, puntob, flecha01, flecha02)
-
-# Limpia trama anterior
-def limpiatrama():
-    puntoa.set_ydata(np.ma.array([xc[0]], mask=True))
-    puntob.set_ydata(np.ma.array([xc[0]], mask=True))
-    return (puntoa, puntob)
-
-# contador de tramas
-i = np.arange(0, tramas-1,1)
-ani = animation.FuncAnimation(fig_ani, unatrama, frames=i, fargs=(xc, yc),
-                              init_func=limpiatrama, interval=retardo, blit=True)
-# Graba Archivo GIFAnimado y video
-ani.save(narchivo+&#39;_animado.gif&#39;, writer=&#39;pillow&#39;)
-#ani.save(narchivo+&#39;.mp4&#39;)
-plt.show()</code></pre>
-<p><img src="unidad03_files/figure-html/unnamed-chunk-15-27.png" width="672" /><img src="unidad03_files/figure-html/unnamed-chunk-15-28.png" width="672" /></p>
 <hr />
-<p><small>Última revisión: 19 de noviembre, 2025</small></p>
+<p><small>Última revisión: 20 de noviembre, 2025</small></p>
 </div>
 
 

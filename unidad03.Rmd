@@ -1346,10 +1346,62 @@ plt.xlabel('x')
 plt.ylabel('f(x)')
 plt.legend(loc='upper left')
 plt.grid(True, linestyle=':', alpha=0.6)
-plt.ylim(-5, 10)
-plt.xlim(0.5, 3.2)
+plt.ylim(-5, 10);
+plt.xlim(0.5, 3.2);
 plt.show()
 ```
+
+::: cuadro-alg
+**FUNCIÓN REGULA_FALSI(f, a, b, TOL, N_MAX)**
+
+    # ENTRADA:
+    #   f:      la función para la cual se busca la raíz.
+    #   a, b:   los extremos del intervalo [a, b] donde f(a) * f(b) < 0.
+    #   TOL:    la tolerancia para el criterio de parada.
+    #   N_MAX:  el número máximo de iteraciones.
+
+    # SALIDA:
+    #   p:      la solución aproximada o un mensaje de error.
+
+    # Paso 1: Verificar la condición inicial.
+    SI f(a) * f(b) >= 0 ENTONCES
+        IMPRIMIR "Error: f(a) y f(b) deben tener signos opuestos."
+        RETORNAR NULO
+    FIN SI
+
+    # Paso 2: Inicializar el contador de iteraciones y la aproximación previa.
+    iteracion = 0
+    p_prev = a # O cualquier valor que no sea la primera p
+
+    # Paso 3: Iniciar el bucle.
+    MIENTRAS iteracion < N_MAX:
+        # Paso 4: Calcular la nueva aproximación con la fórmula de la secante.
+        p = b - f(b) * (b - a) / (f(b) - f(a))
+
+        # Paso 5: Comprobar el criterio de parada.
+        SI |p - p_prev| < TOL O ABS(f(p)) < TOL ENTONCES
+            IMPRIMIR "Solución encontrada en p =", p, "después de", iteracion, "iteraciones."
+            RETORNAR p
+        FIN SI
+
+        # Paso 6: Actualizar el intervalo.
+        SI f(a) * f(p) < 0 ENTONCES
+            b = p
+        SINO
+            a = p
+        FIN SI
+
+        # Paso 7: Actualizar para la siguiente iteración.
+        p_prev = p
+        iteracion = iteracion + 1
+        
+    FIN MIENTRAS
+
+    # Paso 8: Si se alcanza el número máximo de iteraciones.
+    IMPRIMIR "El método fracasó después de", N_MAX, "iteraciones."
+    RETORNAR p
+:::
+
 
 ::: caja-ejemplo
 #### Ejemplo 10
