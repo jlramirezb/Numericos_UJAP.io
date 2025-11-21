@@ -1483,6 +1483,236 @@ plt.show()
 ```
 :::
 
+::: caja-ejemplo
+#### Ejemplo Comparativo: Resolviendo $x^{10}-1=0$
+
+Para consolidar la comprensión de los métodos numéricos abordados, se presenta un ejemplo comparativo final. El objetivo es encontrar la raíz positiva de la ecuación no lineal $f(x) = x^{10} - 1 = 0$. La raíz exacta de esta ecuación es, por supuesto, $x=1$. Este conocimiento nos permite evaluar la precisión y la eficiencia (velocidad de convergencia) de cada método.
+
+Se aplicarán los siguientes métodos:
+
+* **Bisección**: En el intervalo `[0, 1.5]`.
+
+* **Regula Falsi**: En el intervalo `[0, 1.5]`.
+
+* **Punto Fijo**: Con una función de iteración $g(x) = x - 0.05(x^{10}-1)$ y un punto inicial $p_0=0.5$.
+
+* **Newton-Raphson**: Con un punto inicial $p_0=0.5$.
+
+* **Secante**: Con los puntos iniciales $p_0=0.8$ y $p_1=1.3$.
+
+El código en Python implementa estos cinco métodos y presenta una tabla comparativa con los resultados.
+
+```{python, echo=FALSE, fig.cap="Comparación del número de iteraciones para cada método."}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# --- Definición de la función y su derivada ---
+def f(x):
+    # Usamos np.power para un manejo más robusto de posibles overflows
+    try:
+        return np.power(x, 10) - 1
+    except OverflowError:
+        return np.inf
+
+def df(x):
+    # Usamos np.power para un manejo más robusto de posibles overflows
+    try:
+        return 10 * np.power(x, 9)
+    except OverflowError:
+        return np.inf
+
+# --- Implementación de los Métodos Numéricos ---
+
+# 1. Método de Bisección
+def bisection_method(f, a, b, tol=1e-8, n_max=200):
+    iter_count = 0
+    p = a
+    while (b - a) / 2 > tol and iter_count < n_max:
+        p = a + (b - a) / 2
+        fp = f(p)
+        if fp == 0:
+            break
+        if f(a) * fp < 0:
+            b = p
+        else:
+            a = p
+        iter_count += 1
+    return p, iter_count
+
+# 2. Método de Regula Falsi
+def regula_falsi_method(f, a, b, tol=1e-8, n_max=200):
+    if f(a) * f(b) >= 0:
+        raise ValueError("f(a) y f(b) deben tener signos opuestos.")
+    
+    p = a 
+    for i in range(n_max):
+        fa, fb = f(a), f(b)
+        if abs(fb - fa) < 1e-15:
+            return p, i
+        p_next = (a * fb - b * fa) / (fb - fa)
+        
+        if abs(p_next - p) < tol:
+            return p_next, i
+        
+        if f(a) * f(p_next) < 0:
+            b = p_next
+        else:
+            a = p_next
+        
+        p = p_next
+    
+    return p, n_max
+
+# 3. Método de Punto Fijo
+def g_fixed_point(x):
+    try:
+        return x - 0.05 * (np.power(x, 10) - 1)
+    except OverflowError:
+        return np.inf
+
+def fixed_point_method(g, p0, tol=1e-8, n_max=200):
+    iter_count = 0
+    p = p0
+    while iter_count < n_max:
+        p_next = g(p)
+        if not np.isfinite(p_next):
+            return np.nan, n_max
+        if abs(p_next - p) < tol:
+            return p_next, iter_count + 1
+        p = p_next
+        iter_count += 1
+    return p, iter_count
+
+# 4. Método de Newton-Raphson
+def newton_method(f, df, p0, tol=1e-8, n_max=200):
+    iter_count = 0
+    p = p0
+    while iter_count < n_max:
+        fp = f(p)
+        dfp = df(p)
+        
+        if not np.isfinite(fp) or not np.isfinite(dfp):
+            return np.nan, n_max
+        if abs(dfp) < 1e-15:
+            return np.nan, n_max
+        
+        p_next = p - fp / dfp
+
+        if not np.isfinite(p_next):
+            return np.nan, n_max
+
+        if abs(p_next - p) < tol:
+            return p_next, iter_count + 1
+        
+        p = p_next
+        iter_count += 1
+    return np.nan, n_max
+
+# 5. Método de la Secante
+def secant_method(f, p0, p1, tol=1e-8, n_max=200):
+    iter_count = 0
+    while iter_count < n_max:
+        fp0, fp1 = f(p0), f(p1)
+        if not np.isfinite(fp0) or not np.isfinite(fp1):
+            return np.nan, n_max
+        if abs(fp1 - fp0) < 1e-15:
+            # Denominator is too small, method fails to progress
+            return np.nan, n_max
+        p_next = p1 - fp1 * (p1 - p0) / (fp1 - fp0)
+        if not np.isfinite(p_next):
+            return np.nan, n_max
+        if abs(p_next - p1) < tol:
+            return p_next, iter_count + 1
+        p0, p1 = p1, p_next
+        iter_count += 1
+    # If loop finishes, max iterations were reached without convergence
+    return np.nan, n_max
+
+# --- Ejecución y Comparación ---
+tol = 1e-8
+n_max_iters = 200
+results = []
+
+# Bisección
+root_b, iters_b = bisection_method(f, 0, 1.5, tol, n_max=n_max_iters)
+results.append(['Bisección', root_b, iters_b])
+
+# Regula Falsi
+try:
+    root_rf, iters_rf = regula_falsi_method(f, 0, 1.5, tol, n_max=n_max_iters)
+except ValueError:
+    root_rf, iters_rf = np.nan, n_max_iters
+results.append(['Regula Falsi', root_rf, iters_rf])
+
+# Punto Fijo
+root_fp, iters_fp = fixed_point_method(g_fixed_point, 0.5, tol, n_max=n_max_iters)
+results.append(['Punto Fijo', root_fp, iters_fp])
+
+# Newton-Raphson
+root_n, iters_n = newton_method(f, df, 0.5, tol, n_max=n_max_iters)
+results.append(['Newton-Raphson', root_n, iters_n])
+
+# Secante
+root_s, iters_s = secant_method(f, 0.6, 1.25, tol, n_max=n_max_iters)
+results.append(['Secante', root_s, iters_s])
+
+# Crear y mostrar la tabla de resultados
+df_results = pd.DataFrame(results, columns=['Método', 'Raíz Encontrada', 'Iteraciones'])
+df_results['Iteraciones'] = df_results['Iteraciones'].astype(int)
+df_results = df_results.sort_values('Iteraciones').reset_index(drop=True)
+formatters = {'Raíz Encontrada': lambda x: f'{x:.8f}' if pd.notna(x) else 'Fallo'}
+print("--- Tabla Comparativa de Métodos para f(x) = x^10 - 1 ---")
+print(df_results.to_string(index=False, formatters=formatters))
+
+# --- Visualización de Resultados ---
+plt.figure(figsize=(10, 6))
+# Filtrar métodos que fallaron (iteraciones = n_max_iters) para no graficarlos si se desea
+plot_df = df_results.copy()
+plot_df.loc[plot_df['Raíz Encontrada'] == 'Fallo', 'Iteraciones'] = n_max_iters
+
+methods = plot_df['Método']
+iterations = plot_df['Iteraciones']
+color_map = {
+    'Newton-Raphson': 'red', 
+    'Secante': 'skyblue', 
+    'Punto Fijo': 'plum', 
+    'Bisección': 'lightgreen', 
+    'Regula Falsi': 'gold'
+}
+bar_colors = [color_map.get(m, 'gray') for m in methods]
+
+bars = plt.bar(methods, iterations, color=bar_colors)
+
+plt.ylabel('Número de Iteraciones')
+plt.title('Comparación de Eficiencia de Métodos Numéricos')
+plt.xticks(rotation=15);
+for bar in bars:
+    yval = bar.get_height()
+    label = int(yval) if yval < n_max_iters else 'Fallo'
+    plt.text(bar.get_x() + bar.get_width()/2.0, yval, label, va='bottom', ha='center')
+
+plt.show()
+```
+
+### Análisis de los Resultados
+
+La tabla y el gráfico comparativo, ahora ordenados por eficiencia, ilustran de manera clara las diferencias en la velocidad de convergencia y la robustez de cada método:
+
+-   El **Método de Bisección** muestra una convergencia lineal, predecible y garantizada. Aunque no es el más rápido (28 iteraciones), su robustez lo convierte en una opción muy fiable siempre que se pueda acotar la raíz.
+
+-   El **Método de Punto Fijo** converge linealmente, pero de forma bastante lenta (34 iteraciones). Su rendimiento depende críticamente de la elección de la función de iteración $g(x)$ y del punto inicial. En este caso, la convergencia es lenta debido a que el valor de $|g'(x)|$ está muy cerca de 1 para los puntos iniciales.
+
+-   **Newton-Raphson**, a menudo el método más rápido, demuestra ser muy sensible al punto de partida. Con un punto inicial de $p_0=0.5$, la primera iteración salta a un valor muy grande (~51.7), lo que provoca que las siguientes iteraciones diverjan lentamente en lugar de converger a la raíz, excediendo el número máximo de iteraciones. Este resultado subraya una debilidad clave del método: su convergencia no está garantizada y depende fuertemente de una buena aproximación inicial.
+
+-   El **Método de la Secante**, con una elección de puntos iniciales (`0.6` y `1.25`), se observa que el método requiere 104 iteraciones para llegar a la solución. Las 104 iteraciones sugieren que el algoritmo estuvo operando en una región donde la función $f(x)$ y/o la derivada $f'(x)$ tenían un comportamiento desfavorable, lo que resultó en una tasa de convergencia asintótica muy baja (cercana a $1$).
+
+-   El **Método de Regula Falsi** es uno de los más lentos en este ejemplo (199 iteraciones). Aunque garantiza la convergencia, sufre cuando la función es muy convexa o cóncava en el intervalo, como ocurre con $x^{10}-1$. Uno de los extremos del intervalo ($a=0$) apenas se mueve, lo que ralentiza la convergencia a un ritmo lineal muy pobre.
+
+En conclusión, la elección del método numérico implica un compromiso entre velocidad y robustez. Mientras que Newton-Raphson puede ser extremadamente rápido, su falta de convergencia garantizada lo hace poco fiable sin un buen punto de partida. El método de la secante ofrece un excelente equilibrio, con una convergencia rápida y sin necesidad de la derivada, siempre que se elijan puntos iniciales razonables. La bisección, aunque más lenta, es la opción más segura cuando se puede acotar la raíz.
+
+:::
+
 
 ------------------------------------------------------------------------
   

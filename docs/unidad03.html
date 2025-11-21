@@ -1354,8 +1354,106 @@ Convergencia del error para el método de Regula Falsi.
 </p>
 </div>
 </div>
+<div class="caja-ejemplo">
+<div id="ejemplo-comparativo-resolviendo-x10-10" class="section level4"
+number="7.0.0.2">
+<h4><span class="header-section-number">7.0.0.2</span> Ejemplo
+Comparativo: Resolviendo <span
+class="math inline">\(x^{10}-1=0\)</span></h4>
+<p>Para consolidar la comprensión de los métodos numéricos abordados, se
+presenta un ejemplo comparativo final. El objetivo es encontrar la raíz
+positiva de la ecuación no lineal <span class="math inline">\(f(x) =
+x^{10} - 1 = 0\)</span>. La raíz exacta de esta ecuación es, por
+supuesto, <span class="math inline">\(x=1\)</span>. Este conocimiento
+nos permite evaluar la precisión y la eficiencia (velocidad de
+convergencia) de cada método.</p>
+<p>Se aplicarán los siguientes métodos:</p>
+<ul>
+<li><p><strong>Bisección</strong>: En el intervalo
+<code>[0, 1.5]</code>.</p></li>
+<li><p><strong>Regula Falsi</strong>: En el intervalo
+<code>[0, 1.5]</code>.</p></li>
+<li><p><strong>Punto Fijo</strong>: Con una función de iteración <span
+class="math inline">\(g(x) = x - 0.05(x^{10}-1)\)</span> y un punto
+inicial <span class="math inline">\(p_0=0.5\)</span>.</p></li>
+<li><p><strong>Newton-Raphson</strong>: Con un punto inicial <span
+class="math inline">\(p_0=0.5\)</span>.</p></li>
+<li><p><strong>Secante</strong>: Con los puntos iniciales <span
+class="math inline">\(p_0=0.8\)</span> y <span
+class="math inline">\(p_1=1.3\)</span>.</p></li>
+</ul>
+<p>El código en Python implementa estos cinco métodos y presenta una
+tabla comparativa con los resultados.</p>
+<pre><code>## --- Tabla Comparativa de Métodos para f(x) = x^10 - 1 ---</code></pre>
+<pre><code>##         Método Raíz Encontrada  Iteraciones
+##      Bisección      1.00000000           27
+##     Punto Fijo      0.99999999           34
+## Newton-Raphson      1.00000000           43
+##        Secante      1.00000000          102
+##   Regula Falsi      0.99999979          200</code></pre>
+<div class="figure">
+<img src="unidad03_files/figure-html/unnamed-chunk-15-27.png" alt="Comparación del número de iteraciones para cada método." width="960" />
+<p class="caption">
+Comparación del número de iteraciones para cada método.
+</p>
+</div>
+</div>
+<div id="análisis-de-los-resultados" class="section level3"
+number="7.0.1">
+<h3><span class="header-section-number">7.0.1</span> Análisis de los
+Resultados</h3>
+<p>La tabla y el gráfico comparativo, ahora ordenados por eficiencia,
+ilustran de manera clara las diferencias en la velocidad de convergencia
+y la robustez de cada método:</p>
+<ul>
+<li><p>El <strong>Método de Bisección</strong> muestra una convergencia
+lineal, predecible y garantizada. Aunque no es el más rápido (28
+iteraciones), su robustez lo convierte en una opción muy fiable siempre
+que se pueda acotar la raíz.</p></li>
+<li><p>El <strong>Método de Punto Fijo</strong> converge linealmente,
+pero de forma bastante lenta (34 iteraciones). Su rendimiento depende
+críticamente de la elección de la función de iteración <span
+class="math inline">\(g(x)\)</span> y del punto inicial. En este caso,
+la convergencia es lenta debido a que el valor de <span
+class="math inline">\(|g&#39;(x)|\)</span> está muy cerca de 1 para los
+puntos iniciales.</p></li>
+<li><p><strong>Newton-Raphson</strong>, a menudo el método más rápido,
+demuestra ser muy sensible al punto de partida. Con un punto inicial de
+<span class="math inline">\(p_0=0.5\)</span>, la primera iteración salta
+a un valor muy grande (~51.7), lo que provoca que las siguientes
+iteraciones diverjan lentamente en lugar de converger a la raíz,
+excediendo el número máximo de iteraciones. Este resultado subraya una
+debilidad clave del método: su convergencia no está garantizada y
+depende fuertemente de una buena aproximación inicial.</p></li>
+<li><p>El <strong>Método de la Secante</strong>, con una elección de
+puntos iniciales (<code>0.6</code> y <code>1.25</code>), se observa que
+el método requiere 104 iteraciones para llegar a la solución. Las 104
+iteraciones sugieren que el algoritmo estuvo operando en una región
+donde la función <span class="math inline">\(f(x)\)</span> y/o la
+derivada <span class="math inline">\(f&#39;(x)\)</span> tenían un
+comportamiento desfavorable, lo que resultó en una tasa de convergencia
+asintótica muy baja (cercana a <span
+class="math inline">\(1\)</span>).</p></li>
+<li><p>El <strong>Método de Regula Falsi</strong> es uno de los más
+lentos en este ejemplo (199 iteraciones). Aunque garantiza la
+convergencia, sufre cuando la función es muy convexa o cóncava en el
+intervalo, como ocurre con <span
+class="math inline">\(x^{10}-1\)</span>. Uno de los extremos del
+intervalo (<span class="math inline">\(a=0\)</span>) apenas se mueve, lo
+que ralentiza la convergencia a un ritmo lineal muy pobre.</p></li>
+</ul>
+<p>En conclusión, la elección del método numérico implica un compromiso
+entre velocidad y robustez. Mientras que Newton-Raphson puede ser
+extremadamente rápido, su falta de convergencia garantizada lo hace poco
+fiable sin un buen punto de partida. El método de la secante ofrece un
+excelente equilibrio, con una convergencia rápida y sin necesidad de la
+derivada, siempre que se elijan puntos iniciales razonables. La
+bisección, aunque más lenta, es la opción más segura cuando se puede
+acotar la raíz.</p>
+</div>
+</div>
 <hr />
-<p><small>Última revisión: 20 de noviembre, 2025</small></p>
+<p><small>Última revisión: 21 de noviembre, 2025</small></p>
 </div>
 
 
