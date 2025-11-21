@@ -1713,6 +1713,13 @@ En conclusión, la elección del método numérico implica un compromiso entre v
 
 :::
 
+# Guía de ejercicios
+En el siguiente enlace  `Ejercicios_Unidad3` encontrará una lista de ejercicios relacionado con los distintos tópicos cubiertos en esta tercera unidad.
+
+Descargue el PDF de esta guía de ejercicios aqui:
+
+[Descargar Guía PDF](Ejercicios_Unidad3.pdf)
+
 
 ------------------------------------------------------------------------
   
