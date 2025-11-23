@@ -1,0 +1,344 @@
+---
+title: "Interpolación Polinomial Y Ajuste de Curvas"
+author: "José Luis Ramírez"
+date: "Noviembre 2025"
+output:
+  html_document:
+    self_contained: true
+    mathjax: default
+    pandoc_args: "--mathjax"
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    theme: readable
+    css: css/estilos.css
+    number_sections: true
+---
+
+# Motivación
+
+La ídea principal de este capítulo es aproximar una función $f$ cualquiera por un miembro de la familia más conocida y más sencilla de tratar: los polinomios.
+
+Recordemos que un polinomio de grado $n$ tiene una expresión de la forma siguiente:
+
+::: recuadro-gris
+$$
+P_n(x) = a_nx^n + a_{n-1}x^{n-1} + \cdots + a_1x + a_0 = \sum_{i=0}^na_ix^i,
+$$
+:::
+
+con $a_n \neq 0$ para que tenga grado $n$.
+
+Los valores $a_i$, $i=0,1,\ldots,n$ se denominan coeficientes del polinomio $P_n$.
+
+Cuanto “mejor” sea la función "f" a aproximar, es decir, cuanto más alto sea el valor de $k$ donde $f \in \mathcal C^k$, mejor control sobre el error cometido en la aproximación se tendrá, al menos teóricamente.
+
+Al expresar la información mediante una fórmula polinómica, se facilitan operaciones como el cálculo de valores intermedios, la interpolación y la predicción de comportamientos futuros, derivación e integración.
+
+Se supone por ejemplo que se tiene una tabla que relaciona la viscosidad dinámica del agua con la temperatura
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+
+datos <- data.frame(
+  "T ºC" = c(0, 5, 10, 20),
+  "$\\mu_o$" = c(1.787, 1.519, 1.307, 1.002),
+  check.names = FALSE
+)
+
+kable(datos, align = "c", escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = FALSE, 
+                position = "center")
+```
+
+¿Cómo estimar la viscosidad a una temperatura de 7.5º C? Una opción es encontrar un polinomio que pase por los puntos de la tabla y estimar el valor de 7.5 con él.
+
+En este capítulo se presentarán dos técnicas para aproximar una función mediante un polinomio: la interpolación, que ajusta el polinomio pasando exactamente por los datos, y la aproximación por mínimos cuadrados, que busca minimizar el error global cuando no es posible (o deseable) que el polinomio pase por todos los puntos.
+
+```{python, echo=FALSE, message=FALSE, warning=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import lagrange
+
+# Datos de ejemplo (con algo de ruido para que se note la diferencia)
+x = np.array([0, 1, 2, 3, 4, 5])
+y = np.array([2.1, 2.9, 4.2, 5.1, 3.8, 6.5])
+
+# 1. Interpolación (Polinomio de Lagrange)
+# Pasa exactamente por todos los puntos
+poly_interp = lagrange(x, y)
+x_dense = np.linspace(min(x), max(x), 100)
+y_interp = poly_interp(x_dense)
+
+# 2. Mínimos Cuadrados (Ajuste lineal - grado 1)
+# Minimiza el error global, no necesariamente pasa por los puntos
+coeffs_ls = np.polyfit(x, y, 1)
+poly_ls = np.poly1d(coeffs_ls)
+y_ls = poly_ls(x_dense)
+
+# Gráfica
+plt.figure(figsize=(10, 6))
+plt.scatter(x, y, color='red', label='Datos originales', zorder=5)
+plt.plot(x_dense, y_interp, label=f'Interpolación (Grado {len(x)-1})', linestyle='--')
+plt.plot(x_dense, y_ls, label='Mínimos Cuadrados (Grado 1)', color='green')
+
+plt.title('Diferencia entre Interpolación y Mínimos Cuadrados')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+## Algoritmo de Horner
+
+Si el polinomio $P_n(x)$ se escribe en la forma:
+
+::: recuadro-gris
+$$
+P_n(x)=a_0+a_1x+a_2x^2+\cdots+a_nx^n
+$$
+:::
+
+Se necesitan menos operaciones para evaluarlo en un punto $x_0$ si se escribe:
+
+::: recuadro-gris
+$$
+P_n(x) = a_0 + x(a_1 + x(\cdots (a_{n-2} + x(a_{n-1} + x a_n)) \cdots ))
+$$
+:::
+
+El algoritmo de Horner es un algoritmo que permite evaluar un polinomio en un punto $x_0$ de forma eficiente, para ello se define
+
+::: recuadro-gris
+\begin{align*}
+b_n & = a_n\\
+b_{k} & = a_{k} + x_0 b_{k+1}, \forall k \in \mathbb{N}, 0 \leq k < n\\
+P_n(x_0) & = b_0
+\end{align*}
+
+Además, si se llama
+$$
+Q_{n-1}(x) = b_nx^{n-1} + b_{n-1}x^{n-2} + b_{n-2}x^{n-2} + \cdots + b_2x + b_1
+$$
+
+Se tiene que $P_n(x) = (x-x_0)Q_{n-1}(x)+b_0$ y por lo tanto $P'_n(x_0)=Q_{n-1}(x_0)$
+:::
+
+::: cuadro-alg
+**FUNCIÓN HORNER(a, x0)**
+
+    # ENTRADA:
+    #   a:      Una lista o array de coeficientes del polinomio, donde a[i] es el coeficiente de x^i.
+    #           Es decir, a = [a_0, a_1, ..., a_n].
+    #   x0:     El punto en el que se desea evaluar el polinomio.
+
+    # SALIDA:
+    #   P_n(x0): El valor del polinomio evaluado en x0.
+
+    # Función auxiliar recursiva para calcular b_k
+    FUNCIÓN _HORNER_RECURSIVO(coefs, x_val, k)
+        # Caso base: Si k es el índice del coeficiente de mayor grado (a_n),
+        # entonces b_n = a_n.
+        SI k == longitud(coefs) - 1 ENTONCES
+            RETORNAR coefs[k]
+        FIN SI
+
+        # Paso recursivo: b_k = a_k + x0 * b_{k+1}
+        RETORNAR coefs[k] + x_val * _HORNER_RECURSIVO(coefs, x_val, k + 1)
+    FIN FUNCIÓN
+
+    # La evaluación del polinomio P_n(x0) es b_0.
+    # Iniciamos la recursión para calcular b_0.
+    RETORNAR _HORNER_RECURSIVO(a, x0, 0)
+:::
+
+¿Por qu´e es Importante el Algoritmo de Horner?
+
+* **Eficiencia**: Es más eficiente que calcular las potencias de $x_0$ y multiplicar por los coeficientes de forma individual (se usa menos memoria y tiempo de cómputo).
+
+* **Estabilidad**: Reduce errores de redondeo en cálculos numéricos.
+
+* **Derivadas**: Permite obtener información sobre la derivada del polinomio en el mismo punto.
+
+* **División Sintética**: Está relacionado con el método de divisíon sintética para polinomios, lo que lo hace muy útil en el campo del álgebra y el análisis numérico.
+
+::: caja-ejemplo
+#### Ejemplo 1
+
+Tenemos el polinomio:
+$$
+P_3(x) = 2x^3 - 3x^2 + 4x - 1
+$$
+Y queremos evaluarlo en $x_0 = 2$ y también calcular $P'_3(2)$.
+
+**Solución**
+
+Para el polinomio $P_3(x) = 2x^3 - 3x^2 + 4x - 1$ y $x_0 = 2$.
+
+Los coeficientes del polinomio son $a = [-1, 4, -3, 2]$, donde $a_0 = -1$, $a_1 = 4$, $a_2 = -3$ y $a_3 = 2$.
+
+**Paso 1: Evaluar $P_3(2)$ usando el Algoritmo de Horner.**
+
+Aplicamos la fórmula $b_k = a_k + x_0 b_{k+1}$ de arriba hacia abajo (desde $k=n$ hasta $k=0$):
+
+1.  $b_3 = a_3 = 2$
+2.  $b_2 = a_2 + x_0 b_3 = -3 + (2)(2) = -3 + 4 = 1$
+3.  $b_1 = a_1 + x_0 b_2 = 4 + (2)(1) = 4 + 2 = 6$
+4.  $b_0 = a_0 + x_0 b_1 = -1 + (2)(6) = -1 + 12 = 11$
+
+Por lo tanto, $P_3(2) = b_0 = 11$.
+
+**Paso 2: Evaluar $P'_3(2)$ usando el Algoritmo de Horner.**
+
+Sabemos que $P'_n(x_0) = Q_{n-1}(x_0)$, donde $Q_{n-1}(x) = b_nx^{n-1} + b_{n-1}x^{n-2} + \cdots + b_2x + b_1$.
+En nuestro caso, $Q_2(x) = b_3x^2 + b_2x + b_1 = 2x^2 + 1x + 6$.
+
+Los coeficientes para $Q_2(x)$ son $c = [6, 1, 2]$, donde $c_0 = 6$, $c_1 = 1$ y $c_2 = 2$.
+Aplicamos el Algoritmo de Horner a $Q_2(x)$ en $x_0 = 2$:
+
+1.  $d_2 = c_2 = 2$
+2.  $d_1 = c_1 + x_0 d_2 = 1 + (2)(2) = 1 + 4 = 5$
+3.  $d_0 = c_0 + x_0 d_1 = 6 + (2)(5) = 6 + 10 = 16$
+
+Por lo tanto, $P'_3(2) = Q_2(2) = d_0 = 16$.
+
+**Verificación (opcional):**
+
+Podemos verificar los resultados calculando el polinomio y su derivada de forma directa:
+
+$P_3(x) = 2x^3 - 3x^2 + 4x - 1$
+$P_3(2) = 2(2)^3 - 3(2)^2 + 4(2) - 1 = 2(8) - 3(4) + 8 - 1 = 16 - 12 + 8 - 1 = 4 + 8 - 1 = 12 - 1 = 11$.
+
+$P'_3(x) = 6x^2 - 6x + 4$
+$P'_3(2) = 6(2)^2 - 6(2) + 4 = 6(4) - 12 + 4 = 24 - 12 + 4 = 12 + 4 = 16$.
+
+Los resultados coinciden.
+
+```{python, eval=TRUE}
+# Implementación del algoritmo de Horner en Python para verificar
+import numpy as np
+
+def horner_eval(a, x0):
+    """
+    Evalúa un polinomio en un punto x0 usando el algoritmo de Horner.
+    a: lista de coeficientes [a_0, a_1, ..., a_n]
+    x0: punto de evaluación
+    """
+    n = len(a) - 1
+    b = [0] * (n + 1)
+    b[n] = a[n]
+    for k in range(n - 1, -1, -1):
+        b[k] = a[k] + x0 * b[k+1]
+    return b[0], b # Retorna P(x0) y los coeficientes b_k
+
+# Coeficientes del polinomio p_3(x) = 2x^3 - 3x^2 + 4x - 1
+# a = [a_0, a_1, a_2, a_3]
+a = [-1, 4, -3, 2]
+x0 = 2
+
+# Evaluar p_3(2)
+p_x0, b_coeffs = horner_eval(a, x0)
+print(f"p_3({x0}) = {p_x0}") # Debería ser 11
+
+# Los coeficientes b_k son [b_0, b_1, b_2, b_3]
+# Para la derivada, usamos [b_1, b_2, b_3] como los coeficientes del polinomio Q(x)
+# Q(x) = b_3*x^2 + b_2*x + b_1
+# Los coeficientes para Q(x) son [b_1, b_2, b_3]
+q_coeffs = b_coeffs[1:] # [6, 1, 2]
+
+# Evaluar Q(2) para obtener p'_3(2)
+p_prime_x0, _ = horner_eval(q_coeffs, x0)
+print(f"p'_3({x0}) = {p_prime_x0}") # Debería ser 16
+```
+:::
+
+# Interpolación y aproximación numérica
+
+Para justificar la aproximación de una función $f$ por polinomios veamos el **Teorema de Weierstrass** que dice básicamente que cualquier función continua puede aproximarse por un polinomio con un error tan pequeño como se quiera:
+
+::: caja-lema
+**Teorema de Weierstrass**.
+
+Sea $f \in \mathcal{C}^0[a,b]$ una función continua en un intervalo $[a,b]$. Entonces dado un valor $\epsilon>0$, existe un polinomio $P_n(x)$ de un grado determinado $n$ tal que:
+
+::: recuadro-gris
+$$
+|f(x)−P_n(x)|<\epsilon,
+$$
+:::
+
+para todo valor $x \in [a,b]$.
+:::
+
+El problema que intentamos resolver es el siguiente:
+
+**Problema**: Dados $n$ valores $(x_0,y_0), (x_1,y_1), \dots, (x_n,y_n)$, se desea hallar polinomio $P_n$ de grado mínimo tal que $P_n(x_i)=y_i,\, i=0,\ldots,n$.
+
+Es decir, dados $n+1$ puntos en el plano, hallar un polinomio de grado mínimo, (más adelante veremos que dicho grado es $n$) tal que $P_n(x_i)=y_i,\, i=0,\ldots,n$.
+
+**Observaciones**:
+
+* Si los puntos son parte de la gráfica de una función $f$, entonces $y_i=f(x_i)$ y las condiciones que debe verificar el polinomio $P_n(x)$ son $P_n(x_i)=f(x_i),\, i=0,\ldots,n$.
+
+* Se tiene en total $n+1$ condiciones, por tanto, el número de incógnitas debe ser $n+1$. Pensemos que un polinomio de grado $n$ tiene en total $n+1$ coeficientes.
+
+Sea pues $P_n(x)=a_0+a_1x+\cdots+a_nx^n$ el polinomio a hallar.
+
+Las condiciones $P_n(x_i)=y_i$ serían las siguientes en función de los coeficientes $a_i$, $i=0,\ldots,n$:
+
+$$
+a_0+a_1x_i+\cdots+a_nx_i^n=y_i,\quad i=0,\ldots,n.
+$$
+
+Los coeficientes $a_i$ deben verificar el siguiente **sistema de ecuaciones lineales**:
+
+::: recuadro-gris
+$$
+\begin{cases}
+a_0+a_1x_0+\cdots+a_nx_0^n=y_0,\\
+a_0+a_1x_1+\cdots+a_nx_1^n=y_1,\\
+\vdots\\
+a_0+a_1x_n+\cdots+a_nx_n^n=y_n.
+\end{cases}
+$$
+:::
+
+Este sistema lineal tiene solución única y tiene por determinante del sistema el siguiente:
+
+::: recuadro-gris
+$$
+D=\begin{vmatrix}
+1 & x_0 & x_0^2 & \cdots & x_0^n\\
+1 & x_1 & x_1^2 & \cdots & x_1^n\\
+\vdots & \vdots & \vdots & \ddots & \vdots\\
+1 & x_n & x_n^2 & \cdots & x_n^n
+\end{vmatrix}
+$$
+:::
+
+El determinante anterior se llama **determinante de Vandermonde** y su valor es:
+$$
+\prod_{0\leq i<j\leq n}(x_i-x_j).
+$$
+
+Por tanto, si $x_i\neq x_j$ para $i\neq j$, el determinante del sistema no será cero y tendremos solución única para nuestro problema.
+
+En resumen, tenemos el teorema siguiente:
+
+::: caja-lema
+**Teorema**.
+
+Sean $(x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)$, $n$ valores con $x_i\neq x_j$ para $i\neq j$ (es decir, las abscisas son todas diferentes). Entonces existe un único polinomio $P_n(x)$ de grado $n$
+ tal que $P_n(x_i)=y_i$, $i=0,\ldots,n$.
+:::
+
+# Interpolación de Lagrange
+
+
+
+------------------------------------------------------------------------
+  
+<small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>

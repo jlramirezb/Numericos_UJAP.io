@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="José Luis Ramírez" />
+
+
+<title>Interpolación Polinomial Y Ajuste de Curvas</title>
+
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="css/estilos.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Métodos Numéricos</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jlramirezb">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Interpolación Polinomial Y Ajuste de
+Curvas</h1>
+<h4 class="author">José Luis Ramírez</h4>
+<h4 class="date">Noviembre 2025</h4>
+
+</div>
+
+
+<div id="motivación" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Motivación</h1>
+<p>La ídea principal de este capítulo es aproximar una función <span
+class="math inline">\(f\)</span> cualquiera por un miembro de la familia
+más conocida y más sencilla de tratar: los polinomios.</p>
+<p>Recordemos que un polinomio de grado <span
+class="math inline">\(n\)</span> tiene una expresión de la forma
+siguiente:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+P_n(x) = a_nx^n + a_{n-1}x^{n-1} + \cdots + a_1x + a_0 =
+\sum_{i=0}^na_ix^i,
+\]</span></p>
+</div>
+<p>con <span class="math inline">\(a_n \neq 0\)</span> para que tenga
+grado <span class="math inline">\(n\)</span>.</p>
+<p>Los valores <span class="math inline">\(a_i\)</span>, <span
+class="math inline">\(i=0,1,\ldots,n\)</span> se denominan coeficientes
+del polinomio <span class="math inline">\(P_n\)</span>.</p>
+<p>Cuanto “mejor” sea la función “f” a aproximar, es decir, cuanto más
+alto sea el valor de <span class="math inline">\(k\)</span> donde <span
+class="math inline">\(f \in \mathcal C^k\)</span>, mejor control sobre
+el error cometido en la aproximación se tendrá, al menos
+teóricamente.</p>
+<p>Al expresar la información mediante una fórmula polinómica, se
+facilitan operaciones como el cálculo de valores intermedios, la
+interpolación y la predicción de comportamientos futuros, derivación e
+integración.</p>
+<p>Se supone por ejemplo que se tiene una tabla que relaciona la
+viscosidad dinámica del agua con la temperatura</p>
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+T ºC
+</th>
+<th style="text-align:center;">
+<span class="math inline">\(\mu_o\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1.787
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+1.519
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+1.307
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+1.002
+</td>
+</tr>
+</tbody>
+</table>
+<p>¿Cómo estimar la viscosidad a una temperatura de 7.5º C? Una opción
+es encontrar un polinomio que pase por los puntos de la tabla y estimar
+el valor de 7.5 con él.</p>
+<p>En este capítulo se presentarán dos técnicas para aproximar una
+función mediante un polinomio: la interpolación, que ajusta el polinomio
+pasando exactamente por los datos, y la aproximación por mínimos
+cuadrados, que busca minimizar el error global cuando no es posible (o
+deseable) que el polinomio pase por todos los puntos.</p>
+<p><img src="unidad04_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
+<div id="algoritmo-de-horner" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Algoritmo de
+Horner</h2>
+<p>Si el polinomio <span class="math inline">\(P_n(x)\)</span> se
+escribe en la forma:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+P_n(x)=a_0+a_1x+a_2x^2+\cdots+a_nx^n
+\]</span></p>
+</div>
+<p>Se necesitan menos operaciones para evaluarlo en un punto <span
+class="math inline">\(x_0\)</span> si se escribe:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+P_n(x) = a_0 + x(a_1 + x(\cdots (a_{n-2} + x(a_{n-1} + x a_n)) \cdots ))
+\]</span></p>
+</div>
+<p>El algoritmo de Horner es un algoritmo que permite evaluar un
+polinomio en un punto <span class="math inline">\(x_0\)</span> de forma
+eficiente, para ello se define</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+b_n &amp; = a_n\\
+b_{k} &amp; = a_{k} + x_0 b_{k+1}, \forall k \in \mathbb{N}, 0 \leq k
+&lt; n\\
+P_n(x_0) &amp; = b_0
+\end{align*}\]</span></p>
+<p>Además, si se llama <span class="math display">\[
+Q_{n-1}(x) = b_nx^{n-1} + b_{n-1}x^{n-2} + b_{n-2}x^{n-2} + \cdots +
+b_2x + b_1
+\]</span></p>
+<p>Se tiene que <span class="math inline">\(P_n(x) =
+(x-x_0)Q_{n-1}(x)+b_0\)</span> y por lo tanto <span
+class="math inline">\(P&#39;_n(x_0)=Q_{n-1}(x_0)\)</span></p>
+</div>
+<div class="cuadro-alg">
+<p><strong>FUNCIÓN HORNER(a, x0)</strong></p>
+<pre><code># ENTRADA:
+#   a:      Una lista o array de coeficientes del polinomio, donde a[i] es el coeficiente de x^i.
+#           Es decir, a = [a_0, a_1, ..., a_n].
+#   x0:     El punto en el que se desea evaluar el polinomio.
+
+# SALIDA:
+#   P_n(x0): El valor del polinomio evaluado en x0.
+
+# Función auxiliar recursiva para calcular b_k
+FUNCIÓN _HORNER_RECURSIVO(coefs, x_val, k)
+    # Caso base: Si k es el índice del coeficiente de mayor grado (a_n),
+    # entonces b_n = a_n.
+    SI k == longitud(coefs) - 1 ENTONCES
+        RETORNAR coefs[k]
+    FIN SI
+
+    # Paso recursivo: b_k = a_k + x0 * b_{k+1}
+    RETORNAR coefs[k] + x_val * _HORNER_RECURSIVO(coefs, x_val, k + 1)
+FIN FUNCIÓN
+
+# La evaluación del polinomio P_n(x0) es b_0.
+# Iniciamos la recursión para calcular b_0.
+RETORNAR _HORNER_RECURSIVO(a, x0, 0)</code></pre>
+</div>
+<p>¿Por qu´e es Importante el Algoritmo de Horner?</p>
+<ul>
+<li><p><strong>Eficiencia</strong>: Es más eficiente que calcular las
+potencias de <span class="math inline">\(x_0\)</span> y multiplicar por
+los coeficientes de forma individual (se usa menos memoria y tiempo de
+cómputo).</p></li>
+<li><p><strong>Estabilidad</strong>: Reduce errores de redondeo en
+cálculos numéricos.</p></li>
+<li><p><strong>Derivadas</strong>: Permite obtener información sobre la
+derivada del polinomio en el mismo punto.</p></li>
+<li><p><strong>División Sintética</strong>: Está relacionado con el
+método de divisíon sintética para polinomios, lo que lo hace muy útil en
+el campo del álgebra y el análisis numérico.</p></li>
+</ul>
+<div id="ejemplo-1" class="section level4 caja-ejemplo"
+number="1.1.0.1">
+<h4><span class="header-section-number">1.1.0.1</span> Ejemplo 1</h4>
+<p>Tenemos el polinomio: <span class="math display">\[
+P_3(x) = 2x^3 - 3x^2 + 4x - 1
+\]</span> Y queremos evaluarlo en <span class="math inline">\(x_0 =
+2\)</span> y también calcular <span
+class="math inline">\(P&#39;_3(2)\)</span>.</p>
+<p><strong>Solución</strong></p>
+<p>Para el polinomio <span class="math inline">\(P_3(x) = 2x^3 - 3x^2 +
+4x - 1\)</span> y <span class="math inline">\(x_0 = 2\)</span>.</p>
+<p>Los coeficientes del polinomio son <span class="math inline">\(a =
+[-1, 4, -3, 2]\)</span>, donde <span class="math inline">\(a_0 =
+-1\)</span>, <span class="math inline">\(a_1 = 4\)</span>, <span
+class="math inline">\(a_2 = -3\)</span> y <span
+class="math inline">\(a_3 = 2\)</span>.</p>
+<p><strong>Paso 1: Evaluar <span class="math inline">\(P_3(2)\)</span>
+usando el Algoritmo de Horner.</strong></p>
+<p>Aplicamos la fórmula <span class="math inline">\(b_k = a_k + x_0
+b_{k+1}\)</span> de arriba hacia abajo (desde <span
+class="math inline">\(k=n\)</span> hasta <span
+class="math inline">\(k=0\)</span>):</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(b_3 = a_3 = 2\)</span></li>
+<li><span class="math inline">\(b_2 = a_2 + x_0 b_3 = -3 + (2)(2) = -3 +
+4 = 1\)</span></li>
+<li><span class="math inline">\(b_1 = a_1 + x_0 b_2 = 4 + (2)(1) = 4 + 2
+= 6\)</span></li>
+<li><span class="math inline">\(b_0 = a_0 + x_0 b_1 = -1 + (2)(6) = -1 +
+12 = 11\)</span></li>
+</ol>
+<p>Por lo tanto, <span class="math inline">\(P_3(2) = b_0 =
+11\)</span>.</p>
+<p><strong>Paso 2: Evaluar <span
+class="math inline">\(P&#39;_3(2)\)</span> usando el Algoritmo de
+Horner.</strong></p>
+<p>Sabemos que <span class="math inline">\(P&#39;_n(x_0) =
+Q_{n-1}(x_0)\)</span>, donde <span class="math inline">\(Q_{n-1}(x) =
+b_nx^{n-1} + b_{n-1}x^{n-2} + \cdots + b_2x + b_1\)</span>. En nuestro
+caso, <span class="math inline">\(Q_2(x) = b_3x^2 + b_2x + b_1 = 2x^2 +
+1x + 6\)</span>.</p>
+<p>Los coeficientes para <span class="math inline">\(Q_2(x)\)</span> son
+<span class="math inline">\(c = [6, 1, 2]\)</span>, donde <span
+class="math inline">\(c_0 = 6\)</span>, <span class="math inline">\(c_1
+= 1\)</span> y <span class="math inline">\(c_2 = 2\)</span>. Aplicamos
+el Algoritmo de Horner a <span class="math inline">\(Q_2(x)\)</span> en
+<span class="math inline">\(x_0 = 2\)</span>:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(d_2 = c_2 = 2\)</span></li>
+<li><span class="math inline">\(d_1 = c_1 + x_0 d_2 = 1 + (2)(2) = 1 + 4
+= 5\)</span></li>
+<li><span class="math inline">\(d_0 = c_0 + x_0 d_1 = 6 + (2)(5) = 6 +
+10 = 16\)</span></li>
+</ol>
+<p>Por lo tanto, <span class="math inline">\(P&#39;_3(2) = Q_2(2) = d_0
+= 16\)</span>.</p>
+<p><strong>Verificación (opcional):</strong></p>
+<p>Podemos verificar los resultados calculando el polinomio y su
+derivada de forma directa:</p>
+<p><span class="math inline">\(P_3(x) = 2x^3 - 3x^2 + 4x - 1\)</span>
+<span class="math inline">\(P_3(2) = 2(2)^3 - 3(2)^2 + 4(2) - 1 = 2(8) -
+3(4) + 8 - 1 = 16 - 12 + 8 - 1 = 4 + 8 - 1 = 12 - 1 = 11\)</span>.</p>
+<p><span class="math inline">\(P&#39;_3(x) = 6x^2 - 6x + 4\)</span>
+<span class="math inline">\(P&#39;_3(2) = 6(2)^2 - 6(2) + 4 = 6(4) - 12
++ 4 = 24 - 12 + 4 = 12 + 4 = 16\)</span>.</p>
+<p>Los resultados coinciden.</p>
+<pre class="python"><code># Implementación del algoritmo de Horner en Python para verificar
+import numpy as np
+
+def horner_eval(a, x0):
+    &quot;&quot;&quot;
+    Evalúa un polinomio en un punto x0 usando el algoritmo de Horner.
+    a: lista de coeficientes [a_0, a_1, ..., a_n]
+    x0: punto de evaluación
+    &quot;&quot;&quot;
+    n = len(a) - 1
+    b = [0] * (n + 1)
+    b[n] = a[n]
+    for k in range(n - 1, -1, -1):
+        b[k] = a[k] + x0 * b[k+1]
+    return b[0], b # Retorna P(x0) y los coeficientes b_k
+
+# Coeficientes del polinomio p_3(x) = 2x^3 - 3x^2 + 4x - 1
+# a = [a_0, a_1, a_2, a_3]
+a = [-1, 4, -3, 2]
+x0 = 2
+
+# Evaluar p_3(2)
+p_x0, b_coeffs = horner_eval(a, x0)
+print(f&quot;p_3({x0}) = {p_x0}&quot;) # Debería ser 11</code></pre>
+<pre><code>## p_3(2) = 11</code></pre>
+<pre class="python"><code># Los coeficientes b_k son [b_0, b_1, b_2, b_3]
+# Para la derivada, usamos [b_1, b_2, b_3] como los coeficientes del polinomio Q(x)
+# Q(x) = b_3*x^2 + b_2*x + b_1
+# Los coeficientes para Q(x) son [b_1, b_2, b_3]
+q_coeffs = b_coeffs[1:] # [6, 1, 2]
+
+# Evaluar Q(2) para obtener p&#39;_3(2)
+p_prime_x0, _ = horner_eval(q_coeffs, x0)
+print(f&quot;p&#39;_3({x0}) = {p_prime_x0}&quot;) # Debería ser 16</code></pre>
+<pre><code>## p&#39;_3(2) = 16</code></pre>
+</div>
+</div>
+</div>
+<div id="interpolación-y-aproximación-numérica" class="section level1"
+number="2">
+<h1><span class="header-section-number">2</span> Interpolación y
+aproximación numérica</h1>
+<p>Para justificar la aproximación de una función <span
+class="math inline">\(f\)</span> por polinomios veamos el
+<strong>Teorema de Weierstrass</strong> que dice básicamente que
+cualquier función continua puede aproximarse por un polinomio con un
+error tan pequeño como se quiera:</p>
+<div class="caja-lema">
+<p><strong>Teorema de Weierstrass</strong>.</p>
+<p>Sea <span class="math inline">\(f \in \mathcal{C}^0[a,b]\)</span> una
+función continua en un intervalo <span
+class="math inline">\([a,b]\)</span>. Entonces dado un valor <span
+class="math inline">\(\epsilon&gt;0\)</span>, existe un polinomio <span
+class="math inline">\(P_n(x)\)</span> de un grado determinado <span
+class="math inline">\(n\)</span> tal que:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+|f(x)−P_n(x)|&lt;\epsilon,
+\]</span></p>
+</div>
+<p>para todo valor <span class="math inline">\(x \in [a,b]\)</span>.</p>
+</div>
+<p>El problema que intentamos resolver es el siguiente:</p>
+<p><strong>Problema</strong>: Dados <span
+class="math inline">\(n\)</span> valores <span
+class="math inline">\((x_0,y_0), (x_1,y_1), \dots, (x_n,y_n)\)</span>,
+se desea hallar polinomio <span class="math inline">\(P_n\)</span> de
+grado mínimo tal que <span class="math inline">\(P_n(x_i)=y_i,\,
+i=0,\ldots,n\)</span>.</p>
+<p>Es decir, dados <span class="math inline">\(n+1\)</span> puntos en el
+plano, hallar un polinomio de grado mínimo, (más adelante veremos que
+dicho grado es <span class="math inline">\(n\)</span>) tal que <span
+class="math inline">\(P_n(x_i)=y_i,\, i=0,\ldots,n\)</span>.</p>
+<p><strong>Observaciones</strong>:</p>
+<ul>
+<li><p>Si los puntos son parte de la gráfica de una función <span
+class="math inline">\(f\)</span>, entonces <span
+class="math inline">\(y_i=f(x_i)\)</span> y las condiciones que debe
+verificar el polinomio <span class="math inline">\(P_n(x)\)</span> son
+<span class="math inline">\(P_n(x_i)=f(x_i),\,
+i=0,\ldots,n\)</span>.</p></li>
+<li><p>Se tiene en total <span class="math inline">\(n+1\)</span>
+condiciones, por tanto, el número de incógnitas debe ser <span
+class="math inline">\(n+1\)</span>. Pensemos que un polinomio de grado
+<span class="math inline">\(n\)</span> tiene en total <span
+class="math inline">\(n+1\)</span> coeficientes.</p></li>
+</ul>
+<p>Sea pues <span
+class="math inline">\(P_n(x)=a_0+a_1x+\cdots+a_nx^n\)</span> el
+polinomio a hallar.</p>
+<p>Las condiciones <span class="math inline">\(P_n(x_i)=y_i\)</span>
+serían las siguientes en función de los coeficientes <span
+class="math inline">\(a_i\)</span>, <span
+class="math inline">\(i=0,\ldots,n\)</span>:</p>
+<p><span class="math display">\[
+a_0+a_1x_i+\cdots+a_nx_i^n=y_i,\quad i=0,\ldots,n.
+\]</span></p>
+<p>Los coeficientes <span class="math inline">\(a_i\)</span> deben
+verificar el siguiente <strong>sistema de ecuaciones
+lineales</strong>:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\begin{cases}
+a_0+a_1x_0+\cdots+a_nx_0^n=y_0,\\
+a_0+a_1x_1+\cdots+a_nx_1^n=y_1,\\
+\vdots\\
+a_0+a_1x_n+\cdots+a_nx_n^n=y_n.
+\end{cases}
+\]</span></p>
+</div>
+<p>Este sistema lineal tiene solución única y tiene por determinante del
+sistema el siguiente:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+D=\begin{vmatrix}
+1 &amp; x_0 &amp; x_0^2 &amp; \cdots &amp; x_0^n\\
+1 &amp; x_1 &amp; x_1^2 &amp; \cdots &amp; x_1^n\\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+1 &amp; x_n &amp; x_n^2 &amp; \cdots &amp; x_n^n
+\end{vmatrix}
+\]</span></p>
+</div>
+<p>El determinante anterior se llama <strong>determinante de
+Vandermonde</strong> y su valor es: <span class="math display">\[
+\prod_{0\leq i&lt;j\leq n}(x_i-x_j).
+\]</span></p>
+<p>Por tanto, si <span class="math inline">\(x_i\neq x_j\)</span> para
+<span class="math inline">\(i\neq j\)</span>, el determinante del
+sistema no será cero y tendremos solución única para nuestro
+problema.</p>
+<p>En resumen, tenemos el teorema siguiente:</p>
+<div class="caja-lema">
+<p><strong>Teorema</strong>.</p>
+<p>Sean <span
+class="math inline">\((x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)\)</span>,
+<span class="math inline">\(n\)</span> valores con <span
+class="math inline">\(x_i\neq x_j\)</span> para <span
+class="math inline">\(i\neq j\)</span> (es decir, las abscisas son todas
+diferentes). Entonces existe un único polinomio <span
+class="math inline">\(P_n(x)\)</span> de grado <span
+class="math inline">\(n\)</span> tal que <span
+class="math inline">\(P_n(x_i)=y_i\)</span>, <span
+class="math inline">\(i=0,\ldots,n\)</span>.</p>
+</div>
+</div>
+<div id="interpolación-de-lagrange" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Interpolación de
+Lagrange</h1>
+<hr />
+<p><small>Última revisión: 22 de noviembre, 2025</small></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
