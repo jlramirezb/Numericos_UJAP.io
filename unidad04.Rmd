@@ -31,7 +31,7 @@ con $a_n \neq 0$ para que tenga grado $n$.
 
 Los valores $a_i$, $i=0,1,\ldots,n$ se denominan coeficientes del polinomio $P_n$.
 
-Cuanto “mejor” sea la función "f" a aproximar, es decir, cuanto más alto sea el valor de $k$ donde $f \in \mathcal C^k$, mejor control sobre el error cometido en la aproximación se tendrá, al menos teóricamente.
+Cuanto “mejor” sea la función "$f$" a aproximar, es decir, cuanto más alto sea el valor de $k$ donde $f \in \mathcal C^k$, mejor control sobre el error cometido en la aproximación se tendrá, al menos teóricamente.
 
 Al expresar la información mediante una fórmula polinómica, se facilitan operaciones como el cálculo de valores intermedios, la interpolación y la predicción de comportamientos futuros, derivación e integración.
 
@@ -155,7 +155,7 @@ Se tiene que $P_n(x) = (x-x_0)Q_{n-1}(x)+b_0$ y por lo tanto $P'_n(x_0)=Q_{n-1}(
     RETORNAR _HORNER_RECURSIVO(a, x0, 0)
 :::
 
-¿Por qu´e es Importante el Algoritmo de Horner?
+¿Por qué es Importante el Algoritmo de Horner?
 
 * **Eficiencia**: Es más eficiente que calcular las potencias de $x_0$ y multiplicar por los coeficientes de forma individual (se usa menos memoria y tiempo de cómputo).
 
@@ -335,8 +335,368 @@ Sean $(x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)$, $n$ valores con $x_i\neq x_j$ para 
  tal que $P_n(x_i)=y_i$, $i=0,\ldots,n$.
 :::
 
-# Interpolación de Lagrange
+## Interpolación de Lagrange
 
+El método de Lagrange para interpolación polinomial resulta de resolver el sistema de Vandermonde para obtener los coeficientes pero lo hace de una forma más sencilla y sistemática.
+
+Se construye el polinomio interpolador de forma explícita en función de unos polinomios especiales denominados **polinomios interpoladores de Lagrange**:
+
+::: caja-lema
+**Polinomios de Lagrange**.
+
+Sean $x_0,\ldots,x_n$, $n+1$ nodos donde suponemos que $x_i \neq x_j$, para $i\neq j$. Se define el polinomio de Lagrange $L_{k}(x)$ de grado $n$ asociado al nodo $x_k$ de la forma siguiente:
+
+::: recuadro-gris
+\begin{align*}
+L_{k}(x)& = \dfrac{(x-x_0)(x-x_1)\cdots(x-x_{k-1})(x-x_{k+1})\cdots(x-x_n)}{(x_k-x_0)(x_k-x_1)\cdots(x_k-x_{k-1})(x_k-x_{k+1})\cdots(x_k-x_n)}\\
+& =\prod_{\substack{0\leq i\leq n\\i\neq k}}\frac{x-x_i}{x_k-x_i}
+\end{align*}
+:::
+:::
+
+Los polinomios de Lagrange verifican la proposición siguiente:
+
+Sean $x_0,\ldots,x_n$, $n+1$ nodos donde suponemos que $x_i \neq x_j$, para $i\neq j$. Sean $L_{k}(x)$ el polinomio de Lagrange de grado menor o igual a $n$ asociado al nodo $x_k$. Entonces dicho polinomio verifica que:
+
+::: recuadro-gris
+$$
+L_{k}(x_k)=1\quad\text{y}\quad L_{k}(x_i)=0\quad\text{para}\quad i\neq k.
+$$
+:::
+
+::: caja-ejemplo
+#### Ejemplo 2.
+
+Consideremos los nodos $x_0=0,\, x_1=1,\, x_2=3,\, x_3=5$.
+
+Los polinomios de Lagrange asociados a los nodos anteriores son los siguientes:
+
+::: recuadro-gris
+\begin{align*}
+L_0(x) & = \dfrac{(x-1)(x-3)(x-5)}{(0-1)(0-3)(0-5)} = \dfrac{1}{-15}(x^3-9x^2+23x-15)\\
+L_1(x) & = \dfrac{(x-0)(x-3)(x-5)}{(1-0)(1-3)(1-5)} = \dfrac{1}{8}(x^3-8x^2+15x)\\
+L_2(x) & = \dfrac{(x-0)(x-1)(x-5)}{(3-0)(3-1)(3-5)} = \dfrac{1}{-12}(x^3-6x^2+5x)\\
+L_3(x) & = \dfrac{(x-0)(x-1)(x-3)}{(5-0)(5-1)(5-3)} = \dfrac{1}{40}(x^3-4x^2+3x) \\
+\end{align*}
+:::
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Nodos x_k
+x_nodes = np.array([0, 1, 3, 5])
+
+# Definición de los polinomios de Lagrange
+def L0(x):
+    return (1 / -15) * (x**3 - 9*x**2 + 23*x - 15)
+
+def L1(x):
+    return (1 / 8) * (x**3 - 8*x**2 + 15*x)
+
+def L2(x):
+    return (1 / -12) * (x**3 - 6*x**2 + 5*x)
+
+def L3(x):
+    return (1 / 40) * (x**3 - 4*x**2 + 3*x)
+
+# Rango de x para graficar
+x_vals = np.linspace(-1, 6, 400)
+
+plt.figure(figsize=(10, 6));
+
+# Graficar L0(x)
+plt.plot(x_vals, L0(x_vals), label='$L_0(x)$', color='red');
+plt.plot(x_nodes[0], L0(x_nodes[0]), 'ro', markersize=8, label='$(x_0, L_0(x_0))$');
+# (0, 1)
+
+# Graficar L1(x)
+plt.plot(x_vals, L1(x_vals), label='$L_1(x)$', color='green');
+plt.plot(x_nodes[1], L1(x_nodes[1]), 'go', markersize=8, label='$(x_1, L_1(x_1))$');
+# (1, 1)
+
+# Graficar L2(x)
+plt.plot(x_vals, L2(x_vals), label='$L_2(x)$', color='blue');
+plt.plot(x_nodes[2], L2(x_nodes[2]), 'bo', markersize=8, label='$(x_2, L_2(x_2))$');
+# (3, 1)
+
+# Graficar L3(x)
+plt.plot(x_vals, L3(x_vals), label='$L_3(x)$', color='purple');
+plt.plot(x_nodes[3], L3(x_nodes[3]), marker='o', color='purple', markersize=8, label='$(x_3, L_3(x_3))$');
+# (5, 1)
+
+# Añadir puntos (x_i, 0) para todos los polinomios
+for i, x_node in enumerate(x_nodes):
+    if i != 0: # For L0, x0 is (x0,1)
+        plt.plot(x_node, L0(x_node), 'rx', markersize=6);
+    if i != 1: # For L1, x1 is (x1,1)
+        plt.plot(x_node, L1(x_node), 'gx', markersize=6);
+    if i != 2: # For L2, x2 is (x2,1)
+        plt.plot(x_node, L2(x_node), 'bx', markersize=6);
+    if i != 3: # For L3, x3 is (x3,1)
+        plt.plot(x_node, L3(x_node), marker='x', color='purple', markersize=6);
+
+
+plt.axhline(0, color='gray', linestyle='-', linewidth=2);
+plt.axhline(1, color='gray', linestyle='--', linewidth=1.5);
+plt.axvline(0, color='gray', linestyle='-', linewidth=2);
+plt.xlabel('x');
+plt.ylabel('$L_k(x)$');
+plt.title('Polinomios de Lagrange $L_k(x)$ y puntos $(x_k, L_k(x_k))$');
+plt.legend();
+plt.grid(True)
+plt.show()
+```
+:::
+
+El Teorema siguiente nos dice cómo calcular el polinomio interpolador a partir de los polinomios de Lagrange:
+
+::: caja-lema
+**Teorema**.
+
+Sean $(x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)$, $n+1$ puntos con $x_i\neq x_j$ para $i\neq j$, y con $y_i=f(x_i)$ para $i=0,\ldots,n$. Entonces el polinomio interpolador $P_n(x)$ que pasa por dichos puntos se puede escribir de la siguiente forma:
+
+::: recuadro-gris
+\begin{align*}
+P_n(x)&=y_0L_0(x)+y_1L_1(x)+\cdots+y_nL_n(x)\\
+&=\sum_{k=0}^{n}y_kL_k(x).
+\end{align*}
+:::
+donde $L_k(x)$ es el polinomio de Lagrange correspondiente al nodo $x_k$, $k=0,\ldots,n$.
+:::
+
+::: caja-ejemplo
+#### Ejemplo 3.
+
+Calculemos el polinomio interpolador en los nodos $x_0=0$, $x_1=1$, $x_2=3$, $x_3=5$ para la función $f(x)=x\cdot\sin\left(\frac{\pi}{2}\cdot x\right)$.
+
+Los puntos de interpolación serían $(0,0)$, $(1,1)$, $(3,-3)$, $(5,5)$.
+
+El polinomio interpolador $P_3(x)$ que pasa por dichos puntos se puede escribir de la siguiente forma:
+
+::: recuadro-gris
+\begin{align*}
+P_3(x)&=y_0L_0(x)+y_1L_1(x)+y_2L_2(x)+y_3L_3(x)\\
+&=0\cdot L_0(x)+1\cdot L_1(x)-3\cdot L_2(x)+5\cdot L_3(x)\\
+&=1\cdot\left(\frac{1}{8}(x^3-8x^2+15x)\right)-3\cdot\left(\frac{1}{-12}(x^3-6x^2+5x)\right)+5\cdot\left(\frac{1}{40}(x^3-4x^2+3x)\right)\\
+&= 0.5x^3-3x^2+3.5x
+\end{align*}
+:::
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Definir la función f(x)
+def f(x):
+    return x * np.sin(np.pi/2 * x)
+
+# Definir el polinomio interpolador P3(x)
+def P3(x):
+    return 0.5 * x**3 - 3 * x**2 + 3.5 * x
+
+# Nodos de interpolación
+x_nodes = np.array([0, 1, 3, 5])
+y_nodes = np.array([0, 1, -3, 5]) # y_i = f(x_i)
+
+# Rango de x para graficar
+x_vals = np.linspace(-1, 6, 400)
+
+plt.figure(figsize=(10, 6));
+
+# Graficar la función f(x)
+plt.plot(x_vals, f(x_vals), label='$f(x) = x \\cdot \\sin(\\frac{\\pi}{2}x)$', color='blue');
+
+# Graficar el polinomio interpolador P3(x)
+plt.plot(x_vals, P3(x_vals), label='$P_3(x) = 0.5x^3 - 3x^2 + 3.5x$', color='red');
+
+# Graficar los nodos interpolantes
+plt.plot(x_nodes, y_nodes, 'ko', markersize=8, label='Nodos de interpolación $(x_i, y_i)$');
+
+plt.xlabel('x');
+plt.ylabel('y');
+plt.title('Función $f(x)$ y Polinomio Interpolador $P_3(x)$');
+plt.legend();
+plt.grid(True)
+plt.axhline(0, color='black', linestyle='-', linewidth=1.5);
+plt.axvline(0, color='black', linestyle='-', linewidth=1.5);
+plt.xlim(-0.5, 6);
+plt.ylim(-4, 6);
+plt.show()
+```
+:::
+
+### Error de interpolación.
+
+Interpolar una función $f$ en unos nodos determinados puede interpretarse como una manera de aproximar la función $f$ en un entorno de los nodos, es decir, en un dominio que esté relativamente cerca de dichos nodos.
+
+Es fundamental estimar de alguna manera el error cometido en un valor cualquiera cuando se intenta aproximar una función. El Teorema siguiente nos da una expresión del error cometido cuando aproximamos una función $f$ por un polinomio interpolador:
+
+::: caja-lema
+**Teorema**.
+
+Sea $f \in C^{n+1}[a, b]$ y $P_n(x)$ el polinomio de interpolación en los $n + 1$ puntos
+distintos $x_0 = a, x_1, \ldots, x_n = b$, entonces para cada $x \in [a, b]$ existe
+$\xi(x) \in I[x_0, x_1, \ldots, x_n, x]$ (el intervalo cerrado más pequeño que contiene
+$x_0, x_1, \ldots, x_n, x$) tal que
+
+::: recuadro-gris
+\begin{align*}
+E(x)&=f(x)-P_n(x)\\
+&=\dfrac{f^{(n+1)}(\xi(x))}{(n+1)!}\prod_{k=0}^{n}(x-x_k)
+\end{align*}
+:::
+
+donde $\xi(x)$ es un punto en el intervalo $[a,b]$.
+:::
+
+::: caja-ejemplo
+#### Ejemplo 4.
+
+La expresión del error cometido al aproximar la función $f(x)=x\cdot\sin\left(\frac{\pi}{2}x\right)$ en el **ejemplo 3** es:
+
+::: recuadro-gris
+\begin{align*}
+E(x)&=f(x)-P_3(x)\\
+&=\dfrac{f^{(4)}(\xi(x))}{4!}\cdot x\cdot(x-1)\cdot(x-3)\cdot(x-5)
+\end{align*}
+:::
+
+Hallando $f^{(4)}(x)$:
+
+::: recuadro-gris
+\begin{align*}
+f'(x) & = \sin\left(\frac{\pi}{2}x\right)+\frac{\pi}{2}x\cdot\cos\left(\frac{\pi}{2}x\right)\\
+f''(x)& = \pi\cos\left(\frac{\pi}{2}x\right)-\frac{\pi^2}{4}x\cdot\sin\left(\frac{\pi}{2}x\right)\\
+f'''(x)& = -\frac{3\pi^2}{4}\sin\left(\frac{\pi}{2}x\right)-\frac{\pi^3}{8}x\cdot\cos\left(\frac{\pi}{2}x\right)\\
+f^{(4)}(x)& = -\frac{\pi^3}{2}\cos\left(\frac{\pi}{2}x\right)+\frac{\pi^4}{16}x\cdot\sin\left(\frac{\pi}{2}x\right)
+\end{align*}
+:::
+
+La expresión del error es:
+
+::: recuadro-gris
+$$
+f(x) - P_3(x) = \dfrac{\pi^3}{384} \left[ -8\cos\left(\dfrac{\pi \xi(x)}{2}\right) + \pi \xi(x) \sin\left(\dfrac{\pi \xi(x)}{2}\right) \right] x(x-1)(x-3)(x-5)
+$$
+:::
+
+Imaginemos que queremos acotar el error cometido $|f(x)−P_3(x)|$ para todo valor de $x$ en el intervalo $[0,5]$. Entonces, tendremos:
+
+::: recuadro-gris
+$$
+|E(x)|=|f(x) - P_3(x)| \leq \dfrac{\pi^3(8+5\pi)}{384} \cdot \max_{x \in [0,5]} |x(x-1)(x-3)(x-5)|
+$$
+:::
+
+Ahora para hallar $\max_{x \in [0,5]} |x(x-1)(x-3)(x-5)|$ debemos hallar el valor máximo de la función $h(x)=x(x-1)(x-3)(x-5) = x^4 - 9x^3+23x^2-15x$ en el intervalo $[0,5]$, el cual se encuentra dentro del intervalo $(0,5)$, ya que $h(0)=0$ y $h(5)=0$.
+
+$$
+h'(x) = 4x^3 - 27x^2 + 46x - 15
+$$
+
+El siguiente paso es resolver la ecuación $h'(x)=0$, para resolver esta ecuación, se puede usar un método numérico de los vistos en la unidad III. Eligiendo adecuadamente los valores iniciales se llega a los siguientes ceros:
+
+$$
+\begin{align*}
+x_1 &= 0.4257862 \quad |h(x_1)| = 2.878898\\
+x_2 &= 2.0704646 \quad |h(x_2)| = 6.035382\\
+x_3 &= 4.2537492 \quad |h(x_3)| = 12.949453
+\end{align*}
+$$
+
+Por lo tanto, el valor máximo de $|h(x)|$ en el intervalo $[0,5]$ es $12.949453$.
+
+Por lo tanto, el valor máximo de $|E(x)|$ en el intervalo $[0,5]$ es $\dfrac{\pi^3(8+5\pi)}{384} \cdot 12.949453 \approx 24.7892891.$.
+
+La cota del error obtenida es una cota “teórica”. Si se representa el valor absoluto del error exacto: $|E(x)| = |f(x) − P_3(x)|$ se obtiene la siguiente figura:
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Definir la función f(x) (reutilizada del ejemplo 3)
+def f(x):
+    return x * np.sin(np.pi/2 * x)
+
+# Definir el polinomio interpolador P3(x) (reutilizado del ejemplo 3)
+def P3(x):
+    return 0.5 * x**3 - 3 * x**2 + 3.5 * x
+
+# Rango de x para graficar (reutilizado del ejemplo 3)
+x_vals = np.linspace(0, 5, 400)
+
+# Calcular el error absoluto
+error_abs = np.abs(f(x_vals) - P3(x_vals))
+
+plt.figure(figsize=(10, 6));
+
+# Graficar el error absoluto
+plt.plot(x_vals, error_abs, label='$|f(x) - P_3(x)|$', color='orange');
+
+# Nodos de interpolación (reutilizados del ejemplo 3)
+x_nodes = np.array([0, 1, 3, 5])
+# En los nodos, el error es cero por definición
+plt.plot(x_nodes, np.zeros_like(x_nodes), 'ko', markersize=8, label='Nodos de interpolación ($x_i$, 0)');
+
+plt.xlabel('x');
+plt.ylabel('$|E(x)|$');
+plt.title('Diferencia absoluta entre $f(x)$ y $P_3(x)$');
+plt.legend();
+plt.grid(True)
+plt.axhline(0, color='black', linestyle='-', linewidth=1.5);
+plt.axvline(0, color='black', linestyle='-', linewidth=1.5);
+plt.xlim(-0.5, 5.5);
+plt.ylim(-0.5, 4); 
+# Ajustar el límite y para visualizar mejor el error
+plt.show()
+```
+
+Si se hubiese acotado la derivada $f^{(4)}(x)$ hallando el valor máximo dentro del intervalo $[0,5]$ se hubiese obtenido una cota más fina.
+
+:::
+
+**Desventajas del método de Lagrange**
+
+* El polinomio no viene expandido.
+
+* La interpolación para otro valor de $x$ necesita la misma cantidad de cálculos adicionales, ya que no se pueden utilizar partes de la aplicación previa.
+
+* La incorporación de un nuevo nodo obliga a rehacer todos los cálculos.
+
+* La evaluación del error no es fácil.
+
+## Interpolación Iterada
+
+* A veces no es necesario obtener la forma explícita del polinomio interpolador y basta con obtener su valor numérico en un punto dado.
+
+* Además en este caso se desea poder aumentar el orden del polinomio interpolador a voluntad y parar cuando el error sea suficientemente pequeño.
+
+* Para estos propósitos la interpolación iterada está especialmente indicada.
+
+::: caja-lema
+**Definición**.
+
+Sea $f$ una funcíon definida en $x_0, \ldots, x_n$ y supongamos $m_0, \ldots, m_k$ sean $k + 1$ enteros distintos con $0 \leq m_i \leq n$ para cada $i = 0, \ldots, k$. El polinomio de Lagrange de grado menor o igual a $k$ que coincide con $f$ en $x_{m_0}, \ldots, x_{m_k}$ se denota $P_{m_0,\ldots,m_k}$.
+::: 
+
+::: caja-ejemplo
+#### Ejemplo 5.
+
+Sea $f(x) = x^3$, $x_0 = 1$, $x_1 = 2$, $x_2 = 3$, $x_3 = 4$, $x_4 = 6$, calcule $P_{0,3,4}(x)$ y $P_{1,2,4}(x)$.
+
+\begin{align*}
+P_{0,3,4}(x) &= L_0(x)f(x_0)+L_3(x)f(x_3)+L_4(x)f(x_4)\\
+& =\dfrac{(x-4)(x-6)}{(1-4)(1-6)}\cdot 1^3+\dfrac{(x-1)(x-6)}{(4-1)(4-6)}\cdot 4^3+\dfrac{(x-1)(x-4)}{(6-1)(6-4)}\cdot 6^3\\
+& = 11x^2-34x+24
+\end{align*}
+
+\begin{align*}
+P_{1,2,4}(x) &= L_1(x)f(x_1)+L_2(x)f(x_2)+L_4(x)f(x_4)\\
+& =\dfrac{(x-3)(x-6)}{(2-3)(2-6)}\cdot 2^3+\dfrac{(x-2)(x-6)}{(3-2)(3-6)}\cdot 3^3+\dfrac{(x-2)(x-3)}{(6-2)(6-3)}\cdot 6^3\\
+& = 10x^2-27x+18
+\end{align*}
+::: 
 
 
 ------------------------------------------------------------------------

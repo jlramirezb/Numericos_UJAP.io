@@ -374,8 +374,9 @@ grado <span class="math inline">\(n\)</span>.</p>
 <p>Los valores <span class="math inline">\(a_i\)</span>, <span
 class="math inline">\(i=0,1,\ldots,n\)</span> se denominan coeficientes
 del polinomio <span class="math inline">\(P_n\)</span>.</p>
-<p>Cuanto “mejor” sea la función “f” a aproximar, es decir, cuanto más
-alto sea el valor de <span class="math inline">\(k\)</span> donde <span
+<p>Cuanto “mejor” sea la función “<span
+class="math inline">\(f\)</span>” a aproximar, es decir, cuanto más alto
+sea el valor de <span class="math inline">\(k\)</span> donde <span
 class="math inline">\(f \in \mathcal C^k\)</span>, mejor control sobre
 el error cometido en la aproximación se tendrá, al menos
 teóricamente.</p>
@@ -501,7 +502,7 @@ FIN FUNCIÓN
 # Iniciamos la recursión para calcular b_0.
 RETORNAR _HORNER_RECURSIVO(a, x0, 0)</code></pre>
 </div>
-<p>¿Por qu´e es Importante el Algoritmo de Horner?</p>
+<p>¿Por qué es Importante el Algoritmo de Horner?</p>
 <ul>
 <li><p><strong>Eficiencia</strong>: Es más eficiente que calcular las
 potencias de <span class="math inline">\(x_0\)</span> y multiplicar por
@@ -725,12 +726,301 @@ class="math inline">\(n\)</span> tal que <span
 class="math inline">\(P_n(x_i)=y_i\)</span>, <span
 class="math inline">\(i=0,\ldots,n\)</span>.</p>
 </div>
+<div id="interpolación-de-lagrange" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Interpolación de
+Lagrange</h2>
+<p>El método de Lagrange para interpolación polinomial resulta de
+resolver el sistema de Vandermonde para obtener los coeficientes pero lo
+hace de una forma más sencilla y sistemática.</p>
+<p>Se construye el polinomio interpolador de forma explícita en función
+de unos polinomios especiales denominados <strong>polinomios
+interpoladores de Lagrange</strong>:</p>
+<div class="caja-lema">
+<p><strong>Polinomios de Lagrange</strong>.</p>
+<p>Sean <span class="math inline">\(x_0,\ldots,x_n\)</span>, <span
+class="math inline">\(n+1\)</span> nodos donde suponemos que <span
+class="math inline">\(x_i \neq x_j\)</span>, para <span
+class="math inline">\(i\neq j\)</span>. Se define el polinomio de
+Lagrange <span class="math inline">\(L_{k}(x)\)</span> de grado <span
+class="math inline">\(n\)</span> asociado al nodo <span
+class="math inline">\(x_k\)</span> de la forma siguiente:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+L_{k}(x)&amp; =
+\dfrac{(x-x_0)(x-x_1)\cdots(x-x_{k-1})(x-x_{k+1})\cdots(x-x_n)}{(x_k-x_0)(x_k-x_1)\cdots(x_k-x_{k-1})(x_k-x_{k+1})\cdots(x_k-x_n)}\\
+&amp; =\prod_{\substack{0\leq i\leq n\\i\neq k}}\frac{x-x_i}{x_k-x_i}
+\end{align*}\]</span></p>
 </div>
-<div id="interpolación-de-lagrange" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Interpolación de
-Lagrange</h1>
+</div>
+<p>Los polinomios de Lagrange verifican la proposición siguiente:</p>
+<p>Sean <span class="math inline">\(x_0,\ldots,x_n\)</span>, <span
+class="math inline">\(n+1\)</span> nodos donde suponemos que <span
+class="math inline">\(x_i \neq x_j\)</span>, para <span
+class="math inline">\(i\neq j\)</span>. Sean <span
+class="math inline">\(L_{k}(x)\)</span> el polinomio de Lagrange de
+grado menor o igual a <span class="math inline">\(n\)</span> asociado al
+nodo <span class="math inline">\(x_k\)</span>. Entonces dicho polinomio
+verifica que:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+L_{k}(x_k)=1\quad\text{y}\quad L_{k}(x_i)=0\quad\text{para}\quad i\neq
+k.
+\]</span></p>
+</div>
+<div id="ejemplo-2." class="section level4 caja-ejemplo"
+number="2.1.0.1">
+<h4><span class="header-section-number">2.1.0.1</span> Ejemplo 2.</h4>
+<p>Consideremos los nodos <span class="math inline">\(x_0=0,\, x_1=1,\,
+x_2=3,\, x_3=5\)</span>.</p>
+<p>Los polinomios de Lagrange asociados a los nodos anteriores son los
+siguientes:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+L_0(x) &amp; = \dfrac{(x-1)(x-3)(x-5)}{(0-1)(0-3)(0-5)} =
+\dfrac{1}{-15}(x^3-9x^2+23x-15)\\
+L_1(x) &amp; = \dfrac{(x-0)(x-3)(x-5)}{(1-0)(1-3)(1-5)} =
+\dfrac{1}{8}(x^3-8x^2+15x)\\
+L_2(x) &amp; = \dfrac{(x-0)(x-1)(x-5)}{(3-0)(3-1)(3-5)} =
+\dfrac{1}{-12}(x^3-6x^2+5x)\\
+L_3(x) &amp; = \dfrac{(x-0)(x-1)(x-3)}{(5-0)(5-1)(5-3)} =
+\dfrac{1}{40}(x^3-4x^2+3x) \\
+\end{align*}\]</span></p>
+</div>
+<p><img src="unidad04_files/figure-html/unnamed-chunk-4-3.png" width="960" /></p>
+</div>
+<p>El Teorema siguiente nos dice cómo calcular el polinomio interpolador
+a partir de los polinomios de Lagrange:</p>
+<div class="caja-lema">
+<p><strong>Teorema</strong>.</p>
+<p>Sean <span
+class="math inline">\((x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)\)</span>,
+<span class="math inline">\(n+1\)</span> puntos con <span
+class="math inline">\(x_i\neq x_j\)</span> para <span
+class="math inline">\(i\neq j\)</span>, y con <span
+class="math inline">\(y_i=f(x_i)\)</span> para <span
+class="math inline">\(i=0,\ldots,n\)</span>. Entonces el polinomio
+interpolador <span class="math inline">\(P_n(x)\)</span> que pasa por
+dichos puntos se puede escribir de la siguiente forma:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+P_n(x)&amp;=y_0L_0(x)+y_1L_1(x)+\cdots+y_nL_n(x)\\
+&amp;=\sum_{k=0}^{n}y_kL_k(x).
+\end{align*}\]</span></p>
+</div>
+<p>donde <span class="math inline">\(L_k(x)\)</span> es el polinomio de
+Lagrange correspondiente al nodo <span
+class="math inline">\(x_k\)</span>, <span
+class="math inline">\(k=0,\ldots,n\)</span>.</p>
+</div>
+<div id="ejemplo-3." class="section level4 caja-ejemplo"
+number="2.1.0.2">
+<h4><span class="header-section-number">2.1.0.2</span> Ejemplo 3.</h4>
+<p>Calculemos el polinomio interpolador en los nodos <span
+class="math inline">\(x_0=0\)</span>, <span
+class="math inline">\(x_1=1\)</span>, <span
+class="math inline">\(x_2=3\)</span>, <span
+class="math inline">\(x_3=5\)</span> para la función <span
+class="math inline">\(f(x)=x\cdot\sin\left(\frac{\pi}{2}\cdot
+x\right)\)</span>.</p>
+<p>Los puntos de interpolación serían <span
+class="math inline">\((0,0)\)</span>, <span
+class="math inline">\((1,1)\)</span>, <span
+class="math inline">\((3,-3)\)</span>, <span
+class="math inline">\((5,5)\)</span>.</p>
+<p>El polinomio interpolador <span class="math inline">\(P_3(x)\)</span>
+que pasa por dichos puntos se puede escribir de la siguiente forma:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+P_3(x)&amp;=y_0L_0(x)+y_1L_1(x)+y_2L_2(x)+y_3L_3(x)\\
+&amp;=0\cdot L_0(x)+1\cdot L_1(x)-3\cdot L_2(x)+5\cdot L_3(x)\\
+&amp;=1\cdot\left(\frac{1}{8}(x^3-8x^2+15x)\right)-3\cdot\left(\frac{1}{-12}(x^3-6x^2+5x)\right)+5\cdot\left(\frac{1}{40}(x^3-4x^2+3x)\right)\\
+&amp;= 0.5x^3-3x^2+3.5x
+\end{align*}\]</span></p>
+</div>
+<p><img src="unidad04_files/figure-html/unnamed-chunk-5-5.png" width="960" /></p>
+</div>
+<div id="error-de-interpolación." class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Error de
+interpolación.</h3>
+<p>Interpolar una función <span class="math inline">\(f\)</span> en unos
+nodos determinados puede interpretarse como una manera de aproximar la
+función <span class="math inline">\(f\)</span> en un entorno de los
+nodos, es decir, en un dominio que esté relativamente cerca de dichos
+nodos.</p>
+<p>Es fundamental estimar de alguna manera el error cometido en un valor
+cualquiera cuando se intenta aproximar una función. El Teorema siguiente
+nos da una expresión del error cometido cuando aproximamos una función
+<span class="math inline">\(f\)</span> por un polinomio
+interpolador:</p>
+<div class="caja-lema">
+<p><strong>Teorema</strong>.</p>
+<p>Sea <span class="math inline">\(f \in C^{n+1}[a, b]\)</span> y <span
+class="math inline">\(P_n(x)\)</span> el polinomio de interpolación en
+los <span class="math inline">\(n + 1\)</span> puntos distintos <span
+class="math inline">\(x_0 = a, x_1, \ldots, x_n = b\)</span>, entonces
+para cada <span class="math inline">\(x \in [a, b]\)</span> existe <span
+class="math inline">\(\xi(x) \in I[x_0, x_1, \ldots, x_n, x]\)</span>
+(el intervalo cerrado más pequeño que contiene <span
+class="math inline">\(x_0, x_1, \ldots, x_n, x\)</span>) tal que</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+E(x)&amp;=f(x)-P_n(x)\\
+&amp;=\dfrac{f^{(n+1)}(\xi(x))}{(n+1)!}\prod_{k=0}^{n}(x-x_k)
+\end{align*}\]</span></p>
+</div>
+<p>donde <span class="math inline">\(\xi(x)\)</span> es un punto en el
+intervalo <span class="math inline">\([a,b]\)</span>.</p>
+</div>
+<div id="ejemplo-4." class="section level4 caja-ejemplo"
+number="2.1.1.1">
+<h4><span class="header-section-number">2.1.1.1</span> Ejemplo 4.</h4>
+<p>La expresión del error cometido al aproximar la función <span
+class="math inline">\(f(x)=x\cdot\sin\left(\frac{\pi}{2}x\right)\)</span>
+en el <strong>ejemplo 3</strong> es:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+E(x)&amp;=f(x)-P_3(x)\\
+&amp;=\dfrac{f^{(4)}(\xi(x))}{4!}\cdot x\cdot(x-1)\cdot(x-3)\cdot(x-5)
+\end{align*}\]</span></p>
+</div>
+<p>Hallando <span class="math inline">\(f^{(4)}(x)\)</span>:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+f&#39;(x) &amp; =
+\sin\left(\frac{\pi}{2}x\right)+\frac{\pi}{2}x\cdot\cos\left(\frac{\pi}{2}x\right)\\
+f&#39;&#39;(x)&amp; =
+\pi\cos\left(\frac{\pi}{2}x\right)-\frac{\pi^2}{4}x\cdot\sin\left(\frac{\pi}{2}x\right)\\
+f&#39;&#39;&#39;(x)&amp; =
+-\frac{3\pi^2}{4}\sin\left(\frac{\pi}{2}x\right)-\frac{\pi^3}{8}x\cdot\cos\left(\frac{\pi}{2}x\right)\\
+f^{(4)}(x)&amp; =
+-\frac{\pi^3}{2}\cos\left(\frac{\pi}{2}x\right)+\frac{\pi^4}{16}x\cdot\sin\left(\frac{\pi}{2}x\right)
+\end{align*}\]</span></p>
+</div>
+<p>La expresión del error es:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+f(x) - P_3(x) = \dfrac{\pi^3}{384} \left[ -8\cos\left(\dfrac{\pi
+\xi(x)}{2}\right) + \pi \xi(x) \sin\left(\dfrac{\pi \xi(x)}{2}\right)
+\right] x(x-1)(x-3)(x-5)
+\]</span></p>
+</div>
+<p>Imaginemos que queremos acotar el error cometido <span
+class="math inline">\(|f(x)−P_3(x)|\)</span> para todo valor de <span
+class="math inline">\(x\)</span> en el intervalo <span
+class="math inline">\([0,5]\)</span>. Entonces, tendremos:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+|E(x)|=|f(x) - P_3(x)| \leq \dfrac{\pi^3(8+5\pi)}{384} \cdot \max_{x \in
+[0,5]} |x(x-1)(x-3)(x-5)|
+\]</span></p>
+</div>
+<p>Ahora para hallar <span class="math inline">\(\max_{x \in [0,5]}
+|x(x-1)(x-3)(x-5)|\)</span> debemos hallar el valor máximo de la función
+<span class="math inline">\(h(x)=x(x-1)(x-3)(x-5) = x^4 -
+9x^3+23x^2-15x\)</span> en el intervalo <span
+class="math inline">\([0,5]\)</span>, el cual se encuentra dentro del
+intervalo <span class="math inline">\((0,5)\)</span>, ya que <span
+class="math inline">\(h(0)=0\)</span> y <span
+class="math inline">\(h(5)=0\)</span>.</p>
+<p><span class="math display">\[
+h&#39;(x) = 4x^3 - 27x^2 + 46x - 15
+\]</span></p>
+<p>El siguiente paso es resolver la ecuación <span
+class="math inline">\(h&#39;(x)=0\)</span>, para resolver esta ecuación,
+se puede usar un método numérico de los vistos en la unidad III.
+Eligiendo adecuadamente los valores iniciales se llega a los siguientes
+ceros:</p>
+<p><span class="math display">\[
+\begin{align*}
+x_1 &amp;= 0.4257862 \quad |h(x_1)| = 2.878898\\
+x_2 &amp;= 2.0704646 \quad |h(x_2)| = 6.035382\\
+x_3 &amp;= 4.2537492 \quad |h(x_3)| = 12.949453
+\end{align*}
+\]</span></p>
+<p>Por lo tanto, el valor máximo de <span
+class="math inline">\(|h(x)|\)</span> en el intervalo <span
+class="math inline">\([0,5]\)</span> es <span
+class="math inline">\(12.949453\)</span>.</p>
+<p>Por lo tanto, el valor máximo de <span
+class="math inline">\(|E(x)|\)</span> en el intervalo <span
+class="math inline">\([0,5]\)</span> es <span
+class="math inline">\(\dfrac{\pi^3(8+5\pi)}{384} \cdot 12.949453 \approx
+24.7892891.\)</span>.</p>
+<p>La cota del error obtenida es una cota “teórica”. Si se representa el
+valor absoluto del error exacto: <span class="math inline">\(|E(x)| =
+|f(x) − P_3(x)|\)</span> se obtiene la siguiente figura:</p>
+<p><img src="unidad04_files/figure-html/unnamed-chunk-6-7.png" width="960" /></p>
+<p>Si se hubiese acotado la derivada <span
+class="math inline">\(f^{(4)}(x)\)</span> hallando el valor máximo
+dentro del intervalo <span class="math inline">\([0,5]\)</span> se
+hubiese obtenido una cota más fina.</p>
+</div>
+<p><strong>Desventajas del método de Lagrange</strong></p>
+<ul>
+<li><p>El polinomio no viene expandido.</p></li>
+<li><p>La interpolación para otro valor de <span
+class="math inline">\(x\)</span> necesita la misma cantidad de cálculos
+adicionales, ya que no se pueden utilizar partes de la aplicación
+previa.</p></li>
+<li><p>La incorporación de un nuevo nodo obliga a rehacer todos los
+cálculos.</p></li>
+<li><p>La evaluación del error no es fácil.</p></li>
+</ul>
+</div>
+</div>
+<div id="interpolación-iterada" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Interpolación
+Iterada</h2>
+<ul>
+<li><p>A veces no es necesario obtener la forma explícita del polinomio
+interpolador y basta con obtener su valor numérico en un punto
+dado.</p></li>
+<li><p>Además en este caso se desea poder aumentar el orden del
+polinomio interpolador a voluntad y parar cuando el error sea
+suficientemente pequeño.</p></li>
+<li><p>Para estos propósitos la interpolación iterada está especialmente
+indicada.</p></li>
+</ul>
+<div class="caja-lema">
+<p><strong>Definición</strong>.</p>
+<p>Sea <span class="math inline">\(f\)</span> una funcíon definida en
+<span class="math inline">\(x_0, \ldots, x_n\)</span> y supongamos <span
+class="math inline">\(m_0, \ldots, m_k\)</span> sean <span
+class="math inline">\(k + 1\)</span> enteros distintos con <span
+class="math inline">\(0 \leq m_i \leq n\)</span> para cada <span
+class="math inline">\(i = 0, \ldots, k\)</span>. El polinomio de
+Lagrange de grado menor o igual a <span class="math inline">\(k\)</span>
+que coincide con <span class="math inline">\(f\)</span> en <span
+class="math inline">\(x_{m_0}, \ldots, x_{m_k}\)</span> se denota <span
+class="math inline">\(P_{m_0,\ldots,m_k}\)</span>.</p>
+</div>
+<div id="ejemplo-5." class="section level4 caja-ejemplo"
+number="2.2.0.1">
+<h4><span class="header-section-number">2.2.0.1</span> Ejemplo 5.</h4>
+<p>Sea <span class="math inline">\(f(x) = x^3\)</span>, <span
+class="math inline">\(x_0 = 1\)</span>, <span class="math inline">\(x_1
+= 2\)</span>, <span class="math inline">\(x_2 = 3\)</span>, <span
+class="math inline">\(x_3 = 4\)</span>, <span class="math inline">\(x_4
+= 6\)</span>, calcule <span class="math inline">\(P_{0,3,4}(x)\)</span>
+y <span class="math inline">\(P_{1,2,4}(x)\)</span>.</p>
+<p><span class="math display">\[\begin{align*}
+P_{0,3,4}(x) &amp;= L_0(x)f(x_0)+L_3(x)f(x_3)+L_4(x)f(x_4)\\
+&amp; =\dfrac{(x-4)(x-6)}{(1-4)(1-6)}\cdot
+1^3+\dfrac{(x-1)(x-6)}{(4-1)(4-6)}\cdot
+4^3+\dfrac{(x-1)(x-4)}{(6-1)(6-4)}\cdot 6^3\\
+&amp; = 11x^2-34x+24
+\end{align*}\]</span></p>
+<p><span class="math display">\[\begin{align*}
+P_{1,2,4}(x) &amp;= L_1(x)f(x_1)+L_2(x)f(x_2)+L_4(x)f(x_4)\\
+&amp; =\dfrac{(x-3)(x-6)}{(2-3)(2-6)}\cdot
+2^3+\dfrac{(x-2)(x-6)}{(3-2)(3-6)}\cdot
+3^3+\dfrac{(x-2)(x-3)}{(6-2)(6-3)}\cdot 6^3\\
+&amp; = 10x^2-27x+18
+\end{align*}\]</span></p>
+</div>
 <hr />
-<p><small>Última revisión: 22 de noviembre, 2025</small></p>
+<p><small>Última revisión: 23 de noviembre, 2025</small></p>
+</div>
 </div>
 
 
