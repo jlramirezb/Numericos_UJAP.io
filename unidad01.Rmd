@@ -631,14 +631,14 @@ En el siguiente enlace  `Ejercicios_Unidad1` encontrará una lista de ejercicios
 
 Descargue el PDF de esta guía de ejercicios aqui:
 
-[Descargar Guía PDF](Ejercicios_Unidad1.pdf)
+[Descargar Guía PDF](Ejercicios_UnidadI.pdf)
 
 ## Evaluación Práctica
 En el siguiente enlace `Evaluacion1` encontrará la primera evaluación práctica computacional.
 
 Descargue el PDF de esta evaluación aqui:
 
-[Descargar Evaluación PDF](Evaluacion1.pdf)
+[Descargar Evaluación PDF](../docs/Evaluacion1.pdf)
 
 ------------------------------------------------------------------------
 
