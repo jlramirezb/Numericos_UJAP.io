@@ -1718,7 +1718,7 @@ En el siguiente enlace  `Ejercicios_Unidad3` encontrará una lista de ejercicios
 
 Descargue el PDF de esta guía de ejercicios aqui:
 
-[Descargar Guía PDF](Ejercicios_Unidad3.pdf)
+[Descargar Guía PDF](Ejercicios_UnidadIII.pdf)
 
 
 ------------------------------------------------------------------------

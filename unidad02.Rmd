@@ -2210,7 +2210,7 @@ En el siguiente enlace  `Ejercicios_Unidad2` encontrará una lista de ejercicios
 
 Descargue el PDF de esta guía de ejercicios aqui:
 
-[Descargar Guía PDF](Ejercicios_Unidad2.pdf)
+[Descargar Guía PDF](Ejercicios_UnidadII.pdf)
 
 ------------------------------------------------------------------------
   
