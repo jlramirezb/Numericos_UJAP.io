@@ -54,7 +54,7 @@ En esta sección encontrarás un enlace directo a las distintas unidades que cub
 | **Unidad 1** | Teoría de Errores | [Ir a Unidad 1](unidad01.html) |
 | **Unidad 2** | Algebra Lineal Numèrica | [Ir a Unidad 2](unidad02.html) |
 | **Unidad 3** | Soluciòn de Ecuaciones no Lineales | [Ir a Unidad 3](unidad03.html) |
-| **Unidad 4** | Ajuste de curvas | [Ir a Unidad 4](modulos/modulo_04.html) |
+| **Unidad 4** | Ajuste de curvas | [Ir a Unidad 4](unidad04.html) |
 | **Unidad 5** | Diferenciación e Integración Numérica | [Ir a Unidad 5](modulos/modulo_05.html) |
 | **Unidad 6** | Soluciòn de Ecuaciones Diferenciales Ordinarias | [Ir a Unidad 6](modulos/modulo_06.html) |
 
