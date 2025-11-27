@@ -698,6 +698,487 @@ P_{1,2,4}(x) &= L_1(x)f(x_1)+L_2(x)f(x_2)+L_4(x)f(x_4)\\
 \end{align*}
 ::: 
 
+::: caja-lema
+**Teorema**.
+
+Sea $f$ definida en $x_0, \ldots, x_k$, $k+1$ puntos distintos y sea $x_i,\, x_j$ dos números distinto en este conjunto. Entonces el Polinomio de Interpolación de Lagrange de grado menor o igual a $k$ que interpola a $f$ en $x_0, \ldots, x_k$ puede escribirse como:
+
+::: recuadro-gris
+$$
+P(x) = \dfrac{(x-x_i)P_{0,\ldots,i-1,i+1,\ldots,k}(x)-(x-x_j)P_{0,\ldots,j-1,j+1,\ldots,k}(x)}{(x_j-x_i)}
+$$
+:::
+
+:::
+
+
+### Método de Neville
+
+* El método de Neville es un método iterativo que permite calcular el valor de un polinomio de interpolación de Lagrange en un punto dado.
+
+* El método de Neville nos permite hallar los distintos polinomios de interpolación de forma recursiva.
+
+* Los polinomios interpoladores de Lagrange de grado 0 serían:
+
+::: recuadro-gris
+$$
+P_i = f(x_i) \quad i = 0, \ldots, n
+$$
+:::
+
+* El teorema anterior nos da los polinomios interpoladores de Lagrange de grado 1:
+
+::: recuadro-gris
+$$
+P_{i,i+1} = \dfrac{(x-x_i)P_{i+1}-(x-x_{i+1})P_{i}}{(x_{i+1}-x_i)}, \quad \forall i=0,\ldots,n-1
+$$
+:::
+
+* Usando la misma técnica podemos obtener los polinomios interpoladores de Lagrange de grado 2:
+
+::: recuadro-gris
+$$
+P_{i,i+1,i+2} = \dfrac{(x-x_i)P_{i+1,i+2}-(x-x_{i+2})P_{i,i+1}}{(x_{i+2}-x_i)}, \quad \forall i=0,\ldots,n-2
+$$
+:::
+
+* Y así sucesivamente hasta obtener el polinomio interpolador de grado $n$.
+
+* Los polinomios generados anteriormente se pueden escribir en forma de tabla de la siguiente manera:
+
+```{r tabla-diferencias, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+
+# 1. Creamos los datos con notación matemática de LaTeX ($...$)
+# Esto funciona tanto en HTML (gracias a MathJax) como en PDF.
+datos <- data.frame(
+  xi = c("$x_0$", "$x_1$", "$x_2$", "$x_3$", "$\\vdots$"),
+  Pi = c("$P_0$", "$P_1$", "$P_2$", "$P_3$", "$\\vdots$"),
+  Pi_1 = c("", "$P_{0,1}$", "$P_{1,2}$", "$P_{2,3}$", "$\\vdots$"),
+  Pi_2 = c("", "", "$P_{0,1,2}$", "$P_{1,2,3}$", "$\\vdots$"),
+  Pi_3 = c("", "", "", "$P_{0,1,2,3}$", "$\\vdots$"),
+  Dots = c("", "", "", "$\\cdots$", "$\\vdots$")
+)
+
+# 2. Generamos la tabla con kable y kableExtra
+kbl(datos, 
+    col.names = c("$x_i$", "$P_i$", "$P_{i-1,i}$", "$P_{i-2,i-1,i}$", "$P_{i-3,i-2,i-1,i}$", "$\\cdots$"),
+    align = "c", 
+    escape = FALSE) %>% # escape = FALSE es vital para que lea los símbolos $
+  kable_styling(bootstrap_options = c("striped", "hover"), 
+                latex_options = c("striped", "hold_position"),
+                full_width = FALSE) %>%
+  # 3. Estilizamos el encabezado (Azul con texto blanco)
+  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+  # 4. Estilizamos la columna de xi para que se destaque un poco (opcional)
+  column_spec(1, bold = TRUE, border_right = TRUE)
+
+```
+
+**Notación**: Se denota por $Q_{i,j}$ el polinomio interpolante de Lagrange de grado $j$ que pasa
+por los $j + 1$ nodos siguientes $x_{i-j},x_{i-j+1},\ldots,x_{i}$, es decir 
+$$
+Q_{i,j}=P_{i-j,i-j+1,\ldots,i}(x)
+$$
+
+Usando el método de Neville
+
+::: recuadro-gris
+\begin{align*}
+Q_{i,j} & = \dfrac{(x-x_i)P_{i-j,i-j+1,\ldots,i-1}-(x-x_{i-j})P_{i-j+1,\ldots,i}}{(x_{i-j}-x_i)}\\
+& = \dfrac{(x-x_{i-j})P_{i-j+1,i-j+1,\ldots,i}-(x-x_{i})P_{i-j,\ldots,i-1}}{(x_{i}-x_{i-j})}\\
+& = \dfrac{(x-x_{i-j})Q_{i,j-1}-(x-x_{i})Q_{i-1,j-1}}{(x_{i}-x_{i-j})}
+\end{align*}
+:::
+
+Con esta nueva notación se puede obtener el valor del polinomio interpolador de Lagrange en un punto $x$ de la siguiente manera:
+
+```{r tabla_Q, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+datos_Q <- data.frame(
+  xi = c("$x_0$", "$x_1$", "$x_2$", "$x_3$", "$\\vdots$"),
+  Q_0 = c("$Q_{0,0}$", "$Q_{1,0}$", "$Q_{2,0}$", "$Q_{3,0}$", "$\\vdots$"),
+  Q_1 = c("", "$Q_{1,1}$", "$Q_{2,1}$", "$Q_{3,1}$", "$\\vdots$"),
+  Q_2 = c("", "", "$Q_{2,2}$", "$Q_{3,2}$", "$\\vdots$"),
+  Q_3 = c("", "", "", "$Q_{3,3}$", "$\\vdots$"),
+  Dots = c("", "", "", "$\\cdots$", "$\\vdots$")
+)
+
+kbl(datos_Q,
+    col.names = c("$x_i$", "$Q_{i,0}$", "$Q_{i,1}$", "$Q_{i,2}$", "$Q_{i,3}$", "$\\cdots$"),
+    align = "c",
+    escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                latex_options = c("striped", "hold_position"),
+                full_width = FALSE) %>%
+  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, border_right = TRUE)
+```
+
+::: cuadro-alg
+**FUNCIÓN Neville(x, y, x_eval)**
+
+    # Entrada:
+    # x: Vector de nodos de interpolación [x0, x1, ..., xn].
+    # y: Vector de valores de la función [y0, y1, ..., yn] correspondientes a los nodos.
+    # x_eval: El punto en el que se desea evaluar el polinomio interpolador.
+
+    # Salida:
+    # El valor del polinomio interpolador en x_eval.
+
+    **Pasos**:
+
+    # Establecer n <- length(x).
+    # Para i <- 0, 1, ..., n:
+        *   Q[i,0] <- y[i].
+    # Para k <- 1, 2, ..., n:
+        *   Para i <- k, k+1, ..., n:
+            *   frac <- 1/(x[i] - x[i-k])
+            *   Q[i,k] <- ((x_eval - x[i-k])*Q[i,k-1] - (x_eval - x[i])*Q[i-1,k-1])*frac
+    # El resultado es Q[n,n].
+:::
+
+::: caja-ejemplo
+#### Ejemplo 6
+Sean los nodos $(0,0)$, $(1,1)$, $(3,-3)$ y $(5,5)$. Se quiere hallar el valos $P_n(2)$, usando el método de Neville.
+
+La tabla de Neville es la siguiente:
+
+```{r tabla_Neville, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+datos_Neville <- data.frame(
+  xi = c("$x_0=0$", "$x_1=1$", "$x_2=3$", "$x_3=5$"),
+  Qi0 = c("$Q_{0,0}=0$", "$Q_{1,0}=1$", "$Q_{2,0}=-3$", "$Q_{3,0}=5$"),
+  Qi1 = c("", "", "", ""),
+  Qi2 = c("", "", "", ""),
+  Qi3 = c("", "", "", "")
+)
+
+kbl(datos_Neville,
+    col.names = c("$x_i$", "$Q_{i,0}$", "$Q_{i,1}$", "$Q_{i,2}$", "$Q_{i,3}$"),
+    align = "c", escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                latex_options = c("striped", "hold_position"),
+                full_width = FALSE) %>%
+  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, border_right = TRUE)
+```
+Calcular $Q_{1,1}$:
+$$
+Q_{1,1}=\dfrac{(2-0)Q_{1,0}-(2-1)Q_{0,0}}{1-0}=\dfrac{2\cdot 1-1\cdot0}{1}=2
+$$
+Calcular $Q_{2,1}$:
+$$
+Q_{2,1}=\dfrac{(2-1)Q_{2,0}-(2-3)Q_{1,0}}{3-1}=\dfrac{1\cdot(-3)-(-1)\cdot1}{2}=-1
+$$
+Calcular $Q_{3,1}$:
+$$
+Q_{3,1}=\dfrac{(2-3)Q_{3,0}-(2-5)Q_{2,0}}{5-3}=\dfrac{(-1)\cdot5-(-3)\cdot(-3)}{2}=-7
+$$
+Calcular $Q_{2,2}$:
+$$
+Q_{2,2}=\dfrac{(2-0)Q_{2,1}-(2-3)Q_{1,1}}{3-0}=\dfrac{2\cdot(-1)-(-1)\cdot2}{3}=0
+$$
+Calcular $Q_{3,2}$:
+$$
+Q_{3,2}=\dfrac{(2-1)Q_{3,1}-(2-5)Q_{2,1}}{5-1}=\dfrac{1\cdot(-7)-(-3)\cdot(-1)}{4}=-2.5
+$$
+Calcular $Q_{3,3}$:
+$$
+Q_{3,3}=\dfrac{(2-0)Q_{3,2}-(2-0)Q_{2,2}}{5-0}=\dfrac{2\cdot(-2.5)-2\cdot0}{5}=-1
+$$
+
+La tabla de Neville es la siguiente:
+
+```{r tabla_Neville2, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+datos_Neville2 <- data.frame(
+  xi = c("$x_0=0$", "$x_1=1$", "$x_2=3$", "$x_3=5$"),
+  Qi0 = c("$0$", "$1$", "$-3$", "$5$"),
+  Qi1 = c("", "$2$", "$-1$", "$-7$"),
+  Qi2 = c("", "", "$0$", "$-2.5$"),
+  Qi3 = c("", "", "", "$-1$")
+)
+
+kbl(datos_Neville2,
+    col.names = c("$x_i$", "$Q_{i,0}$", "$Q_{i,1}$", "$Q_{i,2}$", "$Q_{i,3}$"),
+    align = "c", escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                latex_options = c("striped", "hold_position"),
+                full_width = FALSE) %>%
+  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, border_right = TRUE)
+```
+
+El valor del polinomio interpolador de Lagrange en el punto $x=2$ es $Q_{3,3}=-1$.
+
+Imaginemos que se añade un nuevo punto a interpolar, digamos el $(6,0)$ y se quiere hallar el valor del nuevo polinomio interpolador en $x=2$ en los puntos anteriores y $(6,0)$.
+
+Para hallar dicho valor podemos aprovechar la tabla anterior. Sólo tenemos que calcular una nueva fila para hallar el valor del polinomio interpolador en $x=2$:
+
+Calcular $Q_{4,1}$:
+$$
+Q_{4,1}=\dfrac{(2-5)Q_{3,0}-(2-6)Q_{4,0}}{6-5}=\dfrac{-3\cdot0-(-4)\cdot5}{1}=20
+$$
+Calcular $Q_{4,2}$:
+$$
+Q_{4,2}=\dfrac{(2-3)Q_{4,1}-(2-6)Q_{3,1}}{6-3}=\dfrac{-1\cdot20-(-4)\cdot(-7)}{3}=-16
+$$
+Calcular $Q_{4,3}$:
+$$
+Q_{4,3}=\dfrac{(2-1)Q_{4,2}-(2-6)Q_{3,2}}{6-1}=\dfrac{1\cdot(-16)-(-4)\cdot(-2.5)}{5}=-5.2
+$$
+Calcular $Q_{4,4}$:
+$$
+Q_{4,4}=\dfrac{(2-0)Q_{4,3}-(2-6)Q_{3,3}}{6-0}=\dfrac{2\cdot(-5.2)-(-4)\cdot(-1)}{6}=-2.4
+$$
+La tabla de Neville es la siguiente:
+
+```{r tabla_Neville3, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+datos_Neville3 <- data.frame(
+  xi = c("$x_0=0$", "$x_1=1$", "$x_2=3$", "$x_3=5$", "$x_4=6$"),
+  Qi0 = c("$0$", "$1$", "$-3$", "$5$", "$0$"),
+  Qi1 = c("", "$2$", "$-1$", "$-7$", "$20$"),
+  Qi2 = c("", "", "$0$", "$-2.5$", "$-16$"),
+  Qi3 = c("", "", "", "$-1$", "$-5.2$"),
+  Qi4 = c("", "", "", "", "$-2.4$")
+)
+
+kbl(datos_Neville3,
+    col.names = c("$x_i$", "$Q_{i,0}$", "$Q_{i,1}$", "$Q_{i,2}$", "$Q_{i,3}$", "$Q_{i,4}$"),
+    align = "c", escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                latex_options = c("striped", "hold_position"),
+                full_width = FALSE) %>%
+  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, border_right = TRUE)
+```
+:::
+
+### Método de Interpolación Iterada Inversa
+
+* Sea $f \in C^1[a, b]$ con $f'(x) \neq 0$ en $[a, b]$ y que $f$ posee un cero $p$ en $[a, b]$.
+
+* Sea $x_0, \ldots, x_n$ $n + 1$ números distintos en $[a, b]$ con $f(x_k) = y_k$ para cada $k = 0, \ldots, n$.
+
+* Si se quiere aproximar $p$, se construye el polinomio interpolante de grado $n$ en los nodos $y_0, \ldots, y_n$ para $f^{-1}$.
+
+* Puesto que $y_k = f(x_k)$ y $0 = f(p)$, se deduce que $f^{-1}(y_k) = x_k$ y $p = f^{-1}(0)$.
+
+* Se da el nombre de interpolación iterada inversa al uso de la interpolación para aproximar $f^{-1}(0)$.
+
+## Fórmula de Newton del Polinomio de Interpolación
+
+* En ocasiones es útil considerar varios polinomios aproximantes $P_1(x),\, P_2(x),\, \ldots,\, P_n(x)$ y, después, elegir el más adecuado a las necesidades.
+
+* Uno de los inconvenientes de los polinomios interpoladores de Lagrange es que no hay relación entre la construcción de $P_{n-1}(x)$ y la de $P_n(x)$; cada polinomio debe construirse individualmente y se requieren muchas operaciones para calcular polinomios de grado elevado.
+
+* Dados $n + 1$ puntos $(x_0, y_0),\, (x_1, y_1),\, \ldots,\, (x_n, y_n)$ con $x_0, x_1, \ldots, x_n$ números distintos y $y_k = f(x_k)$, $k = 0, 1, \ldots, n$ para alguna funcíon $f$ definida en un intervalo $[a, b]$ que contiene a los nodos.
+
+* El polinomio $P(x)$ de grado menor o igual a $n$ que interpola a $f$ en los datos dados, puede expresarse en la forma:
+
+::: recuadro-gris
+\begin{align*}
+P_n(x) = & a_0 + a_1(x - x_0) + a_2(x - x_0)(x - x_1) + \cdots + a_n(x - x_0)(x - x_1) \cdots (x - x_{n-1})\\
+\end{align*}
+
+es decir:
+
+$$
+P_n(x) = a_0 + \sum_{j=1}^{n} a_j \prod_{k=0}^{j-1} (x - x_k)
+$$
+para ciertas constantes $a_0, a_1, \ldots, a_n$.
+:::
+
+Cálculo de los coeficientes $a_0, a_1, \ldots, a_n$.
+
+* Se puede observar que cada coeficiente $a_k$ es el coeficiente principal del polinomio $P_k(x)$ que interpola a $f$ en los puntos $x_0, x_1, \ldots, x_k$.
+
+* Además este coeficiente depende de los puntos y valores de $f(x)$ en estos puntos
+
+::: recuadro-gris
+\begin{align*}
+f(x_0) = & P_0(x_0) = a_0\\
+f(x_1) = &P_1(x_1) = f(x_0) + a_1(x_1 − x_0)\\
+\Rightarrow a_1 = &\dfrac{f(x_1) - f(x_0)}{x_1 - x_0}\\
+f(x_2) = &P_2(x_2) = f(x_0) + a_1(x_2 − x_0) + a_2(x_2 − x_1)\\
+\Rightarrow a_2 = &\dfrac{\frac{f(x_2) - f(x_1)}{x_2 - x_1} - \frac{f(x_1) - f(x_0)}{x_1 - x_0}}{x_2 - x_0}
+\end{align*}
+El numerador es una diferencia de cocientes de diferencias, a cada uno de estos cocientes, se les llama diferencias divididas
+:::
+
+::: caja-lema
+**Definición:**
+
+Dados $n + 1$ puntos $(x_0; f(x_0));\, (x_1; f(x_1));\, \ldots;\, (x_n; f(x_n))$ con $x_0; x_1; \ldots; x_n$ números distintos y $f$ alguna función definida sobre el intervalo $[x_0, x_n]$, se define:
+
+* La diferencia dividida cero de $f$ con respecto a $x_k$ es:
+
+::: recuadro-gris
+$$
+f[x_k] = f(x_k); \forall k = 0; 1; \ldots; n
+$$
+:::
+
+Por lo que en el polinomio interpolante se tiene que $a_0 = f[x_0]$.
+
+* La diferencia dividida uno de $f$ respecto a $x_k$ y $x_{k+1}$ es:
+
+::: recuadro-gris
+$$
+f[x_k, x_{k+1}] = \dfrac{f[x_{k+1}] - f[x_k]}{x_{k+1} - x_k}; \forall k = 0; 1; \ldots; n-1
+$$
+:::
+
+Por lo tanto en el polinomio interpolante se tiene que $a_1 = f[x_0; x_1] = \dfrac{f[x_1] − f[x_0]}{x_1 − x_0}$
+
+* La diferencia dividida dos de $f$ respecto a $x_k$, $x_{k+1}$ y $x_{k+2}$ es:
+
+::: recuadro-gris
+$$
+f[x_k, x_{k+1}, x_{k+2}] = \dfrac{f[x_{k+1}, x_{k+2}] - f[x_k, x_{k+1}]}{x_{k+2} - x_k}; \forall k = 0; 1; \ldots; n-2
+$$
+:::
+
+Por lo tanto en el polinomio interpolante se tiene que $a_2 = f[x_0; x_1; x_2] = \dfrac{f[x_1, x_2] − f[x_0, x_1]}{x_2 − x_0}$
+
+* En general, la diferencia dividida $i$ de $f$ respecto a $x_k$, $x_{k+1}$, $\ldots$, $x_{k+i}$ es:
+
+::: recuadro-gris
+$$
+f[x_k, x_{k+1}, \ldots, x_{k+i}] = \dfrac{f[x_{k+1}, x_{k+2}, \ldots, x_{k+i}] - f[x_k, x_{k+1}, \ldots, x_{k+i-1}]}{x_{k+i} - x_k}; \forall k = 0; 1; \ldots; n-i
+$$
+:::
+
+Por lo tanto en el polinomio interpolante se tiene que $a_k = f[x_0; x_1; \ldots; x_k] = \dfrac{f[x_1, x_2, \ldots, x_k] − f[x_0, x_1, \ldots, x_{k-1}]}{x_k − x_0}$
+
+:::
+
+El polinomio interpolador $P_n(x)$ de la función $f$ en los nodos $x_0, x_1, \ldots, x_n$ se puede expresar en función de las diferencias divididas:
+
+::: recuadro-gris
+\begin{align*}
+P_n(x) = & f[x_0] + f[x_0, x_1](x - x_0)\\
+& + f[x_0, x_1, x_2](x - x_0)(x - x_1) + \cdots \\
+& + f[x_0, x_1, \ldots, x_n](x - x_0)(x - x_1) \cdots (x - x_{n-1})
+\end{align*}
+
+Y se conoce como Fórmula Progresiva de Newton del Polinomio de Interpolación.
+:::
+
+El polinomio interpolador también puede escribirse como:
+
+::: recuadro-gris
+\begin{align*}
+P_n(x) = & f[x_n] + f[x_n, x_{n-1}](x - x_n)\\
+& + f[x_n, x_{n-1}, x_{n-2}](x - x_n)(x - x_{n-1}) + \cdots\\
+& + f[x_n, x_{n-1}, \ldots, x_0](x - x_n)(x - x_{n-1}) \cdots (x - x_1)
+\end{align*}
+
+Y se conoce como Fórmula Regresiva de Newton del Polinomio de Interpolación.
+:::
+
+Para el cálculo de las diferencias divididas se puede usar la siguiente tabla:
+
+```{r tabla_diferencias_divididas, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+datos_diferencias_divididas <- data.frame(
+  xi = c("$x_0$", "$x_1$", "$x_2$", "$\\vdots$", "$x_n$"),
+  Qi0 = c("$f[x_0]$", "$f[x_1]$", "$f[x_2]$", "$\\vdots$", "$f[x_n]$"),
+  Qi1 = c("", "$f[x_0, x_1]$", "$f[x_1, x_2]$", "$\\vdots$", "$f[x_{n-1}, x_n]$"),
+  Qi2 = c("", "", "$f[x_0, x_1, x_2]$", "$\\vdots$", "$f[x_{n-2}, x_{n-1}, x_n]$"),
+  dots = c("", "", "", "$\\ddots$", "$\\cdots$"),
+  Qin = c("", "", "", "", "$f[x_0, x_1, \\ldots, x_n]$")
+)
+
+kbl(datos_diferencias_divididas,
+    col.names = c("$x_i$", "$DD_{0}$", "$DD_{1}$", "$DD_{2}$", "$\\cdots$", "$DD_{n}$"),
+    align = "c", escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"),
+                latex_options = c("striped", "hold_position"),
+                full_width = FALSE) %>%
+  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, border_right = TRUE)
+```
+
+```{python, echo=FALSE, message=FALSE, warning=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Función para calcular las diferencias divididas
+def diferencias_divididas(x, y):
+    n = len(y)
+    # dd almacenará las diferencias divididas en su diagonal
+    dd = np.zeros((n, n))
+    dd[:, 0] = y
+
+    for j in range(1, n):
+        for i in range(n - j):
+            dd[i, j] = (dd[i+1, j-1] - dd[i, j-1]) / (x[i+j] - x[i])
+    
+    # Los coeficientes a_k son los elementos de la primera fila de la tabla dd
+    return dd[0, :]
+
+# Función para evaluar el polinomio interpolante de Newton
+def evaluar_newton_polinomio(x_data, coeffs, x_eval):
+    n = len(coeffs)
+    polinomio = coeffs[0]
+    for i in range(1, n):
+        term = coeffs[i]
+        for j in range(i):
+            term *= (x_eval - x_data[j])
+        polinomio += term
+    return polinomio
+
+# Función para evaluar el polinomio de Newton hasta un cierto grado para visualización
+def evaluar_newton_polinomio_grado(x_data, coeffs, x_eval, grado):
+    if isinstance(x_eval, np.ndarray):
+        polinomio = np.full_like(x_eval, coeffs[0])
+    else:
+        polinomio = coeffs[0]
+        
+    for i in range(1, grado + 1):
+        term = coeffs[i]
+        for j in range(i):
+            term *= (x_eval - x_data[j])
+        polinomio += term
+    return polinomio
+
+# Datos de ejemplo
+x_puntos = np.array([0, 1, 2, 3, 4])
+y_puntos = np.array([1, 3, 2, 4, 5])
+
+# Calcular los coeficientes de las diferencias divididas
+coeficientes = diferencias_divididas(x_puntos, y_puntos)
+
+# Rango para graficar el polinomio
+x_rango = np.linspace(min(x_puntos) - 0.5, max(x_puntos) + 0.5, 200)
+
+plt.figure(figsize=(10, 7))
+plt.scatter(x_puntos, y_puntos, color='red', zorder=5, label='Puntos de interpolación')
+
+# Graficar la construcción paso a paso del polinomio
+for i in range(len(x_puntos)):
+    # Evaluar el polinomio hasta el grado i
+    y_polinomio_parcial = evaluar_newton_polinomio_grado(x_puntos, coeficientes, x_rango, i)
+    plt.plot(x_rango, y_polinomio_parcial, linestyle='--', alpha=0.7, 
+             label=f'P{i}(x) (grado {i})')
+
+plt.title('Construcción Gráfica del Polinomio Interpolante de Newton')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True)
+plt.ylim(min(y_puntos) - 1, max(y_puntos) + 1)
+plt.show()
+```
 
 ------------------------------------------------------------------------
   

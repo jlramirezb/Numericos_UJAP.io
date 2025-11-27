@@ -1018,8 +1018,1001 @@ P_{1,2,4}(x) &amp;= L_1(x)f(x_1)+L_2(x)f(x_2)+L_4(x)f(x_4)\\
 &amp; = 10x^2-27x+18
 \end{align*}\]</span></p>
 </div>
+<div class="caja-lema">
+<p><strong>Teorema</strong>.</p>
+<p>Sea <span class="math inline">\(f\)</span> definida en <span
+class="math inline">\(x_0, \ldots, x_k\)</span>, <span
+class="math inline">\(k+1\)</span> puntos distintos y sea <span
+class="math inline">\(x_i,\, x_j\)</span> dos números distinto en este
+conjunto. Entonces el Polinomio de Interpolación de Lagrange de grado
+menor o igual a <span class="math inline">\(k\)</span> que interpola a
+<span class="math inline">\(f\)</span> en <span
+class="math inline">\(x_0, \ldots, x_k\)</span> puede escribirse
+como:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+P(x) =
+\dfrac{(x-x_i)P_{0,\ldots,i-1,i+1,\ldots,k}(x)-(x-x_j)P_{0,\ldots,j-1,j+1,\ldots,k}(x)}{(x_j-x_i)}
+\]</span></p>
+</div>
+</div>
+<div id="método-de-neville" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Método de
+Neville</h3>
+<ul>
+<li><p>El método de Neville es un método iterativo que permite calcular
+el valor de un polinomio de interpolación de Lagrange en un punto
+dado.</p></li>
+<li><p>El método de Neville nos permite hallar los distintos polinomios
+de interpolación de forma recursiva.</p></li>
+<li><p>Los polinomios interpoladores de Lagrange de grado 0
+serían:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+P_i = f(x_i) \quad i = 0, \ldots, n
+\]</span></p>
+</div>
+<ul>
+<li>El teorema anterior nos da los polinomios interpoladores de Lagrange
+de grado 1:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+P_{i,i+1} = \dfrac{(x-x_i)P_{i+1}-(x-x_{i+1})P_{i}}{(x_{i+1}-x_i)},
+\quad \forall i=0,\ldots,n-1
+\]</span></p>
+</div>
+<ul>
+<li>Usando la misma técnica podemos obtener los polinomios
+interpoladores de Lagrange de grado 2:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+P_{i,i+1,i+2} =
+\dfrac{(x-x_i)P_{i+1,i+2}-(x-x_{i+2})P_{i,i+1}}{(x_{i+2}-x_i)}, \quad
+\forall i=0,\ldots,n-2
+\]</span></p>
+</div>
+<ul>
+<li><p>Y así sucesivamente hasta obtener el polinomio interpolador de
+grado <span class="math inline">\(n\)</span>.</p></li>
+<li><p>Los polinomios generados anteriormente se pueden escribir en
+forma de tabla de la siguiente manera:</p></li>
+</ul>
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(x_i\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(P_i\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(P_{i-1,i}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(P_{i-2,i-1,i}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(P_{i-3,i-2,i-1,i}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(\cdots\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_0\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_{0,1}\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_2\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_2\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_{1,2}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_{0,1,2}\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_3\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_3\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_{2,3}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_{1,2,3}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(P_{0,1,2,3}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\cdots\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notación</strong>: Se denota por <span
+class="math inline">\(Q_{i,j}\)</span> el polinomio interpolante de
+Lagrange de grado <span class="math inline">\(j\)</span> que pasa por
+los <span class="math inline">\(j + 1\)</span> nodos siguientes <span
+class="math inline">\(x_{i-j},x_{i-j+1},\ldots,x_{i}\)</span>, es decir
+<span class="math display">\[
+Q_{i,j}=P_{i-j,i-j+1,\ldots,i}(x)
+\]</span></p>
+<p>Usando el método de Neville</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+Q_{i,j} &amp; =
+\dfrac{(x-x_i)P_{i-j,i-j+1,\ldots,i-1}-(x-x_{i-j})P_{i-j+1,\ldots,i}}{(x_{i-j}-x_i)}\\
+&amp; =
+\dfrac{(x-x_{i-j})P_{i-j+1,i-j+1,\ldots,i}-(x-x_{i})P_{i-j,\ldots,i-1}}{(x_{i}-x_{i-j})}\\
+&amp; =
+\dfrac{(x-x_{i-j})Q_{i,j-1}-(x-x_{i})Q_{i-1,j-1}}{(x_{i}-x_{i-j})}
+\end{align*}\]</span></p>
+</div>
+<p>Con esta nueva notación se puede obtener el valor del polinomio
+interpolador de Lagrange en un punto <span
+class="math inline">\(x\)</span> de la siguiente manera:</p>
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(x_i\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,0}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,1}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,2}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,3}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(\cdots\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{0,0}\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{1,0}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{1,1}\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_2\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{2,0}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{2,1}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{2,2}\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_3\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{3,0}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{3,1}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{3,2}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{3,3}\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\cdots\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="cuadro-alg">
+<p><strong>FUNCIÓN Neville(x, y, x_eval)</strong></p>
+<pre><code># Entrada:
+# x: Vector de nodos de interpolación [x0, x1, ..., xn].
+# y: Vector de valores de la función [y0, y1, ..., yn] correspondientes a los nodos.
+# x_eval: El punto en el que se desea evaluar el polinomio interpolador.
+
+# Salida:
+# El valor del polinomio interpolador en x_eval.
+
+**Pasos**:
+
+# Establecer n &lt;- length(x).
+# Para i &lt;- 0, 1, ..., n:
+    *   Q[i,0] &lt;- y[i].
+# Para k &lt;- 1, 2, ..., n:
+    *   Para i &lt;- k, k+1, ..., n:
+        *   frac &lt;- 1/(x[i] - x[i-k])
+        *   Q[i,k] &lt;- ((x_eval - x[i-k])*Q[i,k-1] - (x_eval - x[i])*Q[i-1,k-1])*frac
+# El resultado es Q[n,n].</code></pre>
+</div>
+<div id="ejemplo-6" class="section level4 caja-ejemplo"
+number="2.2.1.1">
+<h4><span class="header-section-number">2.2.1.1</span> Ejemplo 6</h4>
+<p>Sean los nodos <span class="math inline">\((0,0)\)</span>, <span
+class="math inline">\((1,1)\)</span>, <span
+class="math inline">\((3,-3)\)</span> y <span
+class="math inline">\((5,5)\)</span>. Se quiere hallar el valos <span
+class="math inline">\(P_n(2)\)</span>, usando el método de Neville.</p>
+<p>La tabla de Neville es la siguiente:</p>
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(x_i\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,0}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,1}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,2}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,3}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_0=0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{0,0}=0\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_1=1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{1,0}=1\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_2=3\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{2,0}=-3\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_3=5\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(Q_{3,0}=5\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+</tbody>
+</table>
+<p>Calcular <span class="math inline">\(Q_{1,1}\)</span>: <span
+class="math display">\[
+Q_{1,1}=\dfrac{(2-0)Q_{1,0}-(2-1)Q_{0,0}}{1-0}=\dfrac{2\cdot
+1-1\cdot0}{1}=2
+\]</span> Calcular <span class="math inline">\(Q_{2,1}\)</span>: <span
+class="math display">\[
+Q_{2,1}=\dfrac{(2-1)Q_{2,0}-(2-3)Q_{1,0}}{3-1}=\dfrac{1\cdot(-3)-(-1)\cdot1}{2}=-1
+\]</span> Calcular <span class="math inline">\(Q_{3,1}\)</span>: <span
+class="math display">\[
+Q_{3,1}=\dfrac{(2-3)Q_{3,0}-(2-5)Q_{2,0}}{5-3}=\dfrac{(-1)\cdot5-(-3)\cdot(-3)}{2}=-7
+\]</span> Calcular <span class="math inline">\(Q_{2,2}\)</span>: <span
+class="math display">\[
+Q_{2,2}=\dfrac{(2-0)Q_{2,1}-(2-3)Q_{1,1}}{3-0}=\dfrac{2\cdot(-1)-(-1)\cdot2}{3}=0
+\]</span> Calcular <span class="math inline">\(Q_{3,2}\)</span>: <span
+class="math display">\[
+Q_{3,2}=\dfrac{(2-1)Q_{3,1}-(2-5)Q_{2,1}}{5-1}=\dfrac{1\cdot(-7)-(-3)\cdot(-1)}{4}=-2.5
+\]</span> Calcular <span class="math inline">\(Q_{3,3}\)</span>: <span
+class="math display">\[
+Q_{3,3}=\dfrac{(2-0)Q_{3,2}-(2-0)Q_{2,2}}{5-0}=\dfrac{2\cdot(-2.5)-2\cdot0}{5}=-1
+\]</span></p>
+<p>La tabla de Neville es la siguiente:</p>
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(x_i\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,0}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,1}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,2}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,3}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_0=0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(0\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_1=1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(2\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_2=3\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-3\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(0\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_3=5\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(5\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-7\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-2.5\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-1\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<p>El valor del polinomio interpolador de Lagrange en el punto <span
+class="math inline">\(x=2\)</span> es <span
+class="math inline">\(Q_{3,3}=-1\)</span>.</p>
+<p>Imaginemos que se añade un nuevo punto a interpolar, digamos el <span
+class="math inline">\((6,0)\)</span> y se quiere hallar el valor del
+nuevo polinomio interpolador en <span class="math inline">\(x=2\)</span>
+en los puntos anteriores y <span
+class="math inline">\((6,0)\)</span>.</p>
+<p>Para hallar dicho valor podemos aprovechar la tabla anterior. Sólo
+tenemos que calcular una nueva fila para hallar el valor del polinomio
+interpolador en <span class="math inline">\(x=2\)</span>:</p>
+<p>Calcular <span class="math inline">\(Q_{4,1}\)</span>: <span
+class="math display">\[
+Q_{4,1}=\dfrac{(2-5)Q_{3,0}-(2-6)Q_{4,0}}{6-5}=\dfrac{-3\cdot0-(-4)\cdot5}{1}=20
+\]</span> Calcular <span class="math inline">\(Q_{4,2}\)</span>: <span
+class="math display">\[
+Q_{4,2}=\dfrac{(2-3)Q_{4,1}-(2-6)Q_{3,1}}{6-3}=\dfrac{-1\cdot20-(-4)\cdot(-7)}{3}=-16
+\]</span> Calcular <span class="math inline">\(Q_{4,3}\)</span>: <span
+class="math display">\[
+Q_{4,3}=\dfrac{(2-1)Q_{4,2}-(2-6)Q_{3,2}}{6-1}=\dfrac{1\cdot(-16)-(-4)\cdot(-2.5)}{5}=-5.2
+\]</span> Calcular <span class="math inline">\(Q_{4,4}\)</span>: <span
+class="math display">\[
+Q_{4,4}=\dfrac{(2-0)Q_{4,3}-(2-6)Q_{3,3}}{6-0}=\dfrac{2\cdot(-5.2)-(-4)\cdot(-1)}{6}=-2.4
+\]</span> La tabla de Neville es la siguiente:</p>
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(x_i\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,0}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,1}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,2}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,3}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(Q_{i,4}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_0=0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(0\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_1=1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(2\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_2=3\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-3\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(0\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_3=5\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(5\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-7\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-2.5\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-1\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_4=6\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(20\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-16\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-5.2\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(-2.4\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="método-de-interpolación-iterada-inversa" class="section level3"
+number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Método de
+Interpolación Iterada Inversa</h3>
+<ul>
+<li><p>Sea <span class="math inline">\(f \in C^1[a, b]\)</span> con
+<span class="math inline">\(f&#39;(x) \neq 0\)</span> en <span
+class="math inline">\([a, b]\)</span> y que <span
+class="math inline">\(f\)</span> posee un cero <span
+class="math inline">\(p\)</span> en <span class="math inline">\([a,
+b]\)</span>.</p></li>
+<li><p>Sea <span class="math inline">\(x_0, \ldots, x_n\)</span> <span
+class="math inline">\(n + 1\)</span> números distintos en <span
+class="math inline">\([a, b]\)</span> con <span
+class="math inline">\(f(x_k) = y_k\)</span> para cada <span
+class="math inline">\(k = 0, \ldots, n\)</span>.</p></li>
+<li><p>Si se quiere aproximar <span class="math inline">\(p\)</span>, se
+construye el polinomio interpolante de grado <span
+class="math inline">\(n\)</span> en los nodos <span
+class="math inline">\(y_0, \ldots, y_n\)</span> para <span
+class="math inline">\(f^{-1}\)</span>.</p></li>
+<li><p>Puesto que <span class="math inline">\(y_k = f(x_k)\)</span> y
+<span class="math inline">\(0 = f(p)\)</span>, se deduce que <span
+class="math inline">\(f^{-1}(y_k) = x_k\)</span> y <span
+class="math inline">\(p = f^{-1}(0)\)</span>.</p></li>
+<li><p>Se da el nombre de interpolación iterada inversa al uso de la
+interpolación para aproximar <span
+class="math inline">\(f^{-1}(0)\)</span>.</p></li>
+</ul>
+</div>
+</div>
+<div id="fórmula-de-newton-del-polinomio-de-interpolación"
+class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Fórmula de Newton del
+Polinomio de Interpolación</h2>
+<ul>
+<li><p>En ocasiones es útil considerar varios polinomios aproximantes
+<span class="math inline">\(P_1(x),\, P_2(x),\, \ldots,\,
+P_n(x)\)</span> y, después, elegir el más adecuado a las
+necesidades.</p></li>
+<li><p>Uno de los inconvenientes de los polinomios interpoladores de
+Lagrange es que no hay relación entre la construcción de <span
+class="math inline">\(P_{n-1}(x)\)</span> y la de <span
+class="math inline">\(P_n(x)\)</span>; cada polinomio debe construirse
+individualmente y se requieren muchas operaciones para calcular
+polinomios de grado elevado.</p></li>
+<li><p>Dados <span class="math inline">\(n + 1\)</span> puntos <span
+class="math inline">\((x_0, y_0),\, (x_1, y_1),\, \ldots,\, (x_n,
+y_n)\)</span> con <span class="math inline">\(x_0, x_1, \ldots,
+x_n\)</span> números distintos y <span class="math inline">\(y_k =
+f(x_k)\)</span>, <span class="math inline">\(k = 0, 1, \ldots,
+n\)</span> para alguna funcíon <span class="math inline">\(f\)</span>
+definida en un intervalo <span class="math inline">\([a, b]\)</span> que
+contiene a los nodos.</p></li>
+<li><p>El polinomio <span class="math inline">\(P(x)\)</span> de grado
+menor o igual a <span class="math inline">\(n\)</span> que interpola a
+<span class="math inline">\(f\)</span> en los datos dados, puede
+expresarse en la forma:</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+P_n(x) = &amp; a_0 + a_1(x - x_0) + a_2(x - x_0)(x - x_1) + \cdots +
+a_n(x - x_0)(x - x_1) \cdots (x - x_{n-1})\\
+\end{align*}\]</span></p>
+<p>es decir:</p>
+<p><span class="math display">\[
+P_n(x) = a_0 + \sum_{j=1}^{n} a_j \prod_{k=0}^{j-1} (x - x_k)
+\]</span> para ciertas constantes <span class="math inline">\(a_0, a_1,
+\ldots, a_n\)</span>.</p>
+</div>
+<p>Cálculo de los coeficientes <span class="math inline">\(a_0, a_1,
+\ldots, a_n\)</span>.</p>
+<ul>
+<li><p>Se puede observar que cada coeficiente <span
+class="math inline">\(a_k\)</span> es el coeficiente principal del
+polinomio <span class="math inline">\(P_k(x)\)</span> que interpola a
+<span class="math inline">\(f\)</span> en los puntos <span
+class="math inline">\(x_0, x_1, \ldots, x_k\)</span>.</p></li>
+<li><p>Además este coeficiente depende de los puntos y valores de <span
+class="math inline">\(f(x)\)</span> en estos puntos</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+f(x_0) = &amp; P_0(x_0) = a_0\\
+f(x_1) = &amp;P_1(x_1) = f(x_0) + a_1(x_1 − x_0)\\
+\Rightarrow a_1 = &amp;\dfrac{f(x_1) - f(x_0)}{x_1 - x_0}\\
+f(x_2) = &amp;P_2(x_2) = f(x_0) + a_1(x_2 − x_0) + a_2(x_2 − x_1)\\
+\Rightarrow a_2 = &amp;\dfrac{\frac{f(x_2) - f(x_1)}{x_2 - x_1} -
+\frac{f(x_1) - f(x_0)}{x_1 - x_0}}{x_2 - x_0}
+\end{align*}\]</span> El numerador es una diferencia de cocientes de
+diferencias, a cada uno de estos cocientes, se les llama diferencias
+divididas</p>
+</div>
+<div class="caja-lema">
+<p><strong>Definición:</strong></p>
+<p>Dados <span class="math inline">\(n + 1\)</span> puntos <span
+class="math inline">\((x_0; f(x_0));\, (x_1; f(x_1));\, \ldots;\, (x_n;
+f(x_n))\)</span> con <span class="math inline">\(x_0; x_1; \ldots;
+x_n\)</span> números distintos y <span class="math inline">\(f\)</span>
+alguna función definida sobre el intervalo <span
+class="math inline">\([x_0, x_n]\)</span>, se define:</p>
+<ul>
+<li>La diferencia dividida cero de <span
+class="math inline">\(f\)</span> con respecto a <span
+class="math inline">\(x_k\)</span> es:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+f[x_k] = f(x_k); \forall k = 0; 1; \ldots; n
+\]</span></p>
+</div>
+<p>Por lo que en el polinomio interpolante se tiene que <span
+class="math inline">\(a_0 = f[x_0]\)</span>.</p>
+<ul>
+<li>La diferencia dividida uno de <span class="math inline">\(f\)</span>
+respecto a <span class="math inline">\(x_k\)</span> y <span
+class="math inline">\(x_{k+1}\)</span> es:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+f[x_k, x_{k+1}] = \dfrac{f[x_{k+1}] - f[x_k]}{x_{k+1} - x_k}; \forall k
+= 0; 1; \ldots; n-1
+\]</span></p>
+</div>
+<p>Por lo tanto en el polinomio interpolante se tiene que <span
+class="math inline">\(a_1 = f[x_0; x_1] = \dfrac{f[x_1] − f[x_0]}{x_1 −
+x_0}\)</span></p>
+<ul>
+<li>La diferencia dividida dos de <span class="math inline">\(f\)</span>
+respecto a <span class="math inline">\(x_k\)</span>, <span
+class="math inline">\(x_{k+1}\)</span> y <span
+class="math inline">\(x_{k+2}\)</span> es:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+f[x_k, x_{k+1}, x_{k+2}] = \dfrac{f[x_{k+1}, x_{k+2}] - f[x_k,
+x_{k+1}]}{x_{k+2} - x_k}; \forall k = 0; 1; \ldots; n-2
+\]</span></p>
+</div>
+<p>Por lo tanto en el polinomio interpolante se tiene que <span
+class="math inline">\(a_2 = f[x_0; x_1; x_2] = \dfrac{f[x_1, x_2] −
+f[x_0, x_1]}{x_2 − x_0}\)</span></p>
+<ul>
+<li>En general, la diferencia dividida <span
+class="math inline">\(i\)</span> de <span
+class="math inline">\(f\)</span> respecto a <span
+class="math inline">\(x_k\)</span>, <span
+class="math inline">\(x_{k+1}\)</span>, <span
+class="math inline">\(\ldots\)</span>, <span
+class="math inline">\(x_{k+i}\)</span> es:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+f[x_k, x_{k+1}, \ldots, x_{k+i}] = \dfrac{f[x_{k+1}, x_{k+2}, \ldots,
+x_{k+i}] - f[x_k, x_{k+1}, \ldots, x_{k+i-1}]}{x_{k+i} - x_k}; \forall k
+= 0; 1; \ldots; n-i
+\]</span></p>
+</div>
+<p>Por lo tanto en el polinomio interpolante se tiene que <span
+class="math inline">\(a_k = f[x_0; x_1; \ldots; x_k] = \dfrac{f[x_1,
+x_2, \ldots, x_k] − f[x_0, x_1, \ldots, x_{k-1}]}{x_k −
+x_0}\)</span></p>
+</div>
+<p>El polinomio interpolador <span class="math inline">\(P_n(x)\)</span>
+de la función <span class="math inline">\(f\)</span> en los nodos <span
+class="math inline">\(x_0, x_1, \ldots, x_n\)</span> se puede expresar
+en función de las diferencias divididas:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+P_n(x) = &amp; f[x_0] + f[x_0, x_1](x - x_0)\\
+&amp; + f[x_0, x_1, x_2](x - x_0)(x - x_1) + \cdots \\
+&amp; + f[x_0, x_1, \ldots, x_n](x - x_0)(x - x_1) \cdots (x - x_{n-1})
+\end{align*}\]</span></p>
+<p>Y se conoce como Fórmula Progresiva de Newton del Polinomio de
+Interpolación.</p>
+</div>
+<p>El polinomio interpolador también puede escribirse como:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+P_n(x) = &amp; f[x_n] + f[x_n, x_{n-1}](x - x_n)\\
+&amp; + f[x_n, x_{n-1}, x_{n-2}](x - x_n)(x - x_{n-1}) + \cdots\\
+&amp; + f[x_n, x_{n-1}, \ldots, x_0](x - x_n)(x - x_{n-1}) \cdots (x -
+x_1)
+\end{align*}\]</span></p>
+<p>Y se conoce como Fórmula Regresiva de Newton del Polinomio de
+Interpolación.</p>
+</div>
+<p>Para el cálculo de las diferencias divididas se puede usar la
+siguiente tabla:</p>
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(x_i\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(DD_{0}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(DD_{1}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(DD_{2}\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(\cdots\)</span>
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(58, 134, 232, 255) !important;">
+<span class="math inline">\(DD_{n}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_0\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_0]\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_1\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_1]\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_0, x_1]\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_2\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_2]\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_1, x_2]\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_0, x_1, x_2]\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\vdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\ddots\)</span>
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;border-right:1px solid;">
+<span class="math inline">\(x_n\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_n]\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_{n-1}, x_n]\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_{n-2}, x_{n-1}, x_n]\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(\cdots\)</span>
+</td>
+<td style="text-align:center;">
+<span class="math inline">\(f[x_0, x_1, \ldots, x_n]\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<pre><code>## &lt;Figure size 1000x700 with 0 Axes&gt;</code></pre>
+<pre><code>## &lt;matplotlib.collections.PathCollection object at 0x000001C4CB5A9810&gt;</code></pre>
+<pre><code>## [&lt;matplotlib.lines.Line2D object at 0x000001C4CB583230&gt;]
+## [&lt;matplotlib.lines.Line2D object at 0x000001C4CB583380&gt;]
+## [&lt;matplotlib.lines.Line2D object at 0x000001C4CB5834D0&gt;]
+## [&lt;matplotlib.lines.Line2D object at 0x000001C4CB583620&gt;]
+## [&lt;matplotlib.lines.Line2D object at 0x000001C4CB583770&gt;]</code></pre>
+<pre><code>## Text(0.5, 1.0, &#39;Construcción Gráfica del Polinomio Interpolante de Newton&#39;)</code></pre>
+<pre><code>## Text(0.5, 0, &#39;x&#39;)</code></pre>
+<pre><code>## Text(0, 0.5, &#39;y&#39;)</code></pre>
+<pre><code>## &lt;matplotlib.legend.Legend object at 0x000001C4CB5830E0&gt;</code></pre>
+<pre><code>## (0.0, 6.0)</code></pre>
+<p><img src="unidad04_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
 <hr />
-<p><small>Última revisión: 23 de noviembre, 2025</small></p>
+<p><small>Última revisión: 26 de noviembre, 2025</small></p>
 </div>
 </div>
 
