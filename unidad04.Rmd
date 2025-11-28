@@ -1161,24 +1161,716 @@ coeficientes = diferencias_divididas(x_puntos, y_puntos)
 # Rango para graficar el polinomio
 x_rango = np.linspace(min(x_puntos) - 0.5, max(x_puntos) + 0.5, 200)
 
-plt.figure(figsize=(10, 7))
-plt.scatter(x_puntos, y_puntos, color='red', zorder=5, label='Puntos de interpolación')
+plt.figure(figsize=(10, 7));
+plt.scatter(x_puntos, y_puntos, color='red', zorder=5, label='Puntos de interpolación');
 
 # Graficar la construcción paso a paso del polinomio
 for i in range(len(x_puntos)):
     # Evaluar el polinomio hasta el grado i
     y_polinomio_parcial = evaluar_newton_polinomio_grado(x_puntos, coeficientes, x_rango, i)
     plt.plot(x_rango, y_polinomio_parcial, linestyle='--', alpha=0.7, 
-             label=f'P{i}(x) (grado {i})')
+             label=f'P{i}(x) (grado {i})');
 
-plt.title('Construcción Gráfica del Polinomio Interpolante de Newton')
+plt.title('Construcción Gráfica del Polinomio Interpolante de Newton');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+plt.ylim(min(y_puntos) - 1, max(y_puntos) + 1);
+plt.show()
+```
+
+## Interpolación Cúbica o Spline Cúbicos
+
+El polinomio interpolante de Newton puede ser utilizado para aproximar la función $f$ en un intervalo $[a, b]$. Pero puede presentar el **fenómeno de Runge**.
+
+```{python, echo=FALSE, message=FALSE, warning=FALSE}
+# Función de Runge
+def runge_function(x):
+    return 1 / (1 + 25 * x**2)
+
+# Intervalo y número de puntos para la interpolación
+x_runge_interp = np.linspace(-1, 1, 11) # 11 puntos equiespaciados
+y_runge_interp = runge_function(x_runge_interp)
+
+# Calcular los coeficientes de las diferencias divididas para la función de Runge
+coeffs_runge = diferencias_divididas(x_runge_interp, y_runge_interp)
+
+# Rango para graficar la función original y el polinomio
+x_runge_plot = np.linspace(-1, 1, 200);
+y_runge_original = runge_function(x_runge_plot);
+y_runge_interpolado = evaluar_newton_polinomio(x_runge_interp, coeffs_runge, x_runge_plot);
+
+plt.figure(figsize=(10, 6));
+plt.plot(x_runge_plot, y_runge_original, label='Función de Runge $f(x) = 1 / (1 + 25x^2)$', color='blue');
+plt.plot(x_runge_plot, y_runge_interpolado, label='Polinomio Interpolante de Newton', color='red', linestyle='--');
+plt.scatter(x_runge_interp, y_runge_interp, color='green', zorder=5, label='Puntos de Interpolación');
+
+plt.title('Fenómeno de Runge con Puntos Equiespaciados');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+plt.show()
+```
+
+El fenómeno de Runge se debe a que los polinomios de interpolación de Newton pueden oscilar mucho entre los puntos de interpolación, especialmente cuando los puntos están equiespaciados.
+
+Por lo tanto, una alternativa para evitar el fenómeno de Runge es utilizar la **Interpolación Cúbica o Spline Cúbicos**.
+
+Dados $n+1$ nodos $x_0,x_1,\dots,x_n$, se desea hallar en cada subintervalo $[x_i,x_{i+1}]$ un polinomio de grado bajo de tal manera que la función a interpolar tenga grado de derivabilidad lo más alto posible.
+
+En muchas aplicaciones, como por ejemplo en la informática gráfica, es suficiente que la función interpoladora sea de clase $\mathcal{C}^2$ ya que el ojo humano no distingue grados de derivabilidad superior.
+
+Una primera aproximación es usar polinomios de grado 1 en cada subintervalo $[x_i,x_{i+1}]$, esta consiste en unir los polinomios de grado 1 de forma continua, pero no garantiza que la función interpoladora sea de clase $\mathcal{C}^2$, es decir, no se garantiza derivabilidad en los puntos de interpolación.
+
+```{python, echo=FALSE, message=FALSE, warning=FALSE}
+# Importar la función interp para interpolación lineal
+from numpy import interp
+
+# Calcular la interpolación lineal (spline lineal)
+# np.interp(x a evaluar, x de los puntos, y de los puntos)
+y_runge_linear_spline = interp(x_runge_plot, x_runge_interp, y_runge_interp)
+
+plt.figure(figsize=(10, 6));
+plt.plot(x_runge_plot, y_runge_original, label='Función de Runge $f(x) = 1 / (1 + 25x^2)$', color='blue');
+plt.plot(x_runge_plot, y_runge_linear_spline, label='Spline Lineal', color='purple', linestyle='-.');
+plt.scatter(x_runge_interp, y_runge_interp, color='green', zorder=5, label='Puntos de Interpolación');
+
+plt.title('Interpolación con Spline Lineal en la Función de Runge');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+plt.show()
+```
+
+Para solventar el problema anterior, se puede usar **Spline Cúbicos** en vez de Splines lineales, es decir, sea $f$ una función definida en un intervalo $[a,b]$ y sean $a=x_0<x_1<\cdots<x_n=b$ los $n+1$ nodos en dicho intervalo. Una función spline cúbico interpolador $S$ para $f$ es una función que satisface las siguientes condiciones:
+
+**1.** $S$ es un polinomio de grado 3 en cada subintervalo $[x_i,x_{i+1}]$, el cual denotaremos como $S_i$, para $i=0,1,\dots,n-1$.
+
+**2.** $S_i(x_i)=f(x_i)$ y $S_i(x_{i+1})=f(x_{i+1})$ para $i=0,1,\dots,n-1$.
+
+**3.** $S'_i(x_{i+1})=S'_{i+1}(x_{i+1})$ para $i=0,1,\dots,n-2$.
+
+**4.** $S''_i(x_{i+1})=S''_{i+1}(x_{i+1})$ para $i=0,1,\dots,n-2$.
+
+**5.** Una de las siguientes condiciones debe cumplirse:
+
+**i.** $S''(x_{0})=S''(x_{n})=0$, frontera natural o libre.
+
+**ii.** $S'(x_{0})=f'(x_0)$ y $S'(x_{n})=f'(x_n)$, frontera sujeta.
+
+Considerse los polinomios cúbicos
+
+::: recuadro-gris
+$$
+S_i(x) = a_i + b_i(x − x_i) + c_i(x − x_i)^2 + d_i(x − x_i)^3\quad \forall i = 0, 1,\ldots , n-1
+$$
+las dos primeras derivadas vienen dadas por
+$$
+S'_i(x) = b_i + 2c_i(x − x_i) + 3d_i(x − x_i)^2
+$$
+$$
+S''_i(x) = 2c_i + 6d_i(x − x_i)
+$$
+:::
+
+Veamos cuantas condiciones tenemos:
+
+* Condición 2: $2n$ condiciones.
+* Condición 3: $n-1$ condiciones.
+* Condición 4: $n-1$ condiciones.
+En total tenemos $2n+n-1+n-1=4n-2$ condiciones. Quedan, por tanto, $2$ incógnitas “libres”. Las condiciones 5.i o 5.ii nos fijan dichas incógnitas.
+
+::: caja-ejemplo
+#### Ejemplo 7
+Veamos un ejemplo de cómo calcular los coeficientes de los polinomios cúbicos.
+
+Sea $f(x) = \sqrt{x}$ en el intervalo $[0,1]$. Sea $x_0=0$, $x_1=0.5$ y $x_2=1$. Entonces $f(x_0)=0$, $f(x_1)=\sqrt{0.5}$ y $f(x_2)=\sqrt{1}=1$.   
+
+Entonces 
+
+\begin{align*}
+S_0(x) &= a_0 + b_0(x − x_0) + c_0(x − x_0)^2 + d_0(x − x_0)^3\\
+S_1(x) &= a_1 + b_1(x − x_1) + c_1(x − x_1)^2 + d_1(x − x_1)^3
+\end{align*}
+
+Las condiciones 2 son:
+\begin{align*}
+S_0(x_0) &= f(x_0) \Rightarrow a_0 = 0\\
+S_1(x_1) &= f(x_1) \Rightarrow a_1 = \sqrt{0.5}\\
+S_0(x_1) &= f(x_1) \Rightarrow a_0 + b_0(x_1 - x_0) + c_0(x_1 - x_0)^2 + d_0(x_1 - x_0)^3 = \sqrt{0.5}\\
+ & \Rightarrow b_0(0.5) + c_0(0.5)^2 + d_0(0.5)^3 = \sqrt{0.5}\\
+S_1(x_2) &= f(x_2) \Rightarrow a_1 + b_1(x_2 - x_1) + c_1(x_2 - x_1)^2 + d_1(x_2 - x_1)^3 = 1\\
+ & \Rightarrow b_1(0.5) + c_1(0.5)^2 + d_1(0.5)^3 = 1-\sqrt{0.5}\\
+\end{align*}
+
+Las condiciones 3 son:
+\begin{align*}
+S'_0(x_1) &= S'_1(x_1)\\
+& \Rightarrow b_0 + 2c_0(0.5) + 3d_0(0.5)^2 = b_1\\
+\end{align*}
+
+Las condiciones 4 son:
+\begin{align*}
+S''_0(x_1) &= S''_1(x_1)\\
+ & \Rightarrow 2c_0 + 6d_0(0.5) = 2c_1
+\end{align*}
+
+Las condiciones 5.i son:
+\begin{align*}
+S''_0(x_0) &= 0\\
+& \Rightarrow 2c_0 = 0\\
+& \Rightarrow c_0 = 0\\
+S''_1(x_2) &= 0\\
+& \Rightarrow 2c_1 + 6d_1(0.5) = 0
+\end{align*}
+
+Asi queda entonces el siguiente sistema de ecuaciones:
+$$
+\left\{
+\begin{array}{l}
+0.5b_0 + 0.125d_0 = \sqrt{0.5}\\
+0.5b_1 + 0.25c_1 + 0.125d_1 = 1-\sqrt{0.5}\\
+b_0 + 0.75d_0 = b_1\\
+c_1+1.5d_1 = 0\\
+3d_0 = 2c_1
+\end{array}\right.
+$$
+
+Resolviendo el sistema de ecuaciones obtenemos:
+$$
+\begin{bmatrix}
+0.5 & 0.125 & 0 & 0 & 0 \\
+0 & 0 & 0.5 & 0.25 & 0.125 \\
+1 & 0.75 & -1 & 0 & 0 \\
+0 & 0 & 0 & 1 & 1.5 \\
+0 & 3 & 0 & -2 & 0
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+b_0 \\
+d_0 \\
+b_1 \\
+c_1 \\
+d_1
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sqrt{0.5} \\
+1 - \sqrt{0.5} \\
+0 \\
+0 \\
+0
+\end{bmatrix}
+$$
+
+Resolviendo el sistema de ecuaciones obtenemos:
+$$\begin{aligned}
+b_0 &= \sqrt{2} + \frac{1}{2}(\sqrt{2}-1)\\
+d_0 &= 2(1 - \sqrt{2})\\
+b_1 &= 1\\
+c_1 &= -3(\sqrt{2} - 1)\\
+d_1 &= 2(\sqrt{2} - 1)
+\end{aligned}
+$$
+
+Y recordemos que $a_0=0$ y $a_1=\sqrt{0.5}$.
+
+Entonces
+$$
+\begin{aligned}
+S_0(x) &= \sqrt{2} + \frac{1}{2}(\sqrt{2}-1)(x - 0) + 2(1 - \sqrt{2})(x - 0)^3\\
+S_1(x) &= \sqrt{0.5} + (x - 0.5) + (-3(\sqrt{2} - 1))(x - 0.5)^2 + 2(\sqrt{2} - 1)(x - 0.5)^3
+\end{aligned}
+$$
+
+```{python, echo=FALSE, message=FALSE, warning=FALSE}
+# Graficar los polinomios S_0(x) y S_1(x)
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Coeficientes obtenidos del ejemplo
+sqrt_0_5 = np.sqrt(0.5)
+sqrt_2 = np.sqrt(2)
+
+b0 = sqrt_2 + 0.5 * (sqrt_2 - 1)
+d0 = 2 * (1 - sqrt_2)
+b1 = 1
+c1 = -3 * (sqrt_2 - 1)
+d1 = 2 * (sqrt_2 - 1)
+
+a0 = 0
+a1 = sqrt_0_5
+# c0 fue determinado como 0 en el ejemplo
+c0 = 0
+# Puntos de interpolación
+x0, x1, x2 = 0, 0.5, 1
+y0, y1, y2 = np.sqrt(x0), np.sqrt(x1), np.sqrt(x2)
+
+# Definir los polinomios S_0(x) y S_1(x)
+def S0(x):
+    return a0 + b0 * (x - x0) + c0 * (x - x0)**2 + d0 * (x - x0)**3
+
+def S1(x):
+    return a1 + b1 * (x - x1) + c1 * (x - x1)**2 + d1 * (x - x1)**3
+
+# Rango para graficar S0 y S1
+x_range_s0 = np.linspace(x0, x1, 100)
+y_s0 = S0(x_range_s0)
+
+x_range_s1 = np.linspace(x1, x2, 100)
+y_s1 = S1(x_range_s1)
+
+# Función original
+def f_original(x):
+    return np.sqrt(x)
+
+x_original_range = np.linspace(x0, x2, 200)
+y_original = f_original(x_original_range)
+
+plt.figure(figsize=(10, 6))
+plt.plot(x_original_range, y_original, label='$f(x) = \sqrt{x}$', color='blue')
+plt.plot(x_range_s0, y_s0, label='$S_0(x)$', color='red', linestyle='--')
+plt.plot(x_range_s1, y_s1, label='$S_1(x)$', color='green', linestyle='-.')
+plt.scatter([x0, x1, x2], [y0, y1, y2], color='black', zorder=5, label='Nodos de interpolación')
+
+plt.title('Spline Cúbico Natural para $f(x) = \sqrt{x}$')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.legend()
 plt.grid(True)
-plt.ylim(min(y_puntos) - 1, max(y_puntos) + 1)
 plt.show()
 ```
+:::
+
+### Construcción de Spline Cúbico
+
+Recordemos que los nodos son los siguientes: $a=x_0<x_1<\cdots<x_n=b$ y la función a interpolar es f(x). Por tanto, la Spline Interpoladora debe pasar por los puntos $(x_i,f(x_i))$ para $i=0,1,\ldots,n$.
+
+Recordamos que los polinomios cúbicos son:
+
+::: recuadro-gris
+$$
+S_i(x)=a_i+b_i(x-x_i)+c_i(x-x_i)^2+d_i(x-x_i)^3,
+$$
+:::
+
+donde $a_i,b_i,c_i$ y $d_i$ son las incógnitas que debemos calcular para $i=0,1,\ldots,n-1$.
+
+* Como $S_i(x_i)=f(x_i)$, tenemos que $a_i=f(x_i)$ para $i=0,1,\ldots,n-1$. Se ha reducido el número de incógnitas a $3n$ ya que $n$ de ellas ya están calculadas (las $a_i$).
+
+* Las condiciones de continuidad de las funciones $S_i(x)$ y sus derivadas primera y segunda en los $n-1$ puntos de interpolación intermedios $x_{i+1}$, $i=0,\ldots,n-2$ (las condiciones de continuidad no se aplican a los extremos) dan
+
+::: recuadro-gris
+\begin{align*}
+a_{i+1} &= a_i + b_i(x_{i+1} − x_i) + c_i(x_{i+1} − x_i)^2 + d_i(x_{i+1} − x_i)^3\\
+b_{i+1} &= b_i + 2c_i(x_{i+1} − x_i) + 3d_i(x_{i+1} − x_i)^2\\
+2c_{i+1} &= 2c_i + 6d_i(x_{i+1} − x_i)
+\end{align*}
+:::
+
+* Esto constituye un sistema de $3(n-1)$ ecuaciones para determinar los $3n$ coeficientes $b_i, c_i$ y $d_i$.
+
+* Ademas, una condición adicional es que el último polinomio debe cumplir $S_{n-1}(x_n)=f(x_n)$, con $a_{n}=f(x_n)$.
+
+* Se requieren por tanto dos condiciones adicionales para poder determinar todos los coeficientes.
+
+* Para simplificar la notación, consideremos $h_i=x_{i+1}-x_i$ para $i=0,1,\ldots,n-1$. Entonces
+
+::: recuadro-gris
+\begin{align*}
+\dfrac{a_{i+1} − a_i}{h_i} & = b_i + c_ih_i + d_ih_i^2\\
+b_{i+1}-b_i &= 2c_ih_i + 3d_ih_i^2\\
+c_{i+1}-c_i &= 3d_ih_i
+\end{align*}
+:::
+
+* De las posibles formas de resolver el sistema de ecuaciones anterior, la más comoda es despejar los coeficientes $d_i$ y $b_i$ de forma que se obtenga un sistema de ecuaciones para los coeficientes $c_i$.
+
+* De la Última ecuación se despeja $d_i$ y queda que:
+
+::: recuadro-gris
+$$
+d_i = \frac{c_{i+1}-c_i}{3h_i}
+$$
+:::
+
+* En la segunda ecuación se introduce $d_i$ y queda que:
+
+::: recuadro-gris
+$$
+b_{i+1}-b_i = 2c_ih_i + 3\left(\frac{c_{i+1}-c_i}{3h_i}\right)h_i^2 = \left(c_i + c_{i+1}\right)h_i 
+$$
+:::
+
+* Despejando $b_i$ de la primera ecuación se obtiene:
+
+::: recuadro-gris
+\begin{align*}
+b_i &= \frac{a_{i+1}-a_i}{h_i} - c_ih_i - d_ih_i^2\\
+&= \frac{a_{i+1}-a_i}{h_i} - c_ih_i - \left(\frac{c_{i+1}-c_i}{3h_i}\right)h_i^2\\
+&= \frac{a_{i+1}-a_i}{h_i} - \frac{2}{3}c_ih_i - \frac{1}{3}c_{i+1}h_i
+\end{align*}
+:::
+
+* Cambiando de esta última expresión $b_i$ por $b_{i+1}$ se obtiene:
+
+::: recuadro-gris
+$$
+b_{i+1} = \frac{a_{i+2}-a_{i+1}}{h_{i+1}} - \frac{2}{3}c_{i+1}h_{i+1} - \frac{1}{3}c_{i+2}h_{i+1}
+$$
+:::
+
+* Restando $b_{i+1}$ y $b_i$ se obtiene:
+
+::: recuadro-gris
+\begin{eqnarray*}
+& b_{i+1}-b_i = &\\
+& \frac{a_{i+2}-a_{i+1}}{h_{i+1}} - \frac{2}{3}c_{i+1}h_{i+1} - \frac{1}{3}c_{i+2}h_{i+1} - \left(\frac{a_{i+1}-a_i}{h_i} - \frac{2}{3}c_{i}h_{i} - \frac{1}{3}c_{i+1}h_{i}\right) &
+\end{eqnarray*}
+:::
+
+* Igualando ambas expresiones se obtiene una relacíon entre los $c_i$:
+
+::: recuadro-gris
+$$
+c_{i+2}h_{i+1} + 2c_{i+1}(h_i+h_{i+1}) + c_{i}h_i = \dfrac{3}{h_{i+1}}(a_{i+2}-a_{i+1}) - \dfrac{3}{h_i}(a_{i+1}-a_i)
+$$
+:::
+
+* para $i=0,1,\ldots,n-2$. Conformando un sistema lineal con $n-1$ ecuaciones y $n+1$ incógnitas: $c_0,c_1,\ldots,c_n$
+ ya que los valores $a_i=f(x_i)$ son conocidos.
+
+* Las dos incógnitas libres de las $c_i$ quedarán fijadas usando las condiciones **5.i (splines naturales)** o **5.ii (splines con frontera fija)**.
+
+* Una vez hallados los coeficientes $c_i$, podemos hallar los coeficientes $b_i$ y $d_i$ a partir de las relaciones anteriores.
+
+**Condición 5.i (splines naturales)**
+
+Existe un único spline natural interpolador $S$ de $f$ en los $n+1$ nodos. Es decir, $S$ interpola a los nodos, es de clase $\mathcal{C}^2$ en $[a,b]$ y además, $S''(a)=S''(b)=0$.
+
+::: recuadro-gris
+$$
+c_0 = c_n = 0
+$$
+:::
+
+Esto permite eliminar las incógnitas $c_0$ y $c_n$ del sistema lineal anterior. y el sistema queda de la siguiente manera
+
+::: recuadro-gris
+$$
+A = \begin{pmatrix}
+2(h_0 + h_1) & h_1 & 0 & \cdots & 0 \\
+h_1 & 2(h_1 + h_2) & h_2 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \vdots & \\
+0 & 0 & \cdots & h_{n-2} & 2(h_{n-2} + h_{n-1})
+\end{pmatrix}
+$$
+$$
+c = \begin{pmatrix}
+c_1\\
+c_2\\
+\vdots\\
+c_{n-1}
+\end{pmatrix}, \quad 
+b = \begin{pmatrix}
+\dfrac{3}{h_1}(a_2-a_1)-\dfrac{3}{h_0}(a_1-a_0)\\
+\dfrac{3}{h_2}(a_3-a_2)-\dfrac{3}{h_1}(a_2-a_1)\\
+\vdots\\
+\dfrac{3}{h_{n-1}}(a_{n}-a_{n-1})-\dfrac{3}{h_{n-2}}(a_{n-1}-a_{n-2})
+\end{pmatrix}
+$$
+:::
+
+**Condición 5.ii (splines con frontera fija)**
+
+Existe un único spline con frontera fija interpolador $S$ de $f$ en los $n+1$ nodos. Es decir, $S$ interpola a los nodos, es de clase $\mathcal{C}^2$ en $[a,b]$ y además, $S'(a)=f'(a)$ y $S'(b)=f'(b)$.
+
+De esta manera se agregan dos ecuaciones adicionales al sistema lineal anterior, quedando el sistema lineal de la siguiente manera:
+
+::: recuadro-gris
+$$
+A = \begin{pmatrix}
+2h_0 & h_0 & 0 & 0 &\cdots & 0\\
+h_0 & 2(h_0 + h_1) & h_1 & 0 & \cdots & 0\\
+0 & h_1 & 2(h_1 + h_2) & h_2 & \cdots & 0\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+0 & 0 & \cdots & 0 &  h_{n-1} & 2h_{n-1}\\
+\end{pmatrix}
+$$
+$$
+c = \begin{pmatrix}
+c_0\\
+c_1\\
+\vdots\\
+c_{n}\\
+\end{pmatrix}, \quad 
+b = \begin{pmatrix}
+\dfrac{3}{h_0}(a_1-a_0)-3f'(x_0)\\
+\dfrac{3}{h_1}(a_2-a_1)-\dfrac{3}{h_0}(a_1-a_0)\\
+\vdots\\
+\dfrac{3}{h_{n-1}}(a_{n}-a_{n-1})-\dfrac{3}{h_{n-2}}(a_{n-1}-a_{n-2})\\
+3f'(x_n) - \dfrac{3}{h_{n-1}}(a_{n}-a_{n-1})
+\end{pmatrix}
+$$
+:::
+
+::: cuadro-alg
+**Algoritmo para Coeficientes de Spline Cúbico**
+
+        **Entrada:**
+        *   x: Vector de nodos [x0, x1, ..., xn].
+        *   y: Vector de valores de función [y0, y1, ..., yn] donde y[i] = f(x[i]).
+        *   tipo_condicion: "natural" o "fija".
+        *   f_prime_x0: (Solo para tipo "fija") Valor de f'(x[0]).
+        *   f_prime_xn: (Solo para tipo "fija") Valor de f'(x[n]).
+
+        **Salida:**
+        *   a: Vector de coeficientes a[i].
+        *   b: Vector de coeficientes b[i].
+        *   c: Vector de coeficientes c[i].
+        *   d: Vector de coeficientes d[i].
+
+        **Pasos:**
+
+       1.  **Inicialización:**
+           *   Sea n el número de segmentos (es decir, length(x) - 1).
+           *   h[i] = x[i+1] - x[i] para i=0, ..., n-1.
+           *   a[i] = y[i] para i=0, ..., n.
+
+       2.  **Construcción del sistema lineal para c:**
+
+       *   **Si tipo_condicion es "natural":**
+           *   Crea una matriz A de tamaño (n-1) x (n-1) y un vector b_vec de tamaño (n-1).
+           *   Para i=1, ..., n-1:
+               *   A[i-1, i-1] = 2 * (h[i-1] + h[i])
+               *   Si i < n-1: A[i-1, i] = h[i]
+               *   Si i > 1: A[i-1, i-2] = h[i-1]
+               *   b_vec[i-1] = 3/h[i] * (a[i+1] - a[i]) - 3/h[i-1] * (a[i] - a[i-1])
+           *   Resuelve el sistema A * c_mid = b_vec para obtener c_mid = [c[1], ..., c[n-1]]`.
+           *   Define c[0] = 0 y c[n] = 0.
+           *   Combina para formar el vector `c = [c[0], c_mid, c[n]]`.
+
+        *   **Si `tipo_condicion` es "fija":**
+            *   Crea una matriz `A` de tamaño `(n+1) x (n+1)` y un vector `b_vec` de tamaño `(n+1)`.
+            *   **Primera fila (para c[0]):**
+                *   A[0,0] = 2 * h[0]
+                *   A[0,1] = h[0]
+                *   b_vec[0] = (3/h[0]) * (a[1] - a[0]) - 3 * f_prime_x0
+            *   **Filas intermedias (para c[1] a c[n-1]):**
+                *   Para i=1, ..., n-1:
+                    *   A[i, i-1] = h[i-1]
+                    *   A[i, i] = 2 * (h[i-1] + h[i])
+                    *   A[i, i+1] = h[i]
+                    *   b_vec[i] = (3/h[i]) * (a[i+1] - a[i]) - (3/h[i-1]) * (a[i] - a[i-1])
+            *   **Última fila (para c_n):**
+                *   A[n, n-1] = h[n-1]
+                *   A[n, n] = 2 * h[n-1]
+                *   b_vec_n = 3 * f_prime_xn - (3/h[n-1]) * (a[n] - a[n-1])
+            *   Resuelve el sistema A * c = b_vec para obtener el vector c = [c0, ..., cn]`.
+
+        3.  **Cálculo de `b` y `d`:**
+            *   Para i=0, ..., n-1:
+            *   d[i] = (c[i+1] - c[i]) / (3 * h[i])
+            *   b[i] = (a[i+1] - a[i]) / h[i] - (2/3) * c[i] * h[i] - (1/3) * c[i+1] * h[i]
+
+        4.  **Retorna** los vectores `a`, `b`, `c`, `d`.
+
+:::
+
+::: caja-ejemplo
+#### Ejemplo 8 de Spline Cúbico
+
+En este ejemplo se observa como la Interpolación segmentaria resuelve el fenómeno de Runge antes visto, y presenta opciones cuando la derivada no se puede calcular en alguno de sus extremos
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import solve
+
+def cubic_spline_coefficients(x, y, tipo_condicion, f_prime_x0=None, f_prime_xn=None):
+    n = len(x) - 1
+    h = np.diff(x)
+    a = np.array(y)
+    
+    if tipo_condicion == "natural":
+        A = np.zeros((n - 1, n - 1))
+        b_vec = np.zeros(n - 1)
+        
+        for i in range(1, n):
+            A[i-1, i-1] = 2 * (h[i-1] + h[i])
+            if i < n - 1:
+                A[i-1, i] = h[i]
+            if i > 1:
+                A[i-1, i-2] = h[i-1]
+            b_vec[i-1] = (3/h[i]) * (a[i+1] - a[i]) - (3/h[i-1]) * (a[i] - a[i-1])
+        
+        c_mid = solve(A, b_vec)
+        c = np.concatenate(([0], c_mid, [0]))
+        
+    elif tipo_condicion == "fija":
+        A = np.zeros((n + 1, n + 1))
+        b_vec = np.zeros(n + 1)
+        
+        # Primera fila (para c[0])
+        A[0, 0] = 2 * h[0]
+        A[0, 1] = h[0]
+        b_vec[0] = (3/h[0]) * (a[1] - a[0]) - 3 * f_prime_x0
+        
+        # Filas intermedias (para c[1] a c[n-1])
+        for i in range(1, n):
+            A[i, i-1] = h[i-1]
+            A[i, i] = 2 * (h[i-1] + h[i])
+            A[i, i+1] = h[i]
+            b_vec[i] = (3/h[i]) * (a[i+1] - a[i]) - (3/h[i-1]) * (a[i] - a[i-1])
+            
+        # Última fila (para c[n])
+        A[n, n-1] = h[n-1]
+        A[n, n] = 2 * h[n-1]
+        b_vec[n] = 3 * f_prime_xn - (3/h[n-1]) * (a[n] - a[n-1])
+        
+        c = solve(A, b_vec)
+        
+    else:
+        raise ValueError("Tipo de condición no reconocido. Use 'natural' o 'fija'.")
+        
+    b = np.zeros(n)
+    d = np.zeros(n)
+    for i in range(n):
+        d[i] = (c[i+1] - c[i]) / (3 * h[i])
+        b[i] = (a[i+1] - a[i]) / h[i] - (2/3) * c[i] * h[i] - (1/3) * c[i+1] * h[i]
+        
+    return a, b, c, d
+
+def evaluate_spline(x_eval, x_nodes, a, b, c, d):
+    n = len(x_nodes) - 1
+    y_eval = np.zeros_like(x_eval, dtype=float)
+    
+    for k, val in enumerate(x_eval):
+        # Encontrar el segmento correcto
+        i = np.searchsorted(x_nodes, val, side='right') - 1
+        if i == n: # Caso donde x_eval es el último nodo
+            i = n - 1
+        if i < 0: # Caso donde x_eval es menor que el primer nodo
+            i = 0
+            
+        dx = val - x_nodes[i]
+        y_eval[k] = a[i] + b[i] * dx + c[i] * dx**2 + d[i] * dx**3
+    return y_eval
+
+# --- Configuración para el Fenómeno de Runge ---
+runge_func = lambda x: 1 / (1 + 25 * x**2)
+runge_prime = lambda x: -50 * x / (1 + 25 * x**2)**2
+
+num_nodes_runge = 11 # Un número impar para incluir 0, similar a ejemplos clásicos de Runge
+x_nodes_runge = np.linspace(-1, 1, num_nodes_runge)
+y_nodes_runge = runge_func(x_nodes_runge)
+
+# Derivadas para condición fija del Runge
+f_prime_x0_runge = runge_prime(x_nodes_runge[0])
+f_prime_xn_runge = runge_prime(x_nodes_runge[-1])
+
+# Puntos para graficar
+x_plot_runge = np.linspace(-1, 1, 200)
+y_true_runge = runge_func(x_plot_runge)
+
+# --- Spline Natural para Runge ---
+a_nat_runge, b_nat_runge, c_nat_runge, d_nat_runge = cubic_spline_coefficients(
+    x_nodes_runge, y_nodes_runge, "natural")
+y_spline_nat_runge = evaluate_spline(
+    x_plot_runge, x_nodes_runge, a_nat_runge, b_nat_runge, c_nat_runge, d_nat_runge)
+
+# --- Spline Fijo para Runge ---
+a_fij_runge, b_fij_runge, c_fij_runge, d_fij_runge = cubic_spline_coefficients(
+    x_nodes_runge, y_nodes_runge, "fija", f_prime_x0_runge, f_prime_xn_runge)
+y_spline_fij_runge = evaluate_spline(
+    x_plot_runge, x_nodes_runge, a_fij_runge, b_fij_runge, c_fij_runge, d_fij_runge)
+
+# --- Graficar Resultados para el Fenómeno de Runge ---
+plt.figure(figsize=(12, 5));
+
+# Gráfico para Spline Natural del Fenómeno de Runge
+plt.subplot(1, 2, 1);
+plt.plot(x_plot_runge, y_true_runge, label=r'$1/(1+25x^2)$ (Función real)', color='black', linestyle='--');
+plt.plot(x_plot_runge, y_spline_nat_runge, label='Spline Cúbico Natural', color='red');
+plt.scatter(x_nodes_runge, y_nodes_runge, label='Nodos de Interpolación', color='blue', marker='o', s=50);
+plt.title('Spline Cúbico Natural para Fenómeno de Runge');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+plt.ylim(-0.5, 1.5); # Ajustar límites para mejor visualización del Runge
+
+# Gráfico para Spline Fijo del Fenómeno de Runge
+plt.subplot(1, 2, 2);
+plt.plot(x_plot_runge, y_true_runge, label=r'$1/(1+25x^2)$ (Función real)', color='black', linestyle='--');
+plt.plot(x_plot_runge, y_spline_fij_runge, label='Spline Cúbico Fijo', color='green');
+plt.scatter(x_nodes_runge, y_nodes_runge, label='Nodos de Interpolación', color='blue', marker='o', s=50);
+plt.title('Spline Cúbico Fijo para Fenómeno de Runge');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+plt.ylim(-0.5, 1.5); # Ajustar límites para mejor visualización del Runge
+
+plt.tight_layout();
+plt.show();
+
+# --- Configuración para f(x) = sqrt(x) ---
+x_nodes = np.linspace(0.01, 1, 6) # Usar un offset pequeño para evitar f'(0) = inf
+y_nodes = np.sqrt(x_nodes)
+
+# Derivadas para condición fija
+# f'(x) = 1/(2*sqrt(x))
+f_prime = lambda x: 1 / (2 * np.sqrt(x))
+f_prime_x0 = f_prime(x_nodes[0])
+f_prime_xn = f_prime(x_nodes[-1])
+
+# Puntos para graficar
+x_plot = np.linspace(x_nodes[0], x_nodes[-1], 200)
+y_true = np.sqrt(x_plot)
+
+# --- Spline Natural ---
+a_nat, b_nat, c_nat, d_nat = cubic_spline_coefficients(x_nodes, y_nodes, "natural")
+y_spline_nat = evaluate_spline(x_plot, x_nodes, a_nat, b_nat, c_nat, d_nat)
+
+# --- Spline Fijo ---
+a_fij, b_fij, c_fij, d_fij = cubic_spline_coefficients(x_nodes, y_nodes, "fija", f_prime_x0, f_prime_xn)
+y_spline_fij = evaluate_spline(x_plot, x_nodes, a_fij, b_fij, c_fij, d_fij)
+
+# --- Graficar ---
+plt.figure(figsize=(12, 5));
+
+# Gráfico para Spline Natural
+plt.subplot(1, 2, 1);
+plt.plot(x_plot, y_true, label=r'$\sqrt{x}$ (Función real)', color='black', linestyle='--');
+plt.plot(x_plot, y_spline_nat, label='Spline Cúbico Natural', color='red');
+plt.scatter(x_nodes, y_nodes, label='Nodos de Interpolación', color='blue', marker='o', s=50);
+plt.title('Spline Cúbico Natural para $\sqrt{x}$');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+
+# Gráfico para Spline Fijo
+plt.subplot(1, 2, 2);
+plt.plot(x_plot, y_true, label=r'$\sqrt{x}$ (Función real)', color='black', linestyle='--');
+plt.plot(x_plot, y_spline_fij, label='Spline Cúbico Fijo', color='green');
+plt.scatter(x_nodes, y_nodes, label='Nodos de Interpolación', color='blue', marker='o', s=50);
+plt.title('Spline Cúbico Fijo para $\sqrt{x}$');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+
+plt.tight_layout();
+plt.show()
+
+```
+
+
 
 ------------------------------------------------------------------------
   
