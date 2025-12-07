@@ -2196,6 +2196,13 @@ print(f"\nError Cuadrático Medio (MSE) para el ajuste de la función de Runge (
 ```
 :::
 
+## Guía de ejercicios
+En el siguiente enlace `Ejercicios_Unidad4` encontrará una lista de ejercicios relacionado con los distintos tópicos cubiertos en esta cuarta unidad.
+
+Descargue el PDF de esta guía de ejercicios aqui:
+
+[Descargar Guía PDF](Ejercicios_UnidadIV.pdf)
+
 
 ------------------------------------------------------------------------
   
