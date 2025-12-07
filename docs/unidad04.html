@@ -646,7 +646,7 @@ class="math inline">\(n\)</span> tal que:</p>
 </div>
 <p>El problema que intentamos resolver es el siguiente:</p>
 <p><strong>Problema</strong>: Dados <span
-class="math inline">\(n\)</span> valores <span
+class="math inline">\(n+1\)</span> valores <span
 class="math inline">\((x_0,y_0), (x_1,y_1), \dots, (x_n,y_n)\)</span>,
 se desea hallar polinomio <span class="math inline">\(P_n\)</span> de
 grado mínimo tal que <span class="math inline">\(P_n(x_i)=y_i,\,
@@ -717,7 +717,7 @@ problema.</p>
 <p><strong>Teorema</strong>.</p>
 <p>Sean <span
 class="math inline">\((x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)\)</span>,
-<span class="math inline">\(n\)</span> valores con <span
+<span class="math inline">\(n+1\)</span> valores con <span
 class="math inline">\(x_i\neq x_j\)</span> para <span
 class="math inline">\(i\neq j\)</span> (es decir, las abscisas son todas
 diferentes). Entonces existe un único polinomio <span
@@ -2187,14 +2187,14 @@ S_1(x) &amp;= \sqrt{0.5} + (x - 0.5) + (-3(\sqrt{2} - 1))(x - 0.5)^2 +
 \end{aligned}
 \]</span></p>
 <pre><code>## &lt;Figure size 1000x600 with 0 Axes&gt;</code></pre>
-<pre><code>## [&lt;matplotlib.lines.Line2D object at 0x000001ED689752B0&gt;]</code></pre>
-<pre><code>## [&lt;matplotlib.lines.Line2D object at 0x000001ED68975400&gt;]</code></pre>
-<pre><code>## [&lt;matplotlib.lines.Line2D object at 0x000001ED68975550&gt;]</code></pre>
-<pre><code>## &lt;matplotlib.collections.PathCollection object at 0x000001ED68915450&gt;</code></pre>
+<pre><code>## [&lt;matplotlib.lines.Line2D object at 0x00000113F6B5C6E0&gt;]</code></pre>
+<pre><code>## [&lt;matplotlib.lines.Line2D object at 0x00000113F6B5C830&gt;]</code></pre>
+<pre><code>## [&lt;matplotlib.lines.Line2D object at 0x00000113F6B5C980&gt;]</code></pre>
+<pre><code>## &lt;matplotlib.collections.PathCollection object at 0x00000113F5FE56D0&gt;</code></pre>
 <pre><code>## Text(0.5, 1.0, &#39;Spline Cúbico Natural para $f(x) = \\sqrt{x}$&#39;)</code></pre>
 <pre><code>## Text(0.5, 0, &#39;x&#39;)</code></pre>
 <pre><code>## Text(0, 0.5, &#39;y&#39;)</code></pre>
-<pre><code>## &lt;matplotlib.legend.Legend object at 0x000001ED68975010&gt;</code></pre>
+<pre><code>## &lt;matplotlib.legend.Legend object at 0x00000113F6B5C440&gt;</code></pre>
 <p><img src="unidad04_files/figure-html/unnamed-chunk-10-7.png" width="960" /></p>
 </div>
 <div id="construcción-de-spline-cúbico" class="section level3"
@@ -2496,10 +2496,261 @@ no se puede calcular en alguno de sus extremos</p>
 <pre><code>## (-0.5, 1.5)</code></pre>
 <pre><code>## (-0.5, 1.5)</code></pre>
 <p><img src="unidad04_files/figure-html/unnamed-chunk-11-9.png" width="1152" /><img src="unidad04_files/figure-html/unnamed-chunk-11-10.png" width="1152" /></p>
+</div>
+</div>
+</div>
+</div>
+<div id="método-de-los-mínimos-cuadrados.-polinomio-aproximador"
+class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Método de los mínimos
+cuadrados. Polinomio aproximador</h1>
+<ul>
+<li><p>Supongamos que se han medido un conjunto de pares de datos <span
+class="math inline">\((x_i, y_i)\)</span> en una experimentación, por
+ejemplo, la posición de un móvil en ciertos instantes de
+tiempo.</p></li>
+<li><p>Se desea obtener una función <span
+class="math inline">\(y=f(x)\)</span> que se ajuste lo mejor posible a
+los valores experimentales. Se pueden ensayar muchas funciones, rectas,
+polinomios, funciones potenciales o logarítmicas.</p></li>
+<li><p>Una vez establecida la función a ajustar se determinan sus
+parámetros, en el caso de un polinomio, serán los coeficientes del
+polinomio de modo que los datos experimentales se desvíen lo menos
+posible de la fórmula empírica.</p></li>
+<li><p>La función más sencilla es la función lineal <span
+class="math inline">\(y=ax+b\)</span>. El procedimiento de ajustar los
+datos experimentales a una línea recta se denomina regresión
+lineal.</p></li>
+</ul>
+<div id="polinomio-aproximador" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Polinomio
+aproximador</h2>
+<ul>
+<li><p>Queremos aproximar un polinomio de grado <span
+class="math inline">\(n\)</span>, a un conjunto de <span
+class="math inline">\(m+1\)</span> pares de datos <span
+class="math inline">\((x_i, y_i)\)</span> de modo que <span
+class="math inline">\(n\leq m\)</span>.</p></li>
+<li><p>Sea el polinomio</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+P(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_n x^n
+\]</span></p>
+</div>
+<ul>
+<li>Se calcula la cantidad</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+S = \sum_{i=0}^{m} (P(x_i)-y_i)^2 = \sum_{i=0}^{m} (a_0 + a_1 x_i + a_2
+x_i^2 + \cdots + a_n x_i^n - y_i)^2
+\]</span></p>
+</div>
+<ul>
+<li><p>Se buscan los valores de los coeficientes <span
+class="math inline">\(a_0, a_1, \ldots, a_n\)</span> que minimicen <span
+class="math inline">\(S\)</span>.</p></li>
+<li><p>Hagamos las derivadas parciales de S respecto de <span
+class="math inline">\(a_0, a_1, a_2, \ldots, a_n\)</span> iguales a
+cero.</p></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\dfrac{\partial S}{\partial a_0} = 0, \quad \dfrac{\partial S}{\partial
+a_1} = 0, \quad \ldots, \quad \dfrac{\partial S}{\partial a_n} = 0
+\]</span> <span class="math display">\[\begin{align*}
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_0} &amp; = \sum_{i=0}^{m}(a_0
++ a_1 x_i + a_2 x_i^2 + \cdots + a_n x_i^n - y_i)\cdot 1=0\\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_1} &amp; = \sum_{i=0}^{m}(a_0
++ a_1 x_i + a_2 x_i^2 + \cdots + a_n x_i^n - y_i)\cdot x_i=0\\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_2} &amp; = \sum_{i=0}^{m}(a_0
++ a_1 x_i + a_2 x_i^2 + \cdots + a_n x_i^n - y_i)\cdot x_i^2=0\\
+\vdots &amp; \\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_n} &amp; = \sum_{i=0}^{m}(a_0
++ a_1 x_i + a_2 x_i^2 + \cdots + a_n x_i^n - y_i)\cdot x_i^n=0
+\end{align*}\]</span></p>
+</div>
+<ul>
+<li><p>Obtenemos un sistema de <span class="math inline">\(n+1\)</span>
+ecuaciones con <span class="math inline">\(n+1\)</span> incógnitas,
+<span class="math inline">\(a_0, a_1, a_2, \ldots,
+a_n\)</span>.</p></li>
+<li><p>Supongamos que tenemos 4 pares de datos y que queremos ajustarlos
+al polinomio de segundo grado <span
+class="math inline">\(y=a_0+a_1x+a_2x^2\)</span>.</p></li>
+</ul>
+<table class="table table-bordered table-condensed" style="font-size: 20px; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;width: 3em; font-weight: bold;color: white !important;background-color: rgba(10, 128, 255, 255) !important;border-right:1px solid;font-weight: bold;">
+<span class="math inline">\(x_i\)</span>
+</th>
+<th style="text-align:center;width: 3em; color: black !important;background-color: white !important;font-weight: bold;">
+<span class="math inline">\(x_0\)</span>
+</th>
+<th style="text-align:center;width: 3em; color: black !important;background-color: white !important;font-weight: bold;">
+<span class="math inline">\(x_1\)</span>
+</th>
+<th style="text-align:center;width: 3em; color: black !important;background-color: white !important;font-weight: bold;">
+<span class="math inline">\(x_2\)</span>
+</th>
+<th style="text-align:center;width: 3em; color: black !important;background-color: white !important;font-weight: bold;">
+<span class="math inline">\(x_3\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;width: 3em; font-weight: bold;color: white !important;background-color: rgba(10, 128, 255, 255) !important;border-right:1px solid;font-weight: bold;">
+<span class="math inline">\(y_i\)</span>
+</td>
+<td style="text-align:center;width: 3em; color: black !important;background-color: white !important;font-weight: bold;">
+<span class="math inline">\(y_0\)</span>
+</td>
+<td style="text-align:center;width: 3em; color: black !important;background-color: white !important;font-weight: bold;">
+<span class="math inline">\(y_1\)</span>
+</td>
+<td style="text-align:center;width: 3em; color: black !important;background-color: white !important;font-weight: bold;">
+<span class="math inline">\(y_2\)</span>
+</td>
+<td style="text-align:center;width: 3em; color: black !important;background-color: white !important;font-weight: bold;">
+<span class="math inline">\(y_3\)</span>
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; border:0;" colspan="100%">
+<sup></sup>
+<style type="text/css">.table.table-bordered { border: 2px solid black !important; }.table.table-bordered th, .table.table-bordered td { border: 1px solid black !important; }</style>
+</td>
+</tr>
+</tfoot>
+</table>
+<ul>
+<li>Entonces, el sistema de ecuaciones es:</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_0} &amp; = \sum_{i=0}^{3}(a_0
++ a_1 x_i + a_2 x_i^2 - y_i)\cdot 1=0\\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_1} &amp; = \sum_{i=0}^{3}(a_0
++ a_1 x_i + a_2 x_i^2 - y_i)\cdot x_i=0\\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_2} &amp; = \sum_{i=0}^{3}(a_0
++ a_1 x_i + a_2 x_i^2 - y_i)\cdot x_i^2=0
+\end{align*}\]</span></p>
+<p>Desarrollando las sumatorias obtenemos:</p>
+<p><span class="math display">\[\begin{align*}
+(a_0 + a_1 x_0 + a_2 x_0^2)+(a_0 + a_1 x_1 + a_2 x_1^2)+(a_0 + a_1 x_2 +
+a_2 x_2^2)+&amp;\\
+(a_0 + a_1 x_3 + a_2 x_3^2)-(y_0+y_1+y_2+y_3)&amp;=0\\
+(a_0 + a_1 x_0 + a_2 x_0^2)x_0 + (a_0 + a_1 x_1 + a_2 x_1^2)x_1 + (a_0 +
+a_1 x_2 + a_2 x_2^2)x_2 +&amp;\\
+(a_0 + a_1 x_3 + a_2 x_3^2)x_3 -(y_0x_0+y_1x_1+y_2x_2+y_3x_3)&amp;=0\\
+(a_0 + a_1 x_0 + a_2 x_0^2)x_0^2+(a_0 + a_1 x_1 + a_2 x_1^2)x_1^2+(a_0 +
+a_1 x_2 + a_2 x_2^2)x_2^2+&amp;\\
+(a_0 + a_1 x_3 + a_2
+x_3^2)x_3^2-(y_0x_0^2+y_1x_1^2+y_2x_2^2+y_3x_3^2)&amp;=0
+\end{align*}\]</span></p>
+<p>Agrupando términos obtenemos:</p>
+<p><span class="math display">\[\begin{align*}
+(1 + 1 + 1 + 1)a_0+(x_0 + x_1 + x_2 + x_3)a_1+(x_0^2 + x_1^2 + x_2^2 +
+x_3^2)a_2&amp;=y_0+y_1+y_2+y_3\\
+(x_0 + x_1 + x_2 + x_3)a_0+(x_0^2 + x_1^2 + x_2^2 + x_3^2)a_1+(x_0^3 +
+x_1^3 + x_2^3 + x_3^3)a_2&amp;=y_0x_0+y_1x_1+y_2x_2+y_3x_3\\
+(x_0^2 + x_1^2 + x_2^2 + x_3^2)a_0+(x_0^3 + x_1^3 + x_2^3 +
+x_3^3)a_1+(x_0^4 + x_1^4 + x_2^4 +
+x_3^4)a_2&amp;=y_0x_0^2+y_1x_1^2+y_2x_2^2+y_3x_3^2
+\end{align*}\]</span></p>
+<p>Formando la matriz <span class="math inline">\(A\)</span> y el vector
+<span class="math inline">\(b\)</span> Se despeja <span
+class="math inline">\(a_0, a_1, a_2\)</span></p>
+</div>
+<p>Regresando al sistema de <span class="math inline">\(n+1\)</span>
+ecuaciones con <span class="math inline">\(n+1\)</span> incógnitas.
+Introduzcamos las expresiones:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+s_k &amp; = x_0^k + x_1^k + x_2^k + \cdots + x_m^k \quad
+(k=0,1,\ldots,2n)\\
+t_k &amp; = x_0^k y_0 + x_1^k y_1 + x_2^k y_2 + \cdots + x_m^k y_m \quad
+(k=0,1,\ldots,2n)
+\end{align*}\]</span></p>
+<p>Se obtiene el siguiente Sistema de Ecuaciones lineales <span
+class="math display">\[
+\begin{pmatrix}
+    s_0 &amp; s_1 &amp; \cdots &amp; s_n\\
+    s_1 &amp; s_2 &amp; \cdots &amp; s_{n+1}\\
+    \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+    s_n &amp; s_{n+1} &amp; \cdots &amp; s_{2n}
+\end{pmatrix}
+\begin{pmatrix}
+    a_0\\
+    a_1\\
+    \vdots\\
+    a_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+    t_0\\
+    t_1\\
+    \vdots\\
+    t_n
+\end{pmatrix}
+\]</span></p>
+</div>
+<ul>
+<li><p>Si todos los puntos son distintos, el sistema de ecuaciones tiene
+una solución única.</p></li>
+<li><p>Para resolver el sistema de ecuaciones se puede emplear alguno de
+los procedimientos vistos en la segunda unidad.</p></li>
+<li><p>El método empleado en este programa es el método de iteración. Ya
+que la matriz del sistema de ecuaciones es positiva, para este sistema
+se emplea el procedimiento de Seidel.</p></li>
+<li><p>Tambien se puede emplear la Factorización de Cholesky, dado que
+la matriz es simétrica y positiva definida, siempre que <span
+class="math inline">\(n\)</span> no sea muy grande.</p></li>
+</ul>
+<div id="ejemplo-9-ajuste-de-mínimos-cuadrados"
+class="section level4 caja-ejemplo" number="3.1.0.1">
+<h4><span class="header-section-number">3.1.0.1</span> Ejemplo 9: Ajuste
+de mínimos cuadrados</h4>
+<pre><code>## Datos originales:</code></pre>
+<pre><code>## x_data: [0.24835708 2.43086785 5.32384427 8.26151493 9.88292331]</code></pre>
+<pre><code>## y_data: [ 1.02844024  9.02016133 13.182558   16.58408108 21.85096671]</code></pre>
+<p><img src="unidad04_files/figure-html/unnamed-chunk-13-1.png" width="1152" /></p>
+<pre><code>## Valores estimados (polinomio de grado 1)</code></pre>
+<pre><code>## y_pred_deg1: [ 2.69722028  6.9192862  12.51574753 18.19866985 21.3352835 ]</code></pre>
+<pre><code>## Valores estimados (polinomio de grado 2)</code></pre>
+<pre><code>## y_pred_deg2: [ 1.96107922  7.30216712 13.38001576 18.38300516 20.63994011]</code></pre>
+<pre><code>## Error Cuadrático Medio (MSE) para el ajuste lineal (Grado 1): 2.1032</code></pre>
+<pre><code>## Error Cuadrático Medio (MSE) para el ajuste cuadrático (Grado 2): 1.7126</code></pre>
+</div>
+<div id="ejemplo-10-ajuste-de-mínimos-cuadrados-caso-runge"
+class="section level4 caja-ejemplo" number="3.1.0.2">
+<h4><span class="header-section-number">3.1.0.2</span> Ejemplo 10:
+Ajuste de mínimos cuadrados caso Runge</h4>
+<p>Dada la función de Runge <span class="math inline">\(f(x) =
+\frac{1}{1+25x^2}\)</span>, halla el polinomio de grado menor o igual
+que 20 que mejor aproxima la función en el sentido de mínimos cuadrados
+en <span class="math inline">\([-5, 5]\)</span>, tomando como datos los
+valores de <span class="math inline">\(f(x)\)</span> en 100 nodos
+igualmente espaciados.</p>
+<pre><code>## 
+## Coeficientes del polinomio de grado 20 para la función de Runge:</code></pre>
+<pre><code>## [ 2.61345238e-10 -3.43260270e-20 -3.37998146e-08  3.95650468e-18
+##   1.87244031e-06 -1.91729007e-16 -5.80358770e-05  5.07569890e-15
+##   1.10293931e-03 -7.98090656e-14 -1.32458677e-02  7.58512077e-13
+##   9.99316409e-02 -4.24009903e-12 -4.55626100e-01  1.28962972e-11
+##   1.15679231e+00 -1.79637178e-11 -1.39664057e+00  6.67859064e-12
+##   5.76186735e-01]</code></pre>
+<p><img src="unidad04_files/figure-html/unnamed-chunk-14-3.png" width="960" /></p>
+<pre><code>## 
+## Error Cuadrático Medio (MSE) para el ajuste de la función de Runge (Grado 20): 0.00557896</code></pre>
+</div>
 <hr />
-<p><small>Última revisión: 28 de noviembre, 2025</small></p>
-</div>
-</div>
+<p><small>Última revisión: 07 de diciembre, 2025</small></p>
 </div>
 </div>
 

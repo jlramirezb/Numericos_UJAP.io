@@ -42,15 +42,17 @@ library(knitr)
 library(kableExtra)
 
 datos <- data.frame(
-  "T ºC" = c(0, 5, 10, 20),
-  "$\\mu_o$" = c(1.787, 1.519, 1.307, 1.002),
-  check.names = FALSE
+    "T ºC" = c(0, 5, 10, 20),
+    "$\\mu_o$" = c(1.787, 1.519, 1.307, 1.002),
+    check.names = FALSE
 )
 
 kable(datos, align = "c", escape = FALSE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
-                full_width = FALSE, 
-                position = "center")
+    kable_styling(
+        bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+        full_width = FALSE,
+        position = "center"
+    )
 ```
 
 ¿Cómo estimar la viscosidad a una temperatura de 7.5º C? Una opción es encontrar un polinomio que pase por los puntos de la tabla y estimar el valor de 7.5 con él.
@@ -275,7 +277,7 @@ para todo valor $x \in [a,b]$.
 
 El problema que intentamos resolver es el siguiente:
 
-**Problema**: Dados $n$ valores $(x_0,y_0), (x_1,y_1), \dots, (x_n,y_n)$, se desea hallar polinomio $P_n$ de grado mínimo tal que $P_n(x_i)=y_i,\, i=0,\ldots,n$.
+**Problema**: Dados $n+1$ valores $(x_0,y_0), (x_1,y_1), \dots, (x_n,y_n)$, se desea hallar polinomio $P_n$ de grado mínimo tal que $P_n(x_i)=y_i,\, i=0,\ldots,n$.
 
 Es decir, dados $n+1$ puntos en el plano, hallar un polinomio de grado mínimo, (más adelante veremos que dicho grado es $n$) tal que $P_n(x_i)=y_i,\, i=0,\ldots,n$.
 
@@ -331,7 +333,7 @@ En resumen, tenemos el teorema siguiente:
 ::: caja-lema
 **Teorema**.
 
-Sean $(x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)$, $n$ valores con $x_i\neq x_j$ para $i\neq j$ (es decir, las abscisas son todas diferentes). Entonces existe un único polinomio $P_n(x)$ de grado $n$
+Sean $(x_0,y_0),(x_1,y_1),\ldots,(x_n,y_n)$, $n+1$ valores con $x_i\neq x_j$ para $i\neq j$ (es decir, las abscisas son todas diferentes). Entonces existe un único polinomio $P_n(x)$ de grado $n$
  tal que $P_n(x_i)=y_i$, $i=0,\ldots,n$.
 :::
 
@@ -753,27 +755,29 @@ library(kableExtra)
 # 1. Creamos los datos con notación matemática de LaTeX ($...$)
 # Esto funciona tanto en HTML (gracias a MathJax) como en PDF.
 datos <- data.frame(
-  xi = c("$x_0$", "$x_1$", "$x_2$", "$x_3$", "$\\vdots$"),
-  Pi = c("$P_0$", "$P_1$", "$P_2$", "$P_3$", "$\\vdots$"),
-  Pi_1 = c("", "$P_{0,1}$", "$P_{1,2}$", "$P_{2,3}$", "$\\vdots$"),
-  Pi_2 = c("", "", "$P_{0,1,2}$", "$P_{1,2,3}$", "$\\vdots$"),
-  Pi_3 = c("", "", "", "$P_{0,1,2,3}$", "$\\vdots$"),
-  Dots = c("", "", "", "$\\cdots$", "$\\vdots$")
+    xi = c("$x_0$", "$x_1$", "$x_2$", "$x_3$", "$\\vdots$"),
+    Pi = c("$P_0$", "$P_1$", "$P_2$", "$P_3$", "$\\vdots$"),
+    Pi_1 = c("", "$P_{0,1}$", "$P_{1,2}$", "$P_{2,3}$", "$\\vdots$"),
+    Pi_2 = c("", "", "$P_{0,1,2}$", "$P_{1,2,3}$", "$\\vdots$"),
+    Pi_3 = c("", "", "", "$P_{0,1,2,3}$", "$\\vdots$"),
+    Dots = c("", "", "", "$\\cdots$", "$\\vdots$")
 )
 
 # 2. Generamos la tabla con kable y kableExtra
-kbl(datos, 
+kbl(datos,
     col.names = c("$x_i$", "$P_i$", "$P_{i-1,i}$", "$P_{i-2,i-1,i}$", "$P_{i-3,i-2,i-1,i}$", "$\\cdots$"),
-    align = "c", 
-    escape = FALSE) %>% # escape = FALSE es vital para que lea los símbolos $
-  kable_styling(bootstrap_options = c("striped", "hover"), 
-                latex_options = c("striped", "hold_position"),
-                full_width = FALSE) %>%
-  # 3. Estilizamos el encabezado (Azul con texto blanco)
-  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
-  # 4. Estilizamos la columna de xi para que se destaque un poco (opcional)
-  column_spec(1, bold = TRUE, border_right = TRUE)
-
+    align = "c",
+    escape = FALSE
+) %>% # escape = FALSE es vital para que lea los símbolos $
+    kable_styling(
+        bootstrap_options = c("striped", "hover"),
+        latex_options = c("striped", "hold_position"),
+        full_width = FALSE
+    ) %>%
+    # 3. Estilizamos el encabezado (Azul con texto blanco)
+    row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+    # 4. Estilizamos la columna de xi para que se destaque un poco (opcional)
+    column_spec(1, bold = TRUE, border_right = TRUE)
 ```
 
 **Notación**: Se denota por $Q_{i,j}$ el polinomio interpolante de Lagrange de grado $j$ que pasa
@@ -798,23 +802,26 @@ Con esta nueva notación se puede obtener el valor del polinomio interpolador de
 library(knitr)
 library(kableExtra)
 datos_Q <- data.frame(
-  xi = c("$x_0$", "$x_1$", "$x_2$", "$x_3$", "$\\vdots$"),
-  Q_0 = c("$Q_{0,0}$", "$Q_{1,0}$", "$Q_{2,0}$", "$Q_{3,0}$", "$\\vdots$"),
-  Q_1 = c("", "$Q_{1,1}$", "$Q_{2,1}$", "$Q_{3,1}$", "$\\vdots$"),
-  Q_2 = c("", "", "$Q_{2,2}$", "$Q_{3,2}$", "$\\vdots$"),
-  Q_3 = c("", "", "", "$Q_{3,3}$", "$\\vdots$"),
-  Dots = c("", "", "", "$\\cdots$", "$\\vdots$")
+    xi = c("$x_0$", "$x_1$", "$x_2$", "$x_3$", "$\\vdots$"),
+    Q_0 = c("$Q_{0,0}$", "$Q_{1,0}$", "$Q_{2,0}$", "$Q_{3,0}$", "$\\vdots$"),
+    Q_1 = c("", "$Q_{1,1}$", "$Q_{2,1}$", "$Q_{3,1}$", "$\\vdots$"),
+    Q_2 = c("", "", "$Q_{2,2}$", "$Q_{3,2}$", "$\\vdots$"),
+    Q_3 = c("", "", "", "$Q_{3,3}$", "$\\vdots$"),
+    Dots = c("", "", "", "$\\cdots$", "$\\vdots$")
 )
 
 kbl(datos_Q,
     col.names = c("$x_i$", "$Q_{i,0}$", "$Q_{i,1}$", "$Q_{i,2}$", "$Q_{i,3}$", "$\\cdots$"),
     align = "c",
-    escape = FALSE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"),
-                latex_options = c("striped", "hold_position"),
-                full_width = FALSE) %>%
-  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
-  column_spec(1, bold = TRUE, border_right = TRUE)
+    escape = FALSE
+) %>%
+    kable_styling(
+        bootstrap_options = c("striped", "hover"),
+        latex_options = c("striped", "hold_position"),
+        full_width = FALSE
+    ) %>%
+    row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+    column_spec(1, bold = TRUE, border_right = TRUE)
 ```
 
 ::: cuadro-alg
@@ -850,21 +857,24 @@ La tabla de Neville es la siguiente:
 library(knitr)
 library(kableExtra)
 datos_Neville <- data.frame(
-  xi = c("$x_0=0$", "$x_1=1$", "$x_2=3$", "$x_3=5$"),
-  Qi0 = c("$Q_{0,0}=0$", "$Q_{1,0}=1$", "$Q_{2,0}=-3$", "$Q_{3,0}=5$"),
-  Qi1 = c("", "", "", ""),
-  Qi2 = c("", "", "", ""),
-  Qi3 = c("", "", "", "")
+    xi = c("$x_0=0$", "$x_1=1$", "$x_2=3$", "$x_3=5$"),
+    Qi0 = c("$Q_{0,0}=0$", "$Q_{1,0}=1$", "$Q_{2,0}=-3$", "$Q_{3,0}=5$"),
+    Qi1 = c("", "", "", ""),
+    Qi2 = c("", "", "", ""),
+    Qi3 = c("", "", "", "")
 )
 
 kbl(datos_Neville,
     col.names = c("$x_i$", "$Q_{i,0}$", "$Q_{i,1}$", "$Q_{i,2}$", "$Q_{i,3}$"),
-    align = "c", escape = FALSE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"),
-                latex_options = c("striped", "hold_position"),
-                full_width = FALSE) %>%
-  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
-  column_spec(1, bold = TRUE, border_right = TRUE)
+    align = "c", escape = FALSE
+) %>%
+    kable_styling(
+        bootstrap_options = c("striped", "hover"),
+        latex_options = c("striped", "hold_position"),
+        full_width = FALSE
+    ) %>%
+    row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+    column_spec(1, bold = TRUE, border_right = TRUE)
 ```
 Calcular $Q_{1,1}$:
 $$
@@ -897,21 +907,24 @@ La tabla de Neville es la siguiente:
 library(knitr)
 library(kableExtra)
 datos_Neville2 <- data.frame(
-  xi = c("$x_0=0$", "$x_1=1$", "$x_2=3$", "$x_3=5$"),
-  Qi0 = c("$0$", "$1$", "$-3$", "$5$"),
-  Qi1 = c("", "$2$", "$-1$", "$-7$"),
-  Qi2 = c("", "", "$0$", "$-2.5$"),
-  Qi3 = c("", "", "", "$-1$")
+    xi = c("$x_0=0$", "$x_1=1$", "$x_2=3$", "$x_3=5$"),
+    Qi0 = c("$0$", "$1$", "$-3$", "$5$"),
+    Qi1 = c("", "$2$", "$-1$", "$-7$"),
+    Qi2 = c("", "", "$0$", "$-2.5$"),
+    Qi3 = c("", "", "", "$-1$")
 )
 
 kbl(datos_Neville2,
     col.names = c("$x_i$", "$Q_{i,0}$", "$Q_{i,1}$", "$Q_{i,2}$", "$Q_{i,3}$"),
-    align = "c", escape = FALSE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"),
-                latex_options = c("striped", "hold_position"),
-                full_width = FALSE) %>%
-  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
-  column_spec(1, bold = TRUE, border_right = TRUE)
+    align = "c", escape = FALSE
+) %>%
+    kable_styling(
+        bootstrap_options = c("striped", "hover"),
+        latex_options = c("striped", "hold_position"),
+        full_width = FALSE
+    ) %>%
+    row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+    column_spec(1, bold = TRUE, border_right = TRUE)
 ```
 
 El valor del polinomio interpolador de Lagrange en el punto $x=2$ es $Q_{3,3}=-1$.
@@ -942,22 +955,25 @@ La tabla de Neville es la siguiente:
 library(knitr)
 library(kableExtra)
 datos_Neville3 <- data.frame(
-  xi = c("$x_0=0$", "$x_1=1$", "$x_2=3$", "$x_3=5$", "$x_4=6$"),
-  Qi0 = c("$0$", "$1$", "$-3$", "$5$", "$0$"),
-  Qi1 = c("", "$2$", "$-1$", "$-7$", "$20$"),
-  Qi2 = c("", "", "$0$", "$-2.5$", "$-16$"),
-  Qi3 = c("", "", "", "$-1$", "$-5.2$"),
-  Qi4 = c("", "", "", "", "$-2.4$")
+    xi = c("$x_0=0$", "$x_1=1$", "$x_2=3$", "$x_3=5$", "$x_4=6$"),
+    Qi0 = c("$0$", "$1$", "$-3$", "$5$", "$0$"),
+    Qi1 = c("", "$2$", "$-1$", "$-7$", "$20$"),
+    Qi2 = c("", "", "$0$", "$-2.5$", "$-16$"),
+    Qi3 = c("", "", "", "$-1$", "$-5.2$"),
+    Qi4 = c("", "", "", "", "$-2.4$")
 )
 
 kbl(datos_Neville3,
     col.names = c("$x_i$", "$Q_{i,0}$", "$Q_{i,1}$", "$Q_{i,2}$", "$Q_{i,3}$", "$Q_{i,4}$"),
-    align = "c", escape = FALSE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"),
-                latex_options = c("striped", "hold_position"),
-                full_width = FALSE) %>%
-  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
-  column_spec(1, bold = TRUE, border_right = TRUE)
+    align = "c", escape = FALSE
+) %>%
+    kable_styling(
+        bootstrap_options = c("striped", "hover"),
+        latex_options = c("striped", "hold_position"),
+        full_width = FALSE
+    ) %>%
+    row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+    column_spec(1, bold = TRUE, border_right = TRUE)
 ```
 :::
 
@@ -1090,22 +1106,25 @@ Para el cálculo de las diferencias divididas se puede usar la siguiente tabla:
 library(knitr)
 library(kableExtra)
 datos_diferencias_divididas <- data.frame(
-  xi = c("$x_0$", "$x_1$", "$x_2$", "$\\vdots$", "$x_n$"),
-  Qi0 = c("$f[x_0]$", "$f[x_1]$", "$f[x_2]$", "$\\vdots$", "$f[x_n]$"),
-  Qi1 = c("", "$f[x_0, x_1]$", "$f[x_1, x_2]$", "$\\vdots$", "$f[x_{n-1}, x_n]$"),
-  Qi2 = c("", "", "$f[x_0, x_1, x_2]$", "$\\vdots$", "$f[x_{n-2}, x_{n-1}, x_n]$"),
-  dots = c("", "", "", "$\\ddots$", "$\\cdots$"),
-  Qin = c("", "", "", "", "$f[x_0, x_1, \\ldots, x_n]$")
+    xi = c("$x_0$", "$x_1$", "$x_2$", "$\\vdots$", "$x_n$"),
+    Qi0 = c("$f[x_0]$", "$f[x_1]$", "$f[x_2]$", "$\\vdots$", "$f[x_n]$"),
+    Qi1 = c("", "$f[x_0, x_1]$", "$f[x_1, x_2]$", "$\\vdots$", "$f[x_{n-1}, x_n]$"),
+    Qi2 = c("", "", "$f[x_0, x_1, x_2]$", "$\\vdots$", "$f[x_{n-2}, x_{n-1}, x_n]$"),
+    dots = c("", "", "", "$\\ddots$", "$\\cdots$"),
+    Qin = c("", "", "", "", "$f[x_0, x_1, \\ldots, x_n]$")
 )
 
 kbl(datos_diferencias_divididas,
     col.names = c("$x_i$", "$DD_{0}$", "$DD_{1}$", "$DD_{2}$", "$\\cdots$", "$DD_{n}$"),
-    align = "c", escape = FALSE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"),
-                latex_options = c("striped", "hold_position"),
-                full_width = FALSE) %>%
-  row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
-  column_spec(1, bold = TRUE, border_right = TRUE)
+    align = "c", escape = FALSE
+) %>%
+    kable_styling(
+        bootstrap_options = c("striped", "hover"),
+        latex_options = c("striped", "hold_position"),
+        full_width = FALSE
+    ) %>%
+    row_spec(0, background = "#3a86e8", color = "white", bold = TRUE) %>%
+    column_spec(1, bold = TRUE, border_right = TRUE)
 ```
 
 ```{python, echo=FALSE, message=FALSE, warning=FALSE}
@@ -1869,7 +1888,313 @@ plt.tight_layout();
 plt.show()
 
 ```
+:::
 
+# Método de los mínimos cuadrados. Polinomio aproximador
+
+* Supongamos que se han medido un conjunto de pares de datos $(x_i, y_i)$ en una experimentación, por ejemplo, la posición de un móvil en ciertos instantes de tiempo.
+
+* Se desea obtener una función $y=f(x)$ que se ajuste lo mejor posible a los valores experimentales. Se pueden ensayar muchas funciones, rectas, polinomios, funciones potenciales o logarítmicas.
+
+* Una vez establecida la función a ajustar se determinan sus parámetros, en el caso de un polinomio, serán los coeficientes del polinomio de modo que los datos experimentales se desvíen lo menos posible de la fórmula empírica.
+
+* La función más sencilla es la función lineal $y=ax+b$. El procedimiento de ajustar los datos experimentales a una línea recta se denomina regresión lineal.
+
+## Polinomio aproximador
+
+* Queremos aproximar un polinomio de grado $n$, a un conjunto de $m+1$ pares de datos $(x_i, y_i)$ de modo que $n\leq m$.
+
+* Sea el polinomio
+
+::: recuadro-gris
+$$
+P(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_n x^n
+$$
+:::
+
+* Se calcula la cantidad
+
+::: recuadro-gris
+$$
+S = \sum_{i=0}^{m} (P(x_i)-y_i)^2 = \sum_{i=0}^{m} (a_0 + a_1 x_i + a_2 x_i^2 + \cdots + a_n x_i^n - y_i)^2
+$$
+:::
+
+* Se buscan los valores de los coeficientes $a_0, a_1, \ldots, a_n$ que minimicen $S$.
+
+* Hagamos las derivadas parciales de S respecto de $a_0, a_1, a_2, \ldots, a_n$ iguales a cero.
+
+::: recuadro-gris
+$$
+\dfrac{\partial S}{\partial a_0} = 0, \quad \dfrac{\partial S}{\partial a_1} = 0, \quad \ldots, \quad \dfrac{\partial S}{\partial a_n} = 0
+$$
+\begin{align*}
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_0} & = \sum_{i=0}^{m}(a_0 + a_1 x_i + a_2 x_i^2 + \cdots + a_n x_i^n - y_i)\cdot 1=0\\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_1} & = \sum_{i=0}^{m}(a_0 + a_1 x_i + a_2 x_i^2 + \cdots + a_n x_i^n - y_i)\cdot x_i=0\\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_2} & = \sum_{i=0}^{m}(a_0 + a_1 x_i + a_2 x_i^2 + \cdots + a_n x_i^n - y_i)\cdot x_i^2=0\\
+\vdots & \\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_n} & = \sum_{i=0}^{m}(a_0 + a_1 x_i + a_2 x_i^2 + \cdots + a_n x_i^n - y_i)\cdot x_i^n=0
+\end{align*}
+:::
+
+* Obtenemos un sistema de $n+1$ ecuaciones con $n+1$ incógnitas, $a_0, a_1, a_2, \ldots, a_n$.
+
+* Supongamos que tenemos 4 pares de datos y que queremos ajustarlos al polinomio de segundo grado $y=a_0+a_1x+a_2x^2$.
+
+```{r, echo=FALSE}
+# Datos del problema
+df_points_h <- data.frame(
+    "$x_i$" = "$y_i$",
+    "$x_0$" = "$y_0$",
+    "$x_1$" = "$y_1$",
+    "$x_2$" = "$y_2$",
+    "$x_3$" = "$y_3$",
+    check.names = FALSE
+)
+
+# Colores
+blue_color <- "#0a80ff"
+
+# Creamos la tabla y aplicamos los estilos
+knitr::kable(df_points_h, align = "c", escape = FALSE) %>%
+    kableExtra::kable_styling(
+        bootstrap_options = c("bordered", "condensed"),
+        full_width = FALSE,
+        position = "center",
+        font_size = 20
+    ) %>%
+    # 1. Fondo BLANCO para columnas de datos (2 a 5), INCLUYENDO EL ENCABEZADO
+    kableExtra::column_spec(2:5,
+        background = "white",
+        color = "black",
+        include_thead = TRUE,
+        width = "3em"
+    ) %>%
+    # 2. Fondo AZUL para la Columna 1 (etiqueta), INCLUYENDO EL ENCABEZADO
+    kableExtra::column_spec(1,
+        bold = TRUE,
+        border_right = TRUE,
+        background = blue_color,
+        color = "white",
+        include_thead = TRUE,
+        width = "3em"
+    ) %>%
+    # 3. Estilizamos las filas (negrita)
+    kableExtra::row_spec(0:1,
+        bold = TRUE
+    ) %>%
+    # 4. Bordes negros forzados con CSS
+    kableExtra::add_footnote(
+        label = paste0(
+            '<style type="text/css">',
+            ".table.table-bordered { border: 2px solid black !important; }",
+            ".table.table-bordered th, .table.table-bordered td { border: 1px solid black !important; }",
+            "</style>"
+        ),
+        notation = "none",
+        escape = FALSE
+    )
+```
+
+
+
+* Entonces, el sistema de ecuaciones es:
+
+::: recuadro-gris
+\begin{align*}
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_0} & = \sum_{i=0}^{3}(a_0 + a_1 x_i + a_2 x_i^2 - y_i)\cdot 1=0\\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_1} & = \sum_{i=0}^{3}(a_0 + a_1 x_i + a_2 x_i^2 - y_i)\cdot x_i=0\\
+\dfrac{1}{2}\dfrac{\partial S}{\partial a_2} & = \sum_{i=0}^{3}(a_0 + a_1 x_i + a_2 x_i^2 - y_i)\cdot x_i^2=0
+\end{align*}
+
+Desarrollando las sumatorias obtenemos:
+
+\begin{align*}
+(a_0 + a_1 x_0 + a_2 x_0^2)+(a_0 + a_1 x_1 + a_2 x_1^2)+(a_0 + a_1 x_2 + a_2 x_2^2)+&\\
+(a_0 + a_1 x_3 + a_2 x_3^2)-(y_0+y_1+y_2+y_3)&=0\\
+(a_0 + a_1 x_0 + a_2 x_0^2)x_0 + (a_0 + a_1 x_1 + a_2 x_1^2)x_1 + (a_0 + a_1 x_2 + a_2 x_2^2)x_2 +&\\
+(a_0 + a_1 x_3 + a_2 x_3^2)x_3 -(y_0x_0+y_1x_1+y_2x_2+y_3x_3)&=0\\
+(a_0 + a_1 x_0 + a_2 x_0^2)x_0^2+(a_0 + a_1 x_1 + a_2 x_1^2)x_1^2+(a_0 + a_1 x_2 + a_2 x_2^2)x_2^2+&\\
+(a_0 + a_1 x_3 + a_2 x_3^2)x_3^2-(y_0x_0^2+y_1x_1^2+y_2x_2^2+y_3x_3^2)&=0
+\end{align*}
+
+Agrupando términos obtenemos:
+
+\begin{align*}
+(1 + 1 + 1 + 1)a_0+(x_0 + x_1 + x_2 + x_3)a_1+(x_0^2 + x_1^2 + x_2^2 + x_3^2)a_2&=y_0+y_1+y_2+y_3\\
+(x_0 + x_1 + x_2 + x_3)a_0+(x_0^2 + x_1^2 + x_2^2 + x_3^2)a_1+(x_0^3 + x_1^3 + x_2^3 + x_3^3)a_2&=y_0x_0+y_1x_1+y_2x_2+y_3x_3\\
+(x_0^2 + x_1^2 + x_2^2 + x_3^2)a_0+(x_0^3 + x_1^3 + x_2^3 + x_3^3)a_1+(x_0^4 + x_1^4 + x_2^4 + x_3^4)a_2&=y_0x_0^2+y_1x_1^2+y_2x_2^2+y_3x_3^2
+\end{align*}
+
+ Formando la matriz $A$ y el vector $b$ Se despeja $a_0, a_1, a_2$
+:::
+
+Regresando al sistema de $n+1$ ecuaciones con $n+1$ incógnitas. Introduzcamos las expresiones:
+
+::: recuadro-gris
+\begin{align*}
+s_k & = x_0^k + x_1^k + x_2^k + \cdots + x_m^k \quad (k=0,1,\ldots,2n)\\
+t_k & = x_0^k y_0 + x_1^k y_1 + x_2^k y_2 + \cdots + x_m^k y_m \quad (k=0,1,\ldots,2n)
+\end{align*}
+
+Se obtiene el siguiente Sistema de Ecuaciones lineales
+$$
+\begin{pmatrix}
+    s_0 & s_1 & \cdots & s_n\\
+    s_1 & s_2 & \cdots & s_{n+1}\\
+    \vdots & \vdots & \ddots & \vdots\\
+    s_n & s_{n+1} & \cdots & s_{2n}
+\end{pmatrix}
+\begin{pmatrix}
+    a_0\\
+    a_1\\
+    \vdots\\
+    a_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+    t_0\\
+    t_1\\
+    \vdots\\
+    t_n
+\end{pmatrix}
+$$
+:::
+
+* Si todos los puntos son distintos, el sistema de ecuaciones tiene una solución única.
+
+* Para resolver el sistema de ecuaciones se puede emplear alguno de los procedimientos vistos en la segunda unidad.
+
+* El método empleado en este programa es el método de iteración. Ya que la matriz del sistema de ecuaciones es positiva, para este sistema se emplea el procedimiento de Seidel.
+
+* Tambien se puede emplear la Factorización de Cholesky, dado que la matriz es simétrica y positiva definida, siempre que $n$ no sea muy grande.
+
+::: caja-ejemplo
+#### Ejemplo 9: Ajuste de mínimos cuadrados
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generar 5 datos aleatorios
+np.random.seed(42) # para reproducibilidad
+x_data = np.linspace(0, 10, 5) + np.random.normal(0, 0.5, 5)
+y_data = 2 * x_data + 1 + np.random.normal(0, 2, 5) # Datos con una tendencia lineal
+
+print("Datos originales:")
+print("x_data:", x_data)
+print("y_data:", y_data)
+
+# Polinomio de grado 1 (lineal)
+# Coeficientes: [a1, a0] para a1*x + a0
+coeffs_deg1 = np.polyfit(x_data, y_data, 1)
+poly_deg1 = np.poly1d(coeffs_deg1)
+
+# Polinomio de grado 2 (cuadrático)
+# Coeficientes: [a2, a1, a0] para a2*x^2 + a1*x + a0
+coeffs_deg2 = np.polyfit(x_data, y_data, 2)
+poly_deg2 = np.poly1d(coeffs_deg2)
+
+# Puntos para graficar los polinomios ajustados
+x_plot = np.linspace(min(x_data) - 1, max(x_data) + 1, 100)
+y_plot_deg1 = poly_deg1(x_plot)
+y_plot_deg2 = poly_deg2(x_plot)
+
+# Graficar resultados
+plt.figure(figsize=(12, 5));
+
+# Gráfico para el polinomio de grado 1
+plt.subplot(1, 2, 1);
+plt.scatter(x_data, y_data, label='Datos Originales', color='blue', s=50);
+plt.plot(x_plot, y_plot_deg1, label=f'Ajuste Lineal (y = {coeffs_deg1[0]:.2f}x + {coeffs_deg1[1]:.2f})', color='red');
+plt.title('Ajuste de Mínimos Cuadrados (Grado 1)');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+
+# Gráfico para el polinomio de grado 2
+plt.subplot(1, 2, 2);
+plt.scatter(x_data, y_data, label='Datos Originales', color='blue', s=50);
+plt.plot(x_plot, y_plot_deg2, label=f'Ajuste Cuadrático (y = {coeffs_deg2[0]:.2f}x^2 + {coeffs_deg2[1]:.2f}x + {coeffs_deg2[2]:.2f})', color='green');
+plt.title('Ajuste de Mínimos Cuadrados (Grado 2)');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+
+plt.tight_layout();
+plt.show();
+# Calcular el error (MSE) para ambas aproximaciones
+y_pred_deg1 = poly_deg1(x_data)
+mse_deg1 = np.mean((y_data - y_pred_deg1)**2)
+
+y_pred_deg2 = poly_deg2(x_data)
+mse_deg2 = np.mean((y_data - y_pred_deg2)**2)
+
+print("Valores estimados (polinomio de grado 1)")
+print("y_pred_deg1:", y_pred_deg1)
+print("Valores estimados (polinomio de grado 2)")
+print("y_pred_deg2:", y_pred_deg2)
+
+print(f"Error Cuadrático Medio (MSE) para el ajuste lineal (Grado 1): {mse_deg1:.4f}")
+print(f"Error Cuadrático Medio (MSE) para el ajuste cuadrático (Grado 2): {mse_deg2:.4f}")
+
+```
+:::
+
+::: caja-ejemplo
+#### Ejemplo 10: Ajuste de mínimos cuadrados caso Runge
+
+Dada la función de Runge $f(x) = \frac{1}{1+25x^2}$, halla el polinomio de grado menor o igual que 20 que mejor aproxima la función en el sentido de mínimos cuadrados en $[-5, 5]$, tomando como datos los valores de $f(x)$ en 100 nodos igualmente espaciados.
+
+```{python, echo=FALSE}
+# Función de Runge
+def runge_function(x):
+    return 1 / (1 + 25*x**2)
+
+# Intervalo y número de nodos
+x_min, x_max = -5, 5
+num_nodes = 100
+degree = 20
+
+# Generar nodos igualmente espaciados
+x_data_runge = np.linspace(x_min, x_max, num_nodes)
+y_data_runge = runge_function(x_data_runge)
+
+#print(f"Datos originales para la función de Runge ({num_nodes} puntos):");
+#print("x_data_runge (primeros 5):", x_data_runge[:5]);
+#print("y_data_runge (primeros 5):", y_data_runge[:5]);
+
+# Ajustar un polinomio de grado 20
+coeffs_runge = np.polyfit(x_data_runge, y_data_runge, degree)
+poly_runge = np.poly1d(coeffs_runge)
+
+#print(f"\nCoeficientes del polinomio de grado {degree} para la función de Runge:");
+#print(coeffs_runge);
+
+# Puntos para graficar la función original y el polinomio ajustado
+x_plot_runge = np.linspace(x_min, x_max, 500);
+y_true_runge = runge_function(x_plot_runge);
+y_fit_runge = poly_runge(x_plot_runge);
+
+# Graficar resultados
+plt.figure(figsize=(10, 6));
+plt.plot(x_plot_runge, y_true_runge, label='Función de Runge $f(x) = 1/(1+25x^2)$', color='blue');
+plt.plot(x_plot_runge, y_fit_runge, label=f'Ajuste Polinomial (Grado {degree})', color='red', linestyle='--');
+plt.scatter(x_data_runge, y_data_runge, label='Nodos de Datos', color='green', s=20, alpha=0.6);
+plt.title(f'Ajuste de Mínimos Cuadrados para la Función de Runge (Grado {degree})');
+plt.xlabel('x');
+plt.ylabel('y');
+plt.legend();
+plt.grid(True);
+plt.show();
+
+# Calcular el error (MSE) para el ajuste
+y_pred_runge = poly_runge(x_data_runge);
+mse_runge = np.mean((y_data_runge - y_pred_runge)**2);
+print(f"\nError Cuadrático Medio (MSE) para el ajuste de la función de Runge (Grado {degree}): {mse_runge:.8f}");
+```
+:::
 
 
 ------------------------------------------------------------------------
