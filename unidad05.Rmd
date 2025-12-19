@@ -614,9 +614,44 @@ plt.legend()
 plt.grid(True)
 plt.show()
 ```
+## Fórmulas Compuestas
 
+* Cuando la distancia entre los nodos aumenta, el error que se comete, de forma general, también aumenta considerablemente.
 
+* Para conseguir una mejor aproximación, se puede dividir el intervalo $[a,b]$ en $N$ subintervalos y utilizar una fórmula de cuadratura en cada uno de los subintervalos. Por linealidad de la integral, se tendrá
 
+$$
+a=x_0<x_1<\cdots<x_N=b \Rightarrow \int_a^bf(x)dx=\int_{x_0}^{x_1}f(x)dx+\int_{x_1}^{x_2}f(x)dx+\cdots+\int_{x_{N-1}}^{x_N}f(x)dx
+$$
+
+* La aproximación de las fórmulas compuestas consiste en aplicar una fórmula de cuadratura en cada subintervalo $[x_{i-1},x_i]$.
+
+### Regla del Trapecio Compuesta
+
+* En este caso, la fórmula quedaría de la forma siguiente, teniendo en cuenta que la longitud de cada subintervalo es $h=\dfrac{b-a}{N}$.
+
+::: recuadro-gris
+\begin{align*}
+\int_a^bf(x)dx & = \int_{x_0}^{x_1}f(x)dx+\int_{x_1}^{x_2}f(x)dx+\cdots+\int_{x_{N-1}}^{x_N}f(x)dx\\
+& = \dfrac{x_1-x_0}{2}\left[f(x_0)+f(x_1)\right]+\dfrac{x_2-x_1}{2}\left[f(x_1)+f(x_2)\right]+\cdots+\dfrac{x_N-x_{N-1}}{2}\left[f(x_{N-1})+f(x_N)\right]\\
+& = \dfrac{h}{2}\left[f(x_0)+2f(x_1)+2f(x_2)+\cdots+2f(x_{N-1})+f(x_N)\right]\\
+& = \dfrac{h}{2}\left[f(x_0)+f(x_N)+2\sum_{i=1}^{N-1}f(x_i)\right]
+\end{align*}
+:::
+
+### Regla de Simpson Compuesta
+
+* En este caso, la fórmula quedaría de la forma siguiente, teniendo en cuenta que se divide el intervalo $[a,b]$ en $m=2N$ subintervalos y la longitud de cada subintervalo es $h=\dfrac{b-a}{2N}$.
+
+::: recuadro-gris
+\begin{align*}
+\int_a^bf(x)dx & = \int_{x_0}^{x_2}f(x)dx+\int_{x_2}^{x_4}f(x)dx+\cdots+\int_{x_{m-2}}^{x_m}f(x)dx\\
+& = \dfrac{1}{3}\dfrac{x_2-x_0}{2}\left[f(x_0)+4f(x_1)+f(x_2)\right]+\dfrac{1}{3}\dfrac{x_4-x_2}{2}\left[f(x_2)+4f(x_3)+f(x_4)\right]+\cdots\\
+&+\dfrac{1}{3}\dfrac{x_m-x_{m-2}}{2}\left[f(x_{m-2})+4f(x_{m-1})+f(x_m)\right]\\
+& = \dfrac{h}{6}\left[f(x_0)+4f(x_1)+2f(x_2)+\cdots+2f(x_{m-2})+4f(x_{m-1})+f(x_m)\right]\\
+& = \dfrac{h}{6}\left[f(x_0)+f(x_m)+2\sum_{i=1}^{N-1}f(x_{2i})+4\sum_{i=1}^{N}f(x_{2i-1})\right]
+\end{align*}
+:::
 
 ## Guía de ejercicios
 En el siguiente enlace `Ejercicios_Unidad5` encontrará una lista de ejercicios relacionado con los distintos tópicos cubiertos en esta cuarta unidad.

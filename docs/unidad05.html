@@ -1061,7 +1061,73 @@ tiene que:</p></li>
 I(f) =\dfrac{h}{3}\left[f(a)+4f\left(\frac{a+b}{2}\right)+f(b)\right]
 \end{align*}\]</span></p>
 </div>
-<p><img src="unidad05_files/figure-html/unnamed-chunk-3-5.png" width="672" /></p>
+<p><img src="unidad05_files/figure-html/unnamed-chunk-3-5.png" width="672" />
+## Fórmulas Compuestas</p>
+<ul>
+<li><p>Cuando la distancia entre los nodos aumenta, el error que se
+comete, de forma general, también aumenta considerablemente.</p></li>
+<li><p>Para conseguir una mejor aproximación, se puede dividir el
+intervalo <span class="math inline">\([a,b]\)</span> en <span
+class="math inline">\(N\)</span> subintervalos y utilizar una fórmula de
+cuadratura en cada uno de los subintervalos. Por linealidad de la
+integral, se tendrá</p></li>
+</ul>
+<p><span class="math display">\[
+a=x_0&lt;x_1&lt;\cdots&lt;x_N=b \Rightarrow
+\int_a^bf(x)dx=\int_{x_0}^{x_1}f(x)dx+\int_{x_1}^{x_2}f(x)dx+\cdots+\int_{x_{N-1}}^{x_N}f(x)dx
+\]</span></p>
+<ul>
+<li>La aproximación de las fórmulas compuestas consiste en aplicar una
+fórmula de cuadratura en cada subintervalo <span
+class="math inline">\([x_{i-1},x_i]\)</span>.</li>
+</ul>
+<div id="regla-del-trapecio-compuesta" class="section level3"
+number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Regla del Trapecio
+Compuesta</h3>
+<ul>
+<li>En este caso, la fórmula quedaría de la forma siguiente, teniendo en
+cuenta que la longitud de cada subintervalo es <span
+class="math inline">\(h=\dfrac{b-a}{N}\)</span>.</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+\int_a^bf(x)dx &amp; =
+\int_{x_0}^{x_1}f(x)dx+\int_{x_1}^{x_2}f(x)dx+\cdots+\int_{x_{N-1}}^{x_N}f(x)dx\\
+&amp; =
+\dfrac{x_1-x_0}{2}\left[f(x_0)+f(x_1)\right]+\dfrac{x_2-x_1}{2}\left[f(x_1)+f(x_2)\right]+\cdots+\dfrac{x_N-x_{N-1}}{2}\left[f(x_{N-1})+f(x_N)\right]\\
+&amp; =
+\dfrac{h}{2}\left[f(x_0)+2f(x_1)+2f(x_2)+\cdots+2f(x_{N-1})+f(x_N)\right]\\
+&amp; = \dfrac{h}{2}\left[f(x_0)+f(x_N)+2\sum_{i=1}^{N-1}f(x_i)\right]
+\end{align*}\]</span></p>
+</div>
+</div>
+<div id="regla-de-simpson-compuesta" class="section level3"
+number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> Regla de Simpson
+Compuesta</h3>
+<ul>
+<li>En este caso, la fórmula quedaría de la forma siguiente, teniendo en
+cuenta que se divide el intervalo <span
+class="math inline">\([a,b]\)</span> en <span
+class="math inline">\(m=2N\)</span> subintervalos y la longitud de cada
+subintervalo es <span
+class="math inline">\(h=\dfrac{b-a}{2N}\)</span>.</li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[\begin{align*}
+\int_a^bf(x)dx &amp; =
+\int_{x_0}^{x_2}f(x)dx+\int_{x_2}^{x_4}f(x)dx+\cdots+\int_{x_{m-2}}^{x_m}f(x)dx\\
+&amp; =
+\dfrac{1}{3}\dfrac{x_2-x_0}{2}\left[f(x_0)+4f(x_1)+f(x_2)\right]+\dfrac{1}{3}\dfrac{x_4-x_2}{2}\left[f(x_2)+4f(x_3)+f(x_4)\right]+\cdots\\
+&amp;+\dfrac{1}{3}\dfrac{x_m-x_{m-2}}{2}\left[f(x_{m-2})+4f(x_{m-1})+f(x_m)\right]\\
+&amp; =
+\dfrac{h}{6}\left[f(x_0)+4f(x_1)+2f(x_2)+\cdots+2f(x_{m-2})+4f(x_{m-1})+f(x_m)\right]\\
+&amp; =
+\dfrac{h}{6}\left[f(x_0)+f(x_m)+2\sum_{i=1}^{N-1}f(x_{2i})+4\sum_{i=1}^{N}f(x_{2i-1})\right]
+\end{align*}\]</span></p>
+</div>
+</div>
 </div>
 <div id="guía-de-ejercicios" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span> Guía de
@@ -1072,7 +1138,7 @@ esta cuarta unidad.</p>
 <p>Descargue el PDF de esta guía de ejercicios aqui:</p>
 <p><a href="Ejercicios_UnidadV.pdf">Descargar Guía PDF</a></p>
 <hr />
-<p><small>Última revisión: 17 de diciembre, 2025</small></p>
+<p><small>Última revisión: 19 de diciembre, 2025</small></p>
 </div>
 </div>
 
