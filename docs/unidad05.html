@@ -1061,8 +1061,11 @@ tiene que:</p></li>
 I(f) =\dfrac{h}{3}\left[f(a)+4f\left(\frac{a+b}{2}\right)+f(b)\right]
 \end{align*}\]</span></p>
 </div>
-<p><img src="unidad05_files/figure-html/unnamed-chunk-3-5.png" width="672" />
-## Fórmulas Compuestas</p>
+<p><img src="unidad05_files/figure-html/unnamed-chunk-3-5.png" width="672" /></p>
+</div>
+<div id="fórmulas-compuestas" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Fórmulas
+Compuestas</h2>
 <ul>
 <li><p>Cuando la distancia entre los nodos aumenta, el error que se
 comete, de forma general, también aumenta considerablemente.</p></li>
@@ -1082,8 +1085,8 @@ fórmula de cuadratura en cada subintervalo <span
 class="math inline">\([x_{i-1},x_i]\)</span>.</li>
 </ul>
 <div id="regla-del-trapecio-compuesta" class="section level3"
-number="3.2.1">
-<h3><span class="header-section-number">3.2.1</span> Regla del Trapecio
+number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Regla del Trapecio
 Compuesta</h3>
 <ul>
 <li>En este caso, la fórmula quedaría de la forma siguiente, teniendo en
@@ -1101,10 +1104,107 @@ class="math inline">\(h=\dfrac{b-a}{N}\)</span>.</li>
 &amp; = \dfrac{h}{2}\left[f(x_0)+f(x_N)+2\sum_{i=1}^{N-1}f(x_i)\right]
 \end{align*}\]</span></p>
 </div>
+<p>Cuando <span class="math inline">\(f \in \mathcal{C}^2([a,
+b])\)</span>, el error de esta regla satisface:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+R_T(f):= \int_a^bf(x)dx-I_T(f) = -\dfrac{(b-a)h^2}{12}f&#39;&#39;(\xi)
+\]</span> para algún <span class="math inline">\(\xi \in (a, b)\)</span>
+y, por lo tanto, <span class="math display">\[
+|R_T(f)| \leq \dfrac{M_2}{12}(b-a)h^2, \qquad\text{ con } M_2:= \max_{x
+\in [a,b]}|f&#39;&#39;(\xi)|
+\]</span></p>
+</div>
+<div id="ejemplo-3-regla-del-trapecio"
+class="section level4 caja-ejemplo" number="3.3.1.1">
+<h4><span class="header-section-number">3.3.1.1</span> Ejemplo 3: Regla
+del Trapecio</h4>
+<p>Calcular la integral de <span
+class="math inline">\(f(x)=x^3-6x^2+11x-6\)</span> en el intervalo <span
+class="math inline">\([1.3, 1.8]\)</span> aplicando la regla del
+trapecio simple y compuesto usando 6 subintervalos de igual
+longitud.</p>
+<ul>
+<li><strong>Trapecio simple</strong></li>
+</ul>
+<p>Se evalua la función en los extremos: <span
+class="math display">\[\begin{align*}
+f(x_0) &amp; = f(1.3) = 1.3^3 - 6(1.3)^2 + 11(1.3) - 6 = 0.357\\
+f(x_1) &amp; = f(1.8) = 1.8^3 - 6(1.8)^2 + 11(1.8) - 6 = 0.192
+\end{align*}\]</span></p>
+<p>Se calcula la distancia <span class="math inline">\(h=b-a = 1.8-1.3 =
+0.5\)</span></p>
+<p>Aplicamos la regla del trapecio: <span
+class="math display">\[\begin{align*}
+I_T(f) &amp; = \dfrac{h}{2}\left[f(x_0)+f(x_1)\right]\\
+&amp; = \dfrac{0.5}{2}\left[f(1.3)+f(1.8)\right]\\
+&amp; = \dfrac{0.5}{2}\left[0.357+0.192\right]\\
+&amp; = 0.13725
+\end{align*}\]</span></p>
+<ul>
+<li><strong>Trapecio compuesto</strong></li>
+</ul>
+<p>Se divide el intervalo <span class="math inline">\([a,b]\)</span> en
+<span class="math inline">\(N=6\)</span> subintervalos y la longitud de
+cada subintervalo es <span
+class="math inline">\(h=\dfrac{b-a}{N}=\dfrac{1.8-1.3}{6}=0.0833\)</span>.</p>
+<p>Se generan los nodos <span class="math display">\[\begin{align*}
+x_0 &amp; = 1.3\\
+x_1 &amp; =x_0+h=1.3833\\
+x_2 &amp; =x_1+h=1.4666\\
+x_3 &amp; =x_2+h=1.5499\\
+x_4 &amp; =x_3+h=1.6332\\
+x_5 &amp; =x_4+h=1.7165\\
+x_6 &amp; =x_5+h=1.8
+\end{align*}\]</span></p>
+<p>Se evalua la función en los nodos: <span
+class="math display">\[\begin{align*}
+f(x_0) &amp; = f(1.3) = 1.3^3 - 6(1.3)^2 + 11(1.3) - 6 = 0.357\\
+f(x_1) &amp; = f(1.3833) = 1.3833^3 - 6(1.3833)^2 + 11(1.3833) - 6 =
+0.382157\\
+f(x_2) &amp; = f(1.4666) = 1.4666^3 - 6(1.4666)^2 + 11(1.4666) - 6 =
+0.381639\\
+f(x_3) &amp; = f(1.5499) = 1.5499^3 - 6(1.5499)^2 + 11(1.5499) - 6 =
+0.358914\\
+f(x_4) &amp; = f(1.6332) = 1.6332^3 - 6(1.6332)^2 + 11(1.6332) - 6 =
+0.317449\\
+f(x_5) &amp; = f(1.7165) = 1.7165^3 - 6(1.7165)^2 + 11(1.7165) - 6 =
+0.260714\\
+f(x_6) &amp; = f(1.8) = 1.8^3 - 6(1.8)^2 + 11(1.8) - 6 = 0.192
+\end{align*}\]</span></p>
+<p>Aplicamos la regla del trapecio compuesta: <span
+class="math display">\[\begin{align*}
+I_T(f) &amp; =
+\dfrac{h}{2}\left[f(x_0)+f(x_1)+2\sum_{i=1}^{N-1}f(x_{i})^{5}\right]\\
+&amp; =
+\dfrac{0.0833}{2}\left[f(1.3)+f(1.8)+2\left[f(1.3833)+f(1.4666)+f(1.5499)+f(1.6332)+f(1.7165)\right]\right]\\
+&amp; =
+\dfrac{0.0833}{2}\left[0.357+0.192+2\left[0.382157+0.381639+0.358914+0.317449+0.260714\right]\right]\\
+&amp; = 0.164548
+\end{align*}\]</span></p>
+<pre class="python"><code>from sympy import symbols, integrate
+
+x = symbols(&#39;x&#39;)
+f = x**3 - 6*x**2 + 11*x - 6
+integral_exacta = integrate(f, (x, 1.3, 1.8))
+print(integral_exacta)</code></pre>
+<pre><code>## 0.165374999999999</code></pre>
+<p>Los errores de ambas aproximaciones son:</p>
+<pre class="python"><code># Error para la Regla del Trapecio Simple
+I_T = 0.13725
+error_T = abs(float(integral_exacta) - I_T)
+print(f&quot;Error para la Regla del Trapecio Simple: {error_T}&quot;)</code></pre>
+<pre><code>## Error para la Regla del Trapecio Simple: 0.02812499999999915</code></pre>
+<pre class="python"><code># Error para la Regla del Trapecio Compuesta
+I_T = 0.164548
+error_T = abs(float(integral_exacta) - I_T)
+print(f&quot;Error para la Regla del Trapecio Compuesta: {error_T}&quot;)</code></pre>
+<pre><code>## Error para la Regla del Trapecio Compuesta: 0.0008269999999991617</code></pre>
+</div>
 </div>
 <div id="regla-de-simpson-compuesta" class="section level3"
-number="3.2.2">
-<h3><span class="header-section-number">3.2.2</span> Regla de Simpson
+number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Regla de Simpson
 Compuesta</h3>
 <ul>
 <li>En este caso, la fórmula quedaría de la forma siguiente, teniendo en
@@ -1127,10 +1227,166 @@ class="math inline">\(h=\dfrac{b-a}{2N}\)</span>.</li>
 \dfrac{h}{6}\left[f(x_0)+f(x_m)+2\sum_{i=1}^{N-1}f(x_{2i})+4\sum_{i=1}^{N}f(x_{2i-1})\right]
 \end{align*}\]</span></p>
 </div>
+<p>Cuando <span class="math inline">\(f \in \mathcal{C}^4([a,
+b])\)</span>, el error de esta regla satisface:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+R_S(f):= \int_a^bf(x)dx-I_S(f) = -\dfrac{(b-a)h^4}{180}f^{(4)}(\xi)
+\]</span> para algún <span class="math inline">\(\xi \in (a, b)\)</span>
+y, por lo tanto, <span class="math display">\[
+|R_S(f)| \leq \dfrac{M_4}{180}(b-a)h^4, \qquad\text{ con } M_4:= \max_{x
+\in [a,b]}|f^{(4)}(\xi)|
+\]</span></p>
+</div>
+<div id="ejemplo-4-regla-de-simpson" class="section level4 caja-ejemplo"
+number="3.3.2.1">
+<h4><span class="header-section-number">3.3.2.1</span> Ejemplo 4: Regla
+de Simpson</h4>
+<ul>
+<li><strong>Ejemplo A</strong></li>
+</ul>
+<p>Utilizar la regla de Simpson para aproximar <span
+class="math inline">\(\int_1^4\dfrac{1}{x}dx\)</span></p>
+<p><strong>Simpson simple</strong></p>
+<p>Se evalua la función en los extremos y en el punto medio del
+intervalo <span class="math inline">\([a,b]\)</span>. <span
+class="math display">\[\begin{align*}
+f(x_0) &amp; = f(1) = \dfrac{1}{1} = 1\\
+f(x_1) &amp; = f(4) = \dfrac{1}{4} = 0.25\\
+f(x_m) &amp; = f(\frac{a+b}{2}) = f(\frac{1+4}{2}) = f(2.5) =
+\dfrac{1}{2.5} = 0.4
+\end{align*}\]</span></p>
+<p>Se calcula la distancia <span class="math inline">\(h=\frac{b-a}{2} =
+\frac{4-1}{2} = \frac{3}{2} = 1.5\)</span></p>
+<p>Aplicamos la regla de Simpson: <span
+class="math display">\[\begin{align*}
+I_S(f) &amp; = \dfrac{h}{3}\left[f(x_0)+4f(x_m)+f(x_1)\right]\\
+&amp; = \dfrac{1.5}{3}\left[f(1)+4f(2.5)+f(4)\right]\\
+&amp; = \dfrac{1.5}{3}\left[1+4\cdot
+\dfrac{1}{2.5}+\dfrac{1}{4}\right]\\
+&amp; = \dfrac{1.5}{3}\left[1+1.6+0.25\right]\\
+&amp; = \dfrac{1.5}{3}\left[2.85\right]\\
+&amp; = 1.425
+\end{align*}\]</span></p>
+<ul>
+<li><strong>Ejemplo B</strong></li>
+</ul>
+<p><strong>Simpson compuesto</strong> usando 6 subintervalos de igual
+longitud.</p>
+<p>Se divide el intervalo <span class="math inline">\([a,b]\)</span> en
+<span class="math inline">\(m=6\)</span> subintervalos y la longitud de
+cada subintervalo es <span
+class="math inline">\(h=\dfrac{b-a}{m}=\dfrac{4-1}{6}=\dfrac{1}{2}\)</span>.</p>
+<p>Se generan los nodos <span class="math display">\[\begin{align*}
+x_0 &amp; = 1\\
+x_1 &amp; =x_0+h=1+\dfrac{1}{2}=1.5\\
+x_2 &amp; =x_1+h=1.5+\dfrac{1}{2}=2\\
+x_3 &amp; =x_2+h=2+\dfrac{1}{2}=2.5\\
+x_4 &amp; =x_3+h=2.5+\dfrac{1}{2}=3\\
+x_5 &amp; =x_4+h=3+\dfrac{1}{2}=3.5\\
+x_6 &amp; =x_5+h=3.5+\dfrac{1}{2}=4
+\end{align*}\]</span></p>
+<p>Se evalua la función en los nodos: <span
+class="math display">\[\begin{align*}
+f(x_0) &amp; = f(1) = \dfrac{1}{1} = 1\\
+f(x_1) &amp; = f(1.5) = \dfrac{1}{1.5} = \dfrac{2}{3}\\
+f(x_2) &amp; = f(2) = \dfrac{1}{2} = 0.5\\
+f(x_3) &amp; = f(2.5) = \dfrac{1}{2.5} = \dfrac{2}{5}\\
+f(x_4) &amp; = f(3) = \dfrac{1}{3} = \dfrac{1}{3}\\
+f(x_5) &amp; = f(3.5) = \dfrac{1}{3.5} = \dfrac{2}{7}\\
+f(x_6) &amp; = f(4) = \dfrac{1}{4} = 0.25
+\end{align*}\]</span></p>
+<p>Aplicamos la regla de Simpson compuesta: <span
+class="math display">\[\begin{align*}
+I_S(f) &amp; =
+\dfrac{h}{3}\left[f(x_0)+4f(x_1)+2f(x_2)+4f(x_3)+2f(x_4)+4f(x_5)+f(x_6)\right]\\
+&amp; =
+\dfrac{\frac{1}{2}}{3}\left[f(1)+4f(1.5)+2f(2)+4f(2.5)+2f(3)+4f(3.5)+f(4)\right]\\
+&amp; = \dfrac{1}{6}\left[1+4\cdot \dfrac{2}{3}+2\cdot 0.5+4\cdot
+\dfrac{2}{5}+2\cdot \dfrac{1}{3}+4\cdot \dfrac{2}{7}+0.25\right]\\
+&amp; =
+\dfrac{1}{6}\left[1+\dfrac{8}{3}+1+\dfrac{8}{5}+\dfrac{2}{3}+\dfrac{8}{7}+0.25\right]\\
+&amp; = \dfrac{1}{6}\left[8.3261904\right]\\
+&amp; = 1.387694
+\end{align*}\]</span></p>
+<pre class="python"><code>from sympy import symbols, integrate
+
+x = symbols(&#39;x&#39;)
+f = 1/x
+integral_exacta = integrate(f, (x, 1, 4))
+print(integral_exacta)</code></pre>
+<pre><code>## log(4)</code></pre>
+<p>Los errores de ambas aproximaciones son:</p>
+<pre class="python"><code># Error para la Regla de Simpson Simple
+I_S = 1.425
+error_S = abs(float(integral_exacta) - I_S)
+print(f&quot;Error para la Regla de Simpson Simple: {error_S}&quot;)</code></pre>
+<pre><code>## Error para la Regla de Simpson Simple: 0.03870563888010947</code></pre>
+<pre class="python"><code># Error para la Regla de Simpson Compuesta
+I_S = 1.387694
+error_S = abs(float(integral_exacta) - I_S)
+print(f&quot;Error para la Regla de Simpson Compuesta: {error_S}&quot;)</code></pre>
+<pre><code>## Error para la Regla de Simpson Compuesta: 0.0013996388801094106</code></pre>
+<ul>
+<li><strong>Ejemplo C</strong></li>
+</ul>
+<p>Encuentre <span class="math inline">\(m\)</span> para que la regla de
+Simpson compuesta tenga un error menor a <span
+class="math inline">\(10^{-6}\)</span>.</p>
+<p><strong>Solución:</strong></p>
+<p>Debemos calcular el valor de <span class="math inline">\(m\)</span>
+que cumpla con la siguiente desigualdad: <span class="math display">\[
+|R_S(f)| \leq \dfrac{M_4}{180}(b-a)h^4 \leq 10^{-6}
+\]</span></p>
+<p>Donde <span class="math inline">\(M_4\)</span> es el máximo valor de
+la cuarta derivada de <span class="math inline">\(f\)</span> en el
+intervalo <span class="math inline">\([a,b]\)</span>. En este caso,
+<span class="math inline">\(f^{(4)}(x) = \dfrac{24}{x^5}\)</span> y
+<span class="math inline">\(M_4 = \max_{x \in [1,4]}|f^{(4)}(x)| =
+\max_{x \in [1,4]}\left|\dfrac{24}{x^5}\right| = \dfrac{24}{1^5} =
+24\)</span>.</p>
+<p>Entonces: <span class="math display">\[
+|R_S(f)| \leq \dfrac{24}{180}(4-1)h^4 \leq 10^{-6}
+\]</span></p>
+<p>Donde <span class="math inline">\(h = \dfrac{b-a}{m} =
+\dfrac{4-1}{m}\)</span>.</p>
+<p>Por lo tanto: <span class="math display">\[
+|R_S(f)| \leq \dfrac{24}{180}(4-1)\left(\dfrac{4-1}{m}\right)^4 \leq
+10^{-6}
+\]</span></p>
+<p>Despejando <span class="math inline">\(m\)</span>, se tiene que:
+<span class="math display">\[
+m^4 \geq \dfrac{24}{180}(4-1)^5\left(\dfrac{1}{10^{-6}}\right) =
+32400000
+\]</span></p>
+<p>Por lo tanto, <span class="math inline">\(m \geq \sqrt[4]{32400000}
+\approx 75.44\)</span>. Por lo tanto, debemos tomar <span
+class="math inline">\(m=76\)</span> para que el error sea menor a <span
+class="math inline">\(10^{-6}\)</span>.</p>
+<pre class="python"><code>from sympy import symbols, integrate
+
+x = symbols(&#39;x&#39;)
+f = 1/x
+integral_exacta = integrate(f, (x, 1, 4))
+m = 76
+h = (4-1)/m
+sum_par =0
+sum_impar =0
+for i in range(1,m,2):
+    sum_impar += f.subs(x, 1+i*h)
+for i in range(2,m,2):
+    sum_par += f.subs(x, 1+i*h)
+I_S = (h/3)*(f.subs(x, 1) + 4*sum_impar + 2*sum_par + f.subs(x, 4))
+print(I_S)</code></pre>
+<pre><code>## 1.38629444143560</code></pre>
+<pre class="python"><code>error_S = abs(float(integral_exacta) - I_S)
+print(f&quot;Error para la Regla de Simpson Compuesta: {error_S}&quot;)</code></pre>
+<pre><code>## Error para la Regla de Simpson Compuesta: 8.03157085282891E-8</code></pre>
 </div>
 </div>
-<div id="guía-de-ejercicios" class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> Guía de
+</div>
+<div id="guía-de-ejercicios" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Guía de
 ejercicios</h2>
 <p>En el siguiente enlace <code>Ejercicios_Unidad5</code> encontrará una
 lista de ejercicios relacionado con los distintos tópicos cubiertos en
@@ -1138,7 +1394,7 @@ esta cuarta unidad.</p>
 <p>Descargue el PDF de esta guía de ejercicios aqui:</p>
 <p><a href="Ejercicios_UnidadV.pdf">Descargar Guía PDF</a></p>
 <hr />
-<p><small>Última revisión: 19 de diciembre, 2025</small></p>
+<p><small>Última revisión: 07 de enero, 2026</small></p>
 </div>
 </div>
 
