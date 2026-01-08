@@ -166,7 +166,7 @@ y_0 & = 1\\
 y_1 & = y_0 + hf(x_0,y_0) = 1 + \frac{1}{20}(0+1) = 1 + \frac{1}{20} = 1.05\\
 y_2 & = y_1 + hf(x_1,y_1) = 1.05 + \frac{1}{20}(0.05+1.05) = 1.05 + \frac{1}{20}(1.1) = 1.105\\
 \vdots\\
-y_20 & = 3.306577
+y_{20} & = 3.306577
 \end{align*}
 
 ```{python, echo=FALSE}
@@ -209,9 +209,262 @@ plt.show()
 print(f"Resultado final aproximado (y_20): {y_vals[-1]:.6f}")
 print(f"Resultado final exacto (y(1)):     {sol_exacta(1):.6f}")
 ```
-
 :::
 
+# Método Mejorado de Euler
+
+* El método de Euler es un método de integración numérica que se utiliza para resolver ecuaciones diferenciales ordinarias (EDOs) de primer orden. Este método es simple y fácil de implementar, pero puede no ser el más preciso para problemas complejos.
+
+* Sea la E.D.O:
+$$
+y'=f(x,y),\qquad y(x_0)=y_0
+$$
+
+* Integramos la E.D.O. entre $x_0$ y $x_1$:
+$$
+\int_{x_0}^{x_1} y'\,dx = \int_{x_0}^{x_1} f(x,y)\,dx
+$$
+
+La primera integral es la integral indefinida de $y'$, que es $y$, y por el teorema fundamental del cálculo, la ecuación se convierte en:
+$$
+y(x_1) - y(x_0) = \int_{x_0}^{x_1} f(x,y)\,dx
+$$
+
+La segunda integral se puede aproximar usando la regla de trapecio y se tendría que:
+
+::: recuadro-gris
+$$
+y(x_1)-y_0 = \dfrac{h}{2}\left(f(x_0,y_0)+f(x_1,y_1)\right)
+$$
+Por lo tanto
+$$
+y_1 = y_0 + \dfrac{h}{2}\left(f(x_0,y_0)+f(x_1,y_1)\right)
+$$
+:::
+
+Aquí el problema se presenta por el término $y_1$ a la derecha de la ecuación. Entonces podemos calcular $y_1^p$, por Euler. Es decir,
+
+::: recuadro-gris
+$$
+y_1^p = y_0 + hf(x_0,y_0)
+$$
+
+Por lo tanto
+$$
+y_1 = y_0 + \dfrac{h}{2}\left(f(x_0,y_0)+f(x_1,y_1^p)\right)
+$$
+:::
+
+Este método es un ejemplo de los llamados métodos Predictor-Corrector, donde $y_{n+1}^p$ es el Predictor y $y_{n+1}$ el Corrector.
+
+::: caja-ejemplo
+#### Ejemplo 2
+
+Sea la E.D.O.:
+$$
+y'=f(x,y)=x+y,\qquad y(0)=1, \quad\text{con } x\in[0,1]\quad\text{ y }h=\frac{1}{20}
+$$
+
+\begin{align*}
+y_0 & = 1\\
+y_1^p &= y_0 +hf(x_0,y_0) = 1+\frac{1}{20}(0+1) = 1.05\\
+y_1 &= y_0 + \dfrac{h}{2}\left(f(x_0,y_0)+f(x_1,y_1^p)\right) = 1 + \dfrac{1}{40}\left[\left(0+1\right)+\left(0.05+1.05\right)\right] = 1.0525\\
+y_2^p &= y_1 +hf(x_1,y_1) = 1.0525 + \frac{1}{20}(0.05+1.0525) = 1.107625\\
+y_2 &= y_1 + \dfrac{h}{2}\left(f(x_1,y_1)+f(x_2,y_2^p)\right) = 1.0525 + \dfrac{1}{40}\left[\left(0.05+1.0525\right)+\left(0.1+1.107625\right)\right] =  1.11025313\\
+\vdots\\
+y_{20} & = 3.434368
+\end{align*}
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x, y):
+    return x + y
+def sol_exacta(x):
+    return 2 * np.exp(x) - x - 1
+
+# Parámetros del problema
+x0, y0 = 0, 1
+xf = 1
+h = 1/20
+n = int((xf - x0) / h)
+
+x_vals = np.zeros(n + 1)
+y_vals = np.zeros(n + 1)
+x_vals[0], y_vals[0] = x0, y0
+
+# Implementación del Método Mejorado de Euler
+for i in range(n):    
+    y_1p = y_vals[i] + h * f(x_vals[i], y_vals[i])
+    y_vals[i+1] = y_vals[i] + (h/2) * (f(x_vals[i], y_vals[i]) + f(x_vals[i]+h, y_1p))
+    x_vals[i+1] = x_vals[i] + h
+
+# Gráfico de comparación
+x_range = np.linspace(x0, xf, 100)
+plt.figure(figsize=(10, 6))
+plt.plot(x_range, sol_exacta(x_range), label='Solución Exacta: $y = 2e^x - x - 1$', color='blue', lw=2)
+plt.plot(x_vals, y_vals, 'ro', label=f'Método Mejorado de Euler (h={h})', markersize=4)
+plt.title('Ejemplo 2: Método Mejorado de Euler vs Solución Exacta')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.show()
+
+print(f"Resultado final aproximado (y_20): {y_vals[-1]:.6f}")
+print(f"Resultado final exacto (y(1)):     {sol_exacta(1):.6f}")
+```
+:::
+
+# Método de Runge-Kutta
+
+* Los métodos de Runge-Kutta son una serie de metodos numéricos usados para encontrar aproximaciones de las soluciones de ecuaciones diferenciales y sistemas de ecuaciones diferenciales, lineales y no lineales. 
+
+* Son métodos iterativos que usan la información de la derivada de la función en varios puntos para calcular una aproximación de la solución de la ecuación diferencial en un intervalo.
+
+* Los métodos de Runge-Kutta son una especialización de los métodos numéricos a un paso. Fundamentalmente, lo que caracteriza al los métodos de Runge-Kutta es que el error en cada paso $i$ es de la forma 
+
+$$
+E_i = C h^k
+$$
+ 
+Siendo $C$ una constante real positiva, al número $k$ se le llama orden del método y $h$ es el tamaño del paso en cada nodo. 
+
+## El método de Euler (Runge-Kutta de orden 1)
+
+::: recuadro-gris
+$$
+y_{i+1} = y_i + hk_1\\
+$$
+con
+$$
+k_1 = f(x_i,y_i)
+$$
+:::
+
+* En dicho método el error es de la forma $E \leq C h$ y por tanto el método de Euler es de orden 1 
+
+* **Observación**: La función se evalúa 1 vez en cada paso, número de etapas: 1.
+
+## Runge-kutta estándar de orden 4 (Runge-Kutta de orden 4)
+
+* 
+
+::: recuadro-gris
+$$
+y_{i+1} = y_i + \dfrac{1}{6}\left(k_1+2k_2+2k_3+k_4\right)
+$$
+con
+\begin{align*}
+k_1 &= hf(x_i,y_i)\\
+k_2 &= hf\left(x_i+\dfrac{h}{2},y_i+\dfrac{1}{2}k_1\right)\\
+k_3 &= hf\left(x_i+\dfrac{h}{2},y_i+\dfrac{1}{2}k_2\right)\\
+k_4 &= hf\left(x_i+h,y_i+k_3\right)
+\end{align*}
+:::
+
+* En dicho método el error es de la forma $E \leq C h^4$ y por tanto el método de Runge-Kutta estándar de orden 4 es de orden 4 
+
+* **Observación**: La función se evalúa 4 veces en cada paso, número de etapas: 4.
+
+## Método de Runge-Merson
+
+::: recuadro-gris
+$$
+y_{i+1} = y_i + \dfrac{1}{6}\left(k_1+4k_4+k_5\right)
+$$
+con
+\begin{align*}
+k_1 &= hf(x_i,y_i)\\
+k_2 &= hf\left(x_i+\dfrac{h}{3},y_i+\dfrac{1}{3}k_1\right)\\
+k_3 &= hf\left(x_i+\dfrac{h}{3},y_i+\dfrac{1}{6}(k_1+k_2)\right)\\
+k_4 &= hf\left(x_i+\dfrac{h}{2},y_i+\dfrac{1}{8}(k_1+3k_3)\right)\\
+k_5 &= hf\left(x_i+h,y_i+\dfrac{1}{2}(k_1-3k_3+4k_4)\right)
+\end{align*}
+:::
+
+* En dicho método el error es de la forma $E \leq C h^5$ y por tanto el método de Runge-Merson es de orden 5 
+
+* **Observación**: La función se evalúa 5 veces en cada paso, número de etapas: 5.
+
+::: caja-ejemplo
+#### Ejemplo 3
+
+Sea la E.D.O.:
+$$
+y'=f(x,y)=-y-5e^{-x}\sin(5x),\qquad y(0)=1, \quad\text{con } x\in[0,3]\quad\text{ y }h=0.2
+$$
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x, y):
+    return -y - 5 * np.exp(-x) * np.sin(5 * x)
+
+def sol_exacta(x):
+    return np.exp(-x) * np.cos(5 * x)
+
+# Parámetros del problema
+x0, y0 = 0, 1
+xf = 3
+h = 0.2
+n = int((xf - x0) / h)
+
+x_vals = np.linspace(x0, xf, n + 1)
+
+# Método de Euler
+y_euler = np.zeros(n + 1)
+y_euler[0] = y0
+for i in range(n):
+    y_euler[i+1] = y_euler[i] + h * f(x_vals[i], y_euler[i])
+
+# Método de Euler Mejorado (Heun)
+y_heun = np.zeros(n + 1)
+y_heun[0] = y0
+for i in range(n):
+    k1 = f(x_vals[i], y_heun[i])
+    y_p = y_heun[i] + h * k1
+    y_heun[i+1] = y_heun[i] + (h/2) * (k1 + f(x_vals[i+1], y_p))
+
+# Método Runge-Kutta de orden 4 (RK4)
+y_rk4 = np.zeros(n + 1)
+y_rk4[0] = y0
+for i in range(n):
+    k1 = h * f(x_vals[i], y_rk4[i])
+    k2 = h * f(x_vals[i] + h/2, y_rk4[i] + k1/2)
+    k3 = h * f(x_vals[i] + h/2, y_rk4[i] + k2/2)
+    k4 = h * f(x_vals[i] + h, y_rk4[i] + k3)
+    y_rk4[i+1] = y_rk4[i] + (1/6) * (k1 + 2*k2 + 2*k3 + k4)
+
+# Método de Runge-Merson
+y_merson = np.zeros(n + 1)
+y_merson[0] = y0
+for i in range(n):
+    k1 = h * f(x_vals[i], y_merson[i])
+    k2 = h * f(x_vals[i] + h/3, y_merson[i] + k1/3)
+    k3 = h * f(x_vals[i] + h/3, y_merson[i] + (k1 + k2)/6)
+    k4 = h * f(x_vals[i] + h/2, y_merson[i] + (k1 + 3*k3)/8)
+    k5 = h * f(x_vals[i] + h, y_merson[i] + (k1 - 3*k3 + 4*k4)/2)
+    y_merson[i+1] = y_merson[i] + (1/6) * (k1 + 4*k4 + k5)
+
+# Gráfico de comparación
+x_range = np.linspace(x0, xf, 200)
+plt.figure(figsize=(12, 7))
+plt.plot(x_range, sol_exacta(x_range), 'k-', label='Solución Exacta: $y = e^{-x}\cos(5x)$', lw=1.5)
+plt.plot(x_vals, y_euler, 'ro--', label='Euler', markersize=5)
+plt.plot(x_vals, y_heun, 'go--', label='Euler Mejorado', markersize=5)
+plt.plot(x_vals, y_rk4, 'yo--', label='RK4', markersize=5)
+plt.plot(x_vals, y_merson, 'bo--', label='Runge-Merson', markersize=5)
+
+plt.title('Comparación de Métodos Numéricos (h=0.2)')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.show()
+```
 
 ## Guía de ejercicios
 En el siguiente enlace `Ejercicios_Unidad6` encontrará una lista de ejercicios relacionado con los distintos tópicos cubiertos en esta quinta unidad.

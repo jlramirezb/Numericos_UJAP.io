@@ -493,14 +493,187 @@ y_1 &amp; = y_0 + hf(x_0,y_0) = 1 + \frac{1}{20}(0+1) = 1 + \frac{1}{20}
 y_2 &amp; = y_1 + hf(x_1,y_1) = 1.05 + \frac{1}{20}(0.05+1.05) = 1.05 +
 \frac{1}{20}(1.1) = 1.105\\
 \vdots\\
-y_20 &amp; = 3.306577
+y_{20} &amp; = 3.306577
 \end{align*}\]</span></p>
 <p><img src="unidad06_files/figure-html/unnamed-chunk-2-3.png" width="960" /></p>
 <pre><code>## Resultado final aproximado (y_20): 3.306595</code></pre>
 <pre><code>## Resultado final exacto (y(1)):     3.436564</code></pre>
 </div>
-<div id="guía-de-ejercicios" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Guía de
+</div>
+<div id="método-mejorado-de-euler" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Método Mejorado de
+Euler</h1>
+<ul>
+<li><p>El método de Euler es un método de integración numérica que se
+utiliza para resolver ecuaciones diferenciales ordinarias (EDOs) de
+primer orden. Este método es simple y fácil de implementar, pero puede
+no ser el más preciso para problemas complejos.</p></li>
+<li><p>Sea la E.D.O: <span class="math display">\[
+y&#39;=f(x,y),\qquad y(x_0)=y_0
+\]</span></p></li>
+<li><p>Integramos la E.D.O. entre <span
+class="math inline">\(x_0\)</span> y <span
+class="math inline">\(x_1\)</span>: <span class="math display">\[
+\int_{x_0}^{x_1} y&#39;\,dx = \int_{x_0}^{x_1} f(x,y)\,dx
+\]</span></p></li>
+</ul>
+<p>La primera integral es la integral indefinida de <span
+class="math inline">\(y&#39;\)</span>, que es <span
+class="math inline">\(y\)</span>, y por el teorema fundamental del
+cálculo, la ecuación se convierte en: <span class="math display">\[
+y(x_1) - y(x_0) = \int_{x_0}^{x_1} f(x,y)\,dx
+\]</span></p>
+<p>La segunda integral se puede aproximar usando la regla de trapecio y
+se tendría que:</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+y(x_1)-y_0 = \dfrac{h}{2}\left(f(x_0,y_0)+f(x_1,y_1)\right)
+\]</span> Por lo tanto <span class="math display">\[
+y_1 = y_0 + \dfrac{h}{2}\left(f(x_0,y_0)+f(x_1,y_1)\right)
+\]</span></p>
+</div>
+<p>Aquí el problema se presenta por el término <span
+class="math inline">\(y_1\)</span> a la derecha de la ecuación. Entonces
+podemos calcular <span class="math inline">\(y_1^p\)</span>, por Euler.
+Es decir,</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+y_1^p = y_0 + hf(x_0,y_0)
+\]</span></p>
+<p>Por lo tanto <span class="math display">\[
+y_1 = y_0 + \dfrac{h}{2}\left(f(x_0,y_0)+f(x_1,y_1^p)\right)
+\]</span></p>
+</div>
+<p>Este método es un ejemplo de los llamados métodos
+Predictor-Corrector, donde <span
+class="math inline">\(y_{n+1}^p\)</span> es el Predictor y <span
+class="math inline">\(y_{n+1}\)</span> el Corrector.</p>
+<div id="ejemplo-2" class="section level4 caja-ejemplo"
+number="3.0.0.1">
+<h4><span class="header-section-number">3.0.0.1</span> Ejemplo 2</h4>
+<p>Sea la E.D.O.: <span class="math display">\[
+y&#39;=f(x,y)=x+y,\qquad y(0)=1, \quad\text{con } x\in[0,1]\quad\text{ y
+}h=\frac{1}{20}
+\]</span></p>
+<p><span class="math display">\[\begin{align*}
+y_0 &amp; = 1\\
+y_1^p &amp;= y_0 +hf(x_0,y_0) = 1+\frac{1}{20}(0+1) = 1.05\\
+y_1 &amp;= y_0 + \dfrac{h}{2}\left(f(x_0,y_0)+f(x_1,y_1^p)\right) = 1 +
+\dfrac{1}{40}\left[\left(0+1\right)+\left(0.05+1.05\right)\right] =
+1.0525\\
+y_2^p &amp;= y_1 +hf(x_1,y_1) = 1.0525 + \frac{1}{20}(0.05+1.0525) =
+1.107625\\
+y_2 &amp;= y_1 + \dfrac{h}{2}\left(f(x_1,y_1)+f(x_2,y_2^p)\right) =
+1.0525 +
+\dfrac{1}{40}\left[\left(0.05+1.0525\right)+\left(0.1+1.107625\right)\right]
+=  1.11025313\\
+\vdots\\
+y_{20} &amp; = 3.434368
+\end{align*}\]</span></p>
+<p><img src="unidad06_files/figure-html/unnamed-chunk-3-5.png" width="960" /></p>
+<pre><code>## Resultado final aproximado (y_20): 3.434382</code></pre>
+<pre><code>## Resultado final exacto (y(1)):     3.436564</code></pre>
+</div>
+</div>
+<div id="método-de-runge-kutta" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Método de
+Runge-Kutta</h1>
+<ul>
+<li><p>Los métodos de Runge-Kutta son una serie de metodos numéricos
+usados para encontrar aproximaciones de las soluciones de ecuaciones
+diferenciales y sistemas de ecuaciones diferenciales, lineales y no
+lineales.</p></li>
+<li><p>Son métodos iterativos que usan la información de la derivada de
+la función en varios puntos para calcular una aproximación de la
+solución de la ecuación diferencial en un intervalo.</p></li>
+<li><p>Los métodos de Runge-Kutta son una especialización de los métodos
+numéricos a un paso. Fundamentalmente, lo que caracteriza al los métodos
+de Runge-Kutta es que el error en cada paso <span
+class="math inline">\(i\)</span> es de la forma</p></li>
+</ul>
+<p><span class="math display">\[
+E_i = C h^k
+\]</span></p>
+<p>Siendo <span class="math inline">\(C\)</span> una constante real
+positiva, al número <span class="math inline">\(k\)</span> se le llama
+orden del método y <span class="math inline">\(h\)</span> es el tamaño
+del paso en cada nodo.</p>
+<div id="el-método-de-euler-runge-kutta-de-orden-1"
+class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> El método de Euler
+(Runge-Kutta de orden 1)</h2>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+y_{i+1} = y_i + hk_1\\
+\]</span> con <span class="math display">\[
+k_1 = f(x_i,y_i)
+\]</span></p>
+</div>
+<ul>
+<li><p>En dicho método el error es de la forma <span
+class="math inline">\(E \leq C h\)</span> y por tanto el método de Euler
+es de orden 1</p></li>
+<li><p><strong>Observación</strong>: La función se evalúa 1 vez en cada
+paso, número de etapas: 1.</p></li>
+</ul>
+</div>
+<div id="runge-kutta-estándar-de-orden-4-runge-kutta-de-orden-4"
+class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Runge-kutta estándar
+de orden 4 (Runge-Kutta de orden 4)</h2>
+<ul>
+<li></li>
+</ul>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+y_{i+1} = y_i + \dfrac{1}{6}\left(k_1+2k_2+2k_3+k_4\right)
+\]</span> con <span class="math display">\[\begin{align*}
+k_1 &amp;= hf(x_i,y_i)\\
+k_2 &amp;= hf\left(x_i+\dfrac{h}{2},y_i+\dfrac{1}{2}k_1\right)\\
+k_3 &amp;= hf\left(x_i+\dfrac{h}{2},y_i+\dfrac{1}{2}k_2\right)\\
+k_4 &amp;= hf\left(x_i+h,y_i+k_3\right)
+\end{align*}\]</span></p>
+</div>
+<ul>
+<li><p>En dicho método el error es de la forma <span
+class="math inline">\(E \leq C h^4\)</span> y por tanto el método de
+Runge-Kutta estándar de orden 4 es de orden 4</p></li>
+<li><p><strong>Observación</strong>: La función se evalúa 4 veces en
+cada paso, número de etapas: 4.</p></li>
+</ul>
+</div>
+<div id="método-de-runge-merson" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Método de
+Runge-Merson</h2>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+y_{i+1} = y_i + \dfrac{1}{6}\left(k_1+4k_4+k_5\right)
+\]</span> con <span class="math display">\[\begin{align*}
+k_1 &amp;= hf(x_i,y_i)\\
+k_2 &amp;= hf\left(x_i+\dfrac{h}{3},y_i+\dfrac{1}{3}k_1\right)\\
+k_3 &amp;= hf\left(x_i+\dfrac{h}{3},y_i+\dfrac{1}{6}(k_1+k_2)\right)\\
+k_4 &amp;= hf\left(x_i+\dfrac{h}{2},y_i+\dfrac{1}{8}(k_1+3k_3)\right)\\
+k_5 &amp;= hf\left(x_i+h,y_i+\dfrac{1}{2}(k_1-3k_3+4k_4)\right)
+\end{align*}\]</span></p>
+</div>
+<ul>
+<li><p>En dicho método el error es de la forma <span
+class="math inline">\(E \leq C h^5\)</span> y por tanto el método de
+Runge-Merson es de orden 5</p></li>
+<li><p><strong>Observación</strong>: La función se evalúa 5 veces en
+cada paso, número de etapas: 5.</p></li>
+</ul>
+<div class="caja-ejemplo">
+<div id="ejemplo-3" class="section level4" number="4.3.0.1">
+<h4><span class="header-section-number">4.3.0.1</span> Ejemplo 3</h4>
+<p>Sea la E.D.O.: <span class="math display">\[
+y&#39;=f(x,y)=-y-5e^{-x}\sin(5x),\qquad y(0)=1, \quad\text{con }
+x\in[0,3]\quad\text{ y }h=0.2
+\]</span></p>
+<p><img src="unidad06_files/figure-html/unnamed-chunk-4-7.png" width="1152" /></p>
+</div>
+<div id="guía-de-ejercicios" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Guía de
 ejercicios</h2>
 <p>En el siguiente enlace <code>Ejercicios_Unidad6</code> encontrará una
 lista de ejercicios relacionado con los distintos tópicos cubiertos en
@@ -508,7 +681,9 @@ esta quinta unidad.</p>
 <p>Descargue el PDF de esta guía de ejercicios aqui:</p>
 <p><a href="Ejercicios_UnidadVI.pdf">Descargar Guía PDF</a></p>
 <hr />
-<p><small>Última revisión: 07 de enero, 2026</small></p>
+<p><small>Última revisión: 08 de enero, 2026</small></p>
+</div>
+</div>
 </div>
 </div>
 
