@@ -1,0 +1,226 @@
+---
+title: "Resolución de Ecuaciones Diferenciales Ordinarias"
+author: "José Luis Ramírez"
+date: "Enero 2026"
+output:
+  html_document:
+    self_contained: true
+    mathjax: default
+    pandoc_args: "--mathjax"
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    theme: readable
+    css: css/estilos.css
+    number_sections: true
+---
+
+# Motivación
+
+* En Ingeniería, el comportamiento de un sistema suele describirse mediante ecuaciones que relacionan la tasa de cambio de una magnitud con la magnitud misma y otras variables.
+
+* De hecho, muchas leyes físicas se establecen en términos de razones de cambio, como ocurre en fenómenos relacionados con la caída de un cuerpo o la variación de la temperatura, entre otros.
+
+* Estas relaciones se representan comúnmente mediante ecuaciones diferenciales ordinarias (EDOs), unas ecuaciones que vinculan una función de una única variable independiente con sus derivadas, describiendo formalmente cómo cambia dicha función respecto de esa variable.
+
+* Se estudiará la resolución numérica de dos problemas asociados a las ecuaciones diferenciales ordinarias:
+    - el problema de Cauchy o problema de valor inicial.
+    - el problema de contorno.
+
+* En un problema de valor inicial las condiciones se establecen sobre el instante inicial y en un problema de contorno, las condiciones se imponen tanto en el extremo inicial como en el final de un intervalo.
+
+* Como ejemplo de ecuación diferencial, se muestra un ejemplo de un sistema masa-resorte.
+
+* Este sistema está compuesto por una masa $m$ unida a un resorte que ejerce una fuerza proporcional al desplazamiento, según la ley de Hooke. Si además se considera una fuerza de amortiguamiento proporcional a la velocidad, se obtiene la siguiente ecuación diferencial de segundo orden:
+
+$$
+m \dfrac{d^2x}{dt^2} + c \dfrac{dx}{dt} + kx = 0
+$$
+
+donde:
+
+* $x(t)$ es el desplazamiento de la masa en función del tiempo,
+
+* $m$ es la masa,
+
+* $c$ es el coeficiente de amortiguamiento,
+
+* $k$ es la constante del resorte.
+
+## Formulación del problema de valor inicial
+
+El problema de valor inicial, PVI, puede escribirse de forma general como 
+
+::: recuadro-gris
+$$
+\left\{
+    \begin{aligned} 
+        & y'\left( t \right) = f\left( {t,y\left( t \right)} \right)\,\,\,\,\,\,\,\,\,t \in \left[ {{t_0},{t_f}} \right] \\
+        & y\left( {{t_0}} \right) = {y_0}
+    \end{aligned}
+\right.
+$$
+
+siendo 
+$$
+-\infty < {t_0} < {t_f} < \infty 
+$$
+
+$$
+f:\left[ {{t_0},{t_f}}\right]\text{x}{\mathbb R^n} \to \mathbb R^n
+$$
+:::
+
+# Método de Euler
+
+* Este método fue ideado por Euler hace más de 200 años. Es bastante sencillo, pero no tan preciso como los otros métodos que veremos posteriormente.
+
+* Sin embargo, el método de Euler sirve como punto de partida hacia técnicas alternativas que aparecerán según se considere.
+
+* El objetivo del método es obtener una aproximación al problema
+
+$$
+\dfrac{dy}{dx} = f(x,y), \qquad a\leq x\leq b
+$$
+
+con la condición inicial, $y(x_0) = y_0$.
+
+* Inicialmente no se obtendrá una aproximación continua de la solución $y(x)$, sino que se generarán aproximaciones de $y$ en varios puntos, llamados puntos de red, en el intervalo $[a,b]$.
+
+* Una vez que se obtenga la solución aproximada en estos puntos, es posible encontrar un polinomio de interpolación que se ajuste a los valores (tabulados) obtenidos.
+
+* Supondremos que los puntos de la red están distribuidos uniformemente sobre el intervalo $[a,b]$. Podemos garantizarlo, escogiendo un entero positivo $n$ y seleccionando los puntos de red $x_0 < x_1 < x_2 < \cdots < x_n$, donde $x_i = x_0+ih$
+
+* La distancia común entre los puntos, $h=\frac{b-a}{n}$, se llama tamaño de paso, y el punto inicial, $(x_0,y_0)$, es el único punto conocido de la solución exacta.
+
+La aproximación $y_1$ en el próximo punto $x_1$ de la red está determinado por la recta tangente a la curva $y$ en el punto $(x_0,y_0)$:
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x, y):
+    return y - x**2 + 1
+
+def exact_sol(x):
+    return (x + 1)**2 - 0.5 * np.exp(x)
+
+# Parámetros
+x0, y0 = 0, 0.5
+xf = 2
+h = 0.5
+n = int((xf - x0) / h)
+
+x_euler = np.zeros(n + 1)
+y_euler = np.zeros(n + 1)
+x_euler[0], y_euler[0] = x0, y0
+
+# Iteración de Euler
+for i in range(n):
+    y_euler[i+1] = y_euler[i] + h * f(x_euler[i], y_euler[i])
+    x_euler[i+1] = x_euler[i] + h
+
+# Visualización
+x_range = np.linspace(x0, xf, 100)
+plt.figure(figsize=(8, 5))
+plt.plot(x_range, exact_sol(x_range), label='Solución Exacta', color='blue')
+plt.plot(x_euler, y_euler, 'ro--', label='Aproximación Euler (h=0.5)')
+plt.title('Método de Euler vs Solución Exacta')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+```
+
+Como 
+
+::: recuadro-gris
+$$
+\dfrac{y_1-y_0}{x_1-x_0} = y'(x_0) = f(x_0,y_0) = \dfrac{dy}{dx}
+$$
+
+entonces
+
+$$
+y_1 - y_0 = (x_1-x_0) f(x_0,y_0) \Rightarrow y_1 = y_0 + h f(x_0,y_0)
+$$
+
+Y en general
+$$
+y_{n+1} = y_n + h f(x_n,y_n) \qquad \text{ con } h=x_{n+1}-x_n
+$$
+:::
+
+::: caja-ejemplo
+#### Ejemplo 1
+
+Sea la E.D.O.:
+$$
+y'=f(x,y)=x+y,\qquad y(0)=1, \quad\text{con } x\in[0,1]\quad\text{ y }h=\frac{1}{20}
+$$
+
+\begin{align*}
+y_0 & = 1\\
+y_1 & = y_0 + hf(x_0,y_0) = 1 + \frac{1}{20}(0+1) = 1 + \frac{1}{20} = 1.05\\
+y_2 & = y_1 + hf(x_1,y_1) = 1.05 + \frac{1}{20}(0.05+1.05) = 1.05 + \frac{1}{20}(1.1) = 1.105\\
+\vdots\\
+y_20 & = 3.306577
+\end{align*}
+
+```{python, echo=FALSE}
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x, y):
+    return x + y
+
+def sol_exacta(x):
+    return 2 * np.exp(x) - x - 1
+
+# Parámetros del problema
+x0, y0 = 0, 1
+xf = 1
+h = 1/20
+n = int((xf - x0) / h)
+
+x_vals = np.zeros(n + 1)
+y_vals = np.zeros(n + 1)
+x_vals[0], y_vals[0] = x0, y0
+
+# Implementación del Método de Euler
+for i in range(n):
+    y_vals[i+1] = y_vals[i] + h * f(x_vals[i], y_vals[i])
+    x_vals[i+1] = x_vals[i] + h
+
+# Gráfico de comparación
+x_range = np.linspace(x0, xf, 100)
+plt.figure(figsize=(10, 6))
+plt.plot(x_range, sol_exacta(x_range), label='Solución Exacta: $y = 2e^x - x - 1$', color='blue', lw=2)
+plt.plot(x_vals, y_vals, 'ro', label=f'Aproximación Euler (h={h})', markersize=4)
+plt.title('Ejemplo 1: Método de Euler vs Solución Exacta')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.show()
+
+print(f"Resultado final aproximado (y_20): {y_vals[-1]:.6f}")
+print(f"Resultado final exacto (y(1)):     {sol_exacta(1):.6f}")
+```
+
+:::
+
+
+## Guía de ejercicios
+En el siguiente enlace `Ejercicios_Unidad6` encontrará una lista de ejercicios relacionado con los distintos tópicos cubiertos en esta quinta unidad.
+
+Descargue el PDF de esta guía de ejercicios aqui:
+
+[Descargar Guía PDF](Ejercicios_UnidadVI.pdf)
+
+
+------------------------------------------------------------------------
+  
+<small>Última revisión: `r format(Sys.Date(), "%d de %B, %Y")`</small>

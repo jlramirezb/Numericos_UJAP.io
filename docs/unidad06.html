@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="José Luis Ramírez" />
+
+
+<title>Resolución de Ecuaciones Diferenciales Ordinarias</title>
+
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="css/estilos.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Métodos Numéricos</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jlramirezb">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Resolución de Ecuaciones Diferenciales
+Ordinarias</h1>
+<h4 class="author">José Luis Ramírez</h4>
+<h4 class="date">Enero 2026</h4>
+
+</div>
+
+
+<div id="motivación" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Motivación</h1>
+<ul>
+<li><p>En Ingeniería, el comportamiento de un sistema suele describirse
+mediante ecuaciones que relacionan la tasa de cambio de una magnitud con
+la magnitud misma y otras variables.</p></li>
+<li><p>De hecho, muchas leyes físicas se establecen en términos de
+razones de cambio, como ocurre en fenómenos relacionados con la caída de
+un cuerpo o la variación de la temperatura, entre otros.</p></li>
+<li><p>Estas relaciones se representan comúnmente mediante ecuaciones
+diferenciales ordinarias (EDOs), unas ecuaciones que vinculan una
+función de una única variable independiente con sus derivadas,
+describiendo formalmente cómo cambia dicha función respecto de esa
+variable.</p></li>
+<li><p>Se estudiará la resolución numérica de dos problemas asociados a
+las ecuaciones diferenciales ordinarias:</p>
+<ul>
+<li>el problema de Cauchy o problema de valor inicial.</li>
+<li>el problema de contorno.</li>
+</ul></li>
+<li><p>En un problema de valor inicial las condiciones se establecen
+sobre el instante inicial y en un problema de contorno, las condiciones
+se imponen tanto en el extremo inicial como en el final de un
+intervalo.</p></li>
+<li><p>Como ejemplo de ecuación diferencial, se muestra un ejemplo de un
+sistema masa-resorte.</p></li>
+<li><p>Este sistema está compuesto por una masa <span
+class="math inline">\(m\)</span> unida a un resorte que ejerce una
+fuerza proporcional al desplazamiento, según la ley de Hooke. Si además
+se considera una fuerza de amortiguamiento proporcional a la velocidad,
+se obtiene la siguiente ecuación diferencial de segundo orden:</p></li>
+</ul>
+<p><span class="math display">\[
+m \dfrac{d^2x}{dt^2} + c \dfrac{dx}{dt} + kx = 0
+\]</span></p>
+<p>donde:</p>
+<ul>
+<li><p><span class="math inline">\(x(t)\)</span> es el desplazamiento de
+la masa en función del tiempo,</p></li>
+<li><p><span class="math inline">\(m\)</span> es la masa,</p></li>
+<li><p><span class="math inline">\(c\)</span> es el coeficiente de
+amortiguamiento,</p></li>
+<li><p><span class="math inline">\(k\)</span> es la constante del
+resorte.</p></li>
+</ul>
+<div id="formulación-del-problema-de-valor-inicial"
+class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Formulación del
+problema de valor inicial</h2>
+<p>El problema de valor inicial, PVI, puede escribirse de forma general
+como</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\left\{
+    \begin{aligned}
+        &amp; y&#39;\left( t \right) = f\left( {t,y\left( t \right)}
+\right)\,\,\,\,\,\,\,\,\,t \in \left[ {{t_0},{t_f}} \right] \\
+        &amp; y\left( {{t_0}} \right) = {y_0}
+    \end{aligned}
+\right.
+\]</span></p>
+<p>siendo <span class="math display">\[
+-\infty &lt; {t_0} &lt; {t_f} &lt; \infty
+\]</span></p>
+<p><span class="math display">\[
+f:\left[ {{t_0},{t_f}}\right]\text{x}{\mathbb R^n} \to \mathbb R^n
+\]</span></p>
+</div>
+</div>
+</div>
+<div id="método-de-euler" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Método de Euler</h1>
+<ul>
+<li><p>Este método fue ideado por Euler hace más de 200 años. Es
+bastante sencillo, pero no tan preciso como los otros métodos que
+veremos posteriormente.</p></li>
+<li><p>Sin embargo, el método de Euler sirve como punto de partida hacia
+técnicas alternativas que aparecerán según se considere.</p></li>
+<li><p>El objetivo del método es obtener una aproximación al
+problema</p></li>
+</ul>
+<p><span class="math display">\[
+\dfrac{dy}{dx} = f(x,y), \qquad a\leq x\leq b
+\]</span></p>
+<p>con la condición inicial, <span class="math inline">\(y(x_0) =
+y_0\)</span>.</p>
+<ul>
+<li><p>Inicialmente no se obtendrá una aproximación continua de la
+solución <span class="math inline">\(y(x)\)</span>, sino que se
+generarán aproximaciones de <span class="math inline">\(y\)</span> en
+varios puntos, llamados puntos de red, en el intervalo <span
+class="math inline">\([a,b]\)</span>.</p></li>
+<li><p>Una vez que se obtenga la solución aproximada en estos puntos, es
+posible encontrar un polinomio de interpolación que se ajuste a los
+valores (tabulados) obtenidos.</p></li>
+<li><p>Supondremos que los puntos de la red están distribuidos
+uniformemente sobre el intervalo <span
+class="math inline">\([a,b]\)</span>. Podemos garantizarlo, escogiendo
+un entero positivo <span class="math inline">\(n\)</span> y
+seleccionando los puntos de red <span class="math inline">\(x_0 &lt; x_1
+&lt; x_2 &lt; \cdots &lt; x_n\)</span>, donde <span
+class="math inline">\(x_i = x_0+ih\)</span></p></li>
+<li><p>La distancia común entre los puntos, <span
+class="math inline">\(h=\frac{b-a}{n}\)</span>, se llama tamaño de paso,
+y el punto inicial, <span class="math inline">\((x_0,y_0)\)</span>, es
+el único punto conocido de la solución exacta.</p></li>
+</ul>
+<p>La aproximación <span class="math inline">\(y_1\)</span> en el
+próximo punto <span class="math inline">\(x_1\)</span> de la red está
+determinado por la recta tangente a la curva <span
+class="math inline">\(y\)</span> en el punto <span
+class="math inline">\((x_0,y_0)\)</span>:</p>
+<p><img src="unidad06_files/figure-html/unnamed-chunk-1-1.png" width="768" /></p>
+<p>Como</p>
+<div class="recuadro-gris">
+<p><span class="math display">\[
+\dfrac{y_1-y_0}{x_1-x_0} = y&#39;(x_0) = f(x_0,y_0) = \dfrac{dy}{dx}
+\]</span></p>
+<p>entonces</p>
+<p><span class="math display">\[
+y_1 - y_0 = (x_1-x_0) f(x_0,y_0) \Rightarrow y_1 = y_0 + h f(x_0,y_0)
+\]</span></p>
+<p>Y en general <span class="math display">\[
+y_{n+1} = y_n + h f(x_n,y_n) \qquad \text{ con } h=x_{n+1}-x_n
+\]</span></p>
+</div>
+<div id="ejemplo-1" class="section level4 caja-ejemplo"
+number="2.0.0.1">
+<h4><span class="header-section-number">2.0.0.1</span> Ejemplo 1</h4>
+<p>Sea la E.D.O.: <span class="math display">\[
+y&#39;=f(x,y)=x+y,\qquad y(0)=1, \quad\text{con } x\in[0,1]\quad\text{ y
+}h=\frac{1}{20}
+\]</span></p>
+<p><span class="math display">\[\begin{align*}
+y_0 &amp; = 1\\
+y_1 &amp; = y_0 + hf(x_0,y_0) = 1 + \frac{1}{20}(0+1) = 1 + \frac{1}{20}
+= 1.05\\
+y_2 &amp; = y_1 + hf(x_1,y_1) = 1.05 + \frac{1}{20}(0.05+1.05) = 1.05 +
+\frac{1}{20}(1.1) = 1.105\\
+\vdots\\
+y_20 &amp; = 3.306577
+\end{align*}\]</span></p>
+<p><img src="unidad06_files/figure-html/unnamed-chunk-2-3.png" width="960" /></p>
+<pre><code>## Resultado final aproximado (y_20): 3.306595</code></pre>
+<pre><code>## Resultado final exacto (y(1)):     3.436564</code></pre>
+</div>
+<div id="guía-de-ejercicios" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Guía de
+ejercicios</h2>
+<p>En el siguiente enlace <code>Ejercicios_Unidad6</code> encontrará una
+lista de ejercicios relacionado con los distintos tópicos cubiertos en
+esta quinta unidad.</p>
+<p>Descargue el PDF de esta guía de ejercicios aqui:</p>
+<p><a href="Ejercicios_UnidadVI.pdf">Descargar Guía PDF</a></p>
+<hr />
+<p><small>Última revisión: 07 de enero, 2026</small></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
