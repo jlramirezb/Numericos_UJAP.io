@@ -1,7 +1,7 @@
 ---
 title: "Teoría de Errores"
 author: "José Luis Ramírez"
-date: "Octubre 2025"
+date: "Febrero 2026"
 output:
   html_document:
     self_contained: true
@@ -638,7 +638,6 @@ En el siguiente enlace `Evaluacion1` encontrará la primera evaluación práctic
 
 Descargue el PDF de esta evaluación aqui:
 
-[Descargar Evaluación PDF](../docs/Evaluacion1.pdf)
 
 ------------------------------------------------------------------------
 
